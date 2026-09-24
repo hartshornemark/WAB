@@ -23,7 +23,7 @@ export const A319_LAYOUT = {
   typeCode: "319", subtype: "100", length: 33.84, noseArm: 2.540,
   // The Airbus plan occupies x=137.4..330.3 after the engine-bounded crop.
   tailX: 330.3, span: 192.9, centreY: 363,
-  asset: "/aircraft-layouts/a319-100-fuselage",
+  asset: "/aircraft-layouts/a319-100-fuselage?v=1800f1d81420",
   imageFrame: { x: 102, y: 327.25, width: 236, height: 72 },
   cropLeft: 102, cropRight: 338,
   holdY: 352, holdHeight: 22, leftDoorY: 347, rightDoorY: 377,
@@ -33,7 +33,7 @@ export const A320_LAYOUT = {
   typeCode: "320", subtype: "200", length: 37.57, noseArm: 0,
   // The Airbus plan occupies x=123.5..337.8 after the engine-bounded crop.
   tailX: 337.8, span: 214.3, centreY: 359.5,
-  asset: "/aircraft-layouts/a320-200-fuselage",
+  asset: "/aircraft-layouts/a320-200-fuselage?v=f5de949b13d9",
   imageFrame: { x: 102, y: 327.25, width: 236, height: 72 },
   cropLeft: 102, cropRight: 338,
   holdY: 348.5, holdHeight: 22, leftDoorY: 344, rightDoorY: 374,

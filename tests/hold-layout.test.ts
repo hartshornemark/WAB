@@ -17,11 +17,16 @@ test("aircraft hold overlays remain centred on their calibrated fuselage",()=>{
 });
 test("aircraft vector assets and image frames require an explicit calibration review when changed",()=>{
   const assetHash=(name:string)=>createHash("sha256").update(readFileSync(join(process.cwd(),"src/assets/aircraft-layouts",name))).digest("hex");
+  const assetVersion=(asset:string)=>new URL(asset,"http://layout.local").searchParams.get("v");
   // These vectors, their crops and the image frame form one coordinate system.
   // A changed hash is intentional friction: review the rendered overlay, then
   // update this contract together with the aircraft calibration.
-  assert.equal(assetHash("a319-100-fuselage.svg"),"1800f1d814208e34c17d7ad7a91cc4abdd7f18f8251ae91ad8ef6ab1e1cdb4d6");
-  assert.equal(assetHash("a320-200-fuselage.svg"),"f5de949b13d92da8bcf889a0644390edde83e33a1ed35146279e51b19e47e0f7");
+  const a319Hash=assetHash("a319-100-fuselage.svg");
+  const a320Hash=assetHash("a320-200-fuselage.svg");
+  assert.equal(a319Hash,"1800f1d814208e34c17d7ad7a91cc4abdd7f18f8251ae91ad8ef6ab1e1cdb4d6");
+  assert.equal(a320Hash,"f5de949b13d92da8bcf889a0644390edde83e33a1ed35146279e51b19e47e0f7");
+  assert.equal(assetVersion(A319_LAYOUT.asset),a319Hash.slice(0,12));
+  assert.equal(assetVersion(A320_LAYOUT.asset),a320Hash.slice(0,12));
   assert.deepEqual(A319_LAYOUT.imageFrame,{x:102,y:327.25,width:236,height:72});
   assert.deepEqual(A320_LAYOUT.imageFrame,{x:102,y:327.25,width:236,height:72});
   assert.deepEqual(
