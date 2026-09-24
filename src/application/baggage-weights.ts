@@ -1,5 +1,5 @@
 import { AuthenticationRequired,CarrierUnavailable } from "@/domain/models";
-import { BaggageDenied,BaggageInvalid,BaggageConflict,validateBaggage,type BaggageOperationMode,type BaggageSection } from "@/domain/baggage-weights";
+import { BaggageDenied,BaggageInvalid,BaggageConflict,validateBaggage,type BaggageOperationMode,type BaggageSection,type BaggageVariationMethod } from "@/domain/baggage-weights";
 import type { AuthService } from "@/ports/auth-service";
 import type { CarrierRepository } from "@/ports/carrier-repository";
 import type { BaggageRepository } from "@/ports/baggage-repository";
@@ -33,12 +33,13 @@ export function createBaggageWeights(auth:AuthService,carriers:CarrierRepository
    if(!["STANDARD","ACTUAL"].includes(mode))throw new BaggageInvalid("Choose Standard or Actual Baggage Weight Operations.");
    await repository.saveOperationMode(iata,revision,mode);
   },
-  async saveVariationStandard(iata:string,revision:string,variation:unknown){
+  async saveVariationMethod(iata:string,revision:string,variation:unknown,method:BaggageVariationMethod){
    await check(iata);const current=await repository.get(iata);
    if(!current.canEdit)throw new BaggageDenied();if(current.revision!==revision)throw new BaggageConflict();
    if(typeof variation!=="string"||!current.variations.some(item=>item.code===variation))throw new BaggageInvalid("Choose a Flight Variation saved on B3.");
-   if(current.weights.some(row=>row.values.variation===variation))throw new BaggageInvalid("Remove the saved variation-specific Baggage Weight records before selecting Standard Baggage Weights.");
-   await repository.saveVariationStandard(iata,revision,variation);
+   if(!["INHERIT","STANDARD","ACTUAL"].includes(method))throw new BaggageInvalid("Choose how Baggage Weights apply to this Flight Variation.");
+   if(method!=="STANDARD"&&current.weights.some(row=>!row.baseline&&row.values.variation===variation))throw new BaggageInvalid("Remove the saved variation-specific Standard Weight records before changing this method.");
+   await repository.saveVariationMethod(iata,revision,variation,method);
   }
  };
 }

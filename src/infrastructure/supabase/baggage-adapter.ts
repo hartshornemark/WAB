@@ -1,7 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { DataUnavailable } from "@/domain/models";
-import { BaggageConflict,BaggageDenied,BaggageInvalid,type BaggageRecord,type BaggageSection } from "@/domain/baggage-weights";
+import { BaggageConflict,BaggageDenied,BaggageInvalid,type BaggageRecord,type BaggageSection,type BaggageVariationMethod } from "@/domain/baggage-weights";
 import type { BaggageRepository } from "@/ports/baggage-repository";
 import type { RequestClient } from "./server";
 import { createPassengerAdapter } from "./passenger-adapter";
@@ -29,9 +29,14 @@ export function createBaggageAdapter(client:RequestClient):BaggageRepository {
   const reviewRows=reviews.data??[];
   const operationMode=reviewRows.find(row=>row.Section_Code==="BAGGAGE_OPERATION_MODE")?.Review_State==="APPLIES"?"ACTUAL" as const:"STANDARD" as const;
   const defaultPerPiece=reviewRows.find(row=>row.Section_Code==="PER_PASSENGER_WEIGHTS")?.Review_State!=="APPLIES";
-  const standardVariations=context.variations.filter(variation=>reviewRows.some(row=>row.Section_Code===`BAGGAGE_VARIATION_${variation.code}`&&row.Review_State==="NOT_APPLICABLE")).map(variation=>variation.code);
+  const variationMethods=Object.fromEntries(context.variations.flatMap(variation=>{
+   const state=reviewRows.find(row=>row.Section_Code===`BAGGAGE_VARIATION_${variation.code}`)?.Review_State;
+   const hasTable=raw.weights.some(row=>row.Is_Baseline!==true&&row.Flight_Type_Variation===variation.code);
+   const method=hasTable||state==="REVIEWED"?"STANDARD":state==="NOT_APPLICABLE"?"INHERIT":state==="APPLIES"?"ACTUAL":null;
+   return method?[[variation.code,method]]:[];
+  })) as Partial<Record<string,BaggageVariationMethod>>;
   const revision=createHash("sha256").update(JSON.stringify([raw,context.unit,details.values.volumeUnit,context.classes,context.variations,reviewRows,density.data])).digest("hex");
-  return {raw,snapshot:{canView:context.canView,canEdit:context.canEdit,revision,unit:context.unit??"",volumeUnit:details.values.volumeUnit,operationMode,defaultPerPiece,checkedBaggageDensity:density.data?.Density_Checked_Baggage?.toString()??"",classes:context.classes,variations:context.variations,standardVariations,defaults:raw.defaults[0]?record("defaults",raw.defaults[0]):null,weights:raw.weights.map(r=>record("weights",r)).sort((a,b)=>Number(b.baseline)-Number(a.baseline)),planning:raw.planning.map(r=>record("planning",r))}};
+  return {raw,snapshot:{canView:context.canView,canEdit:context.canEdit,revision,unit:context.unit??"",volumeUnit:details.values.volumeUnit,operationMode,defaultPerPiece,checkedBaggageDensity:density.data?.Density_Checked_Baggage?.toString()??"",classes:context.classes,variations:context.variations,variationMethods,defaults:raw.defaults[0]?record("defaults",raw.defaults[0]):null,weights:raw.weights.map(r=>record("weights",r)).sort((a,b)=>Number(b.baseline)-Number(a.baseline)),planning:raw.planning.map(r=>record("planning",r))}};
  }
  return {async get(iata){return (await read(iata)).snapshot;},async save(iata,revision,section,row,remove){
   const current=await read(iata);if(!current.snapshot.canEdit)throw new BaggageDenied();if(current.snapshot.revision!==revision)throw new BaggageConflict();
@@ -53,10 +58,11 @@ export function createBaggageAdapter(client:RequestClient):BaggageRepository {
   const current=await read(iata);if(!current.snapshot.canEdit)throw new BaggageDenied();if(current.snapshot.revision!==revision)throw new BaggageConflict();
   const result=await api().from("Carrier_Configuration_Review_State").upsert({Carrier_IATA:iata,Page_Code:"B4",Section_Code:"PER_PASSENGER_WEIGHTS",Review_State:defaultPerPiece?"NOT_APPLICABLE":"APPLIES",Reviewed_At:new Date().toISOString()},{onConflict:"Carrier_IATA,Page_Code,Section_Code"}).select("Carrier_IATA");
  fail(result.error);if(result.data?.length!==1)throw new BaggageConflict();
- },async saveVariationStandard(iata,revision,variation){
+ },async saveVariationMethod(iata,revision,variation,method){
   const current=await read(iata);if(!current.snapshot.canEdit)throw new BaggageDenied();if(current.snapshot.revision!==revision)throw new BaggageConflict();
-  if(!current.snapshot.variations.some(item=>item.code===variation)||current.snapshot.weights.some(row=>row.values.variation===variation))throw new BaggageInvalid("Check the Flight Variation and remove any saved variation-specific records first.");
-  const result=await api().from("Carrier_Configuration_Review_State").upsert({Carrier_IATA:iata,Page_Code:"B4",Section_Code:`BAGGAGE_VARIATION_${variation}`,Review_State:"NOT_APPLICABLE",Reviewed_At:new Date().toISOString()},{onConflict:"Carrier_IATA,Page_Code,Section_Code"}).select("Carrier_IATA");
+  if(!current.snapshot.variations.some(item=>item.code===variation)||method!=="STANDARD"&&current.snapshot.weights.some(row=>!row.baseline&&row.values.variation===variation))throw new BaggageInvalid("Check the Flight Variation and remove any saved variation-specific Standard Weight records first.");
+  const state=method==="STANDARD"?"REVIEWED":method==="ACTUAL"?"APPLIES":"NOT_APPLICABLE";
+  const result=await api().from("Carrier_Configuration_Review_State").upsert({Carrier_IATA:iata,Page_Code:"B4",Section_Code:`BAGGAGE_VARIATION_${variation}`,Review_State:state,Reviewed_At:new Date().toISOString()},{onConflict:"Carrier_IATA,Page_Code,Section_Code"}).select("Carrier_IATA");
   fail(result.error);if(result.data?.length!==1)throw new BaggageConflict();
  }};
 }
