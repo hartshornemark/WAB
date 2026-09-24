@@ -22,7 +22,7 @@ export const A319_LAYOUT = {
   typeCode: "319", subtype: "100", length: 33.84, noseArm: 2.540,
   // The Airbus plan occupies x=137.4..330.3 after the engine-bounded crop.
   tailX: 330.3, span: 192.9, centreY: 375,
-  asset: "/aircraft-layouts/a319-100-fuselage.svg?v=airbus-20260923",
+  asset: "/aircraft-layouts/a319-100-fuselage",
   cropLeft: 102, cropRight: 338,
   holdY: 364, holdHeight: 22, leftDoorY: 359, rightDoorY: 389,
   labelCharWidth: 0.58,
