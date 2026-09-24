@@ -34,3 +34,9 @@ test("missing saved class or commodity rows prevents B1 from being configured",(
  assert.equal(b1Statuses(details,density,{...classes,rows:[]},commodities).page,"partial");
  assert.equal(b1Statuses(details,density,{...classes,rows:[]},{...commodities,rows:[]}).page,"partial");
 });
+
+test("B1 does not require Passenger Class Codes for an all-Freighter carrier",()=>{
+ const status=b1Statuses(details,density,{...classes,rows:[]},commodities,false);
+ assert.equal(status.classCodes,"not_required");
+ assert.equal(status.page,"configured");
+});

@@ -5,7 +5,7 @@ import { validateClasses, ClassInvalid, type ClassSnapshot } from "@/domain/clas
 import {ConfigurationStatusBadge} from "@/components/configuration-status-badge";
 import {b1ClassStatus} from "@/domain/b1-status";
 import {useRouter} from "next/navigation";
-export function ClassEditor({ iata, initial }: { iata: string; initial: ClassSnapshot }) {
+export function ClassEditor({ iata, initial, passengerOperations }: { iata: string; initial: ClassSnapshot; passengerOperations:boolean }) {
   const router=useRouter();
   const [saved, setSaved] = useState(initial);
   const [draft, setDraft] = useState(initial.rows);
@@ -14,6 +14,7 @@ export function ClassEditor({ iata, initial }: { iata: string; initial: ClassSna
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   if (!saved.canView) return <p>Class codes are not available for your account.</p>;
+  if (!passengerOperations) return <section className="commodity-section" aria-labelledby="class-title"><div className="details-heading"><h3 id="class-title">CARRIER CLASS CODES</h3><ConfigurationStatusBadge status="not_required"/></div><p>This carrier currently operates only Freighter aircraft. Passenger class codes are not required; any existing data is retained.</p></section>;
   const suggested = saved.rows.length === 0;
   const displayed = suggested ? saved.defaults : saved.rows;
   return <section className="commodity-section" aria-labelledby="class-title">

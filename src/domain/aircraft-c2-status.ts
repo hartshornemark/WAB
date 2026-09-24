@@ -1,5 +1,6 @@
 import{aggregateConfigurationStatuses,type ConfigurationStatus,type DisplayConfigurationStatus}from"@/domain/configuration-status";
 import type{AircraftC2Snapshot,C2Output}from"@/domain/aircraft-c2";
+import type{AircraftOperatingRole}from"@/domain/aircraft-c1";
 
 const documentFields:{code:string;selected:keyof C2Output;valid:keyof C2Output}[]=[
   {code:"LS EDP PRELIM",selected:"selectedEdpPrelim",valid:"validEdpPrelim"},
@@ -23,10 +24,11 @@ export function aircraftC5ApplicabilityFromC2(snapshot:AircraftC2Snapshot):Aircr
   return{tow:selected(envelopeCodes.tow),law:selected(envelopeCodes.law),zfw:selected(envelopeCodes.zfw)};
 }
 
-export function aircraftC2Statuses(snapshot:AircraftC2Snapshot):AircraftC2Statuses{
+export function aircraftC2Statuses(snapshot:AircraftC2Snapshot,role:AircraftOperatingRole="PASSENGER"):AircraftC2Statuses{
   const activeDocuments=new Set(snapshot.documents.filter(document=>document.required).map(document=>document.code));
   if(activeDocuments.size===0)return{page:"skipped",documents:"skipped",balance:"skipped",trim:"skipped"};
   const balance:ConfigurationStatus=snapshot.outputs.some(output=>documentFields.some(field=>activeDocuments.has(field.code)&&Boolean(output[field.valid])&&Boolean(output[field.selected])))?"configured":"incomplete";
+  if(role==="FREIGHTER")return{page:balance,documents:"configured",balance,trim:"not_required"};
   const selectedTrim=snapshot.trimOptions.filter(option=>option.selected);
   const priorities=selectedTrim.map(option=>option.priority);
   const trim:ConfigurationStatus=selectedTrim.length>0&&priorities.every(priority=>Number.isInteger(priority)&&priority!>=1&&priority!<=3)&&new Set(priorities).size===priorities.length?"configured":"incomplete";

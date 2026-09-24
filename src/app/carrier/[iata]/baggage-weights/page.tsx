@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { services, baggageServices } from "@/composition/services";
+import { services, baggageServices, aircraftC1Services } from "@/composition/services";
+import { carrierCarriesPassengers } from "@/domain/aircraft-c1";
 import { AuthenticationRequired, CarrierUnavailable } from "@/domain/models";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { CarrierLogo } from "@/components/carrier-logo";
@@ -12,12 +13,12 @@ export default async function BaggageWeightsPage({ params }: { params: Promise<{
     if (error instanceof CarrierUnavailable) notFound();
     throw error;
   });
-  const snapshot = await (await baggageServices()).get(iata);
+  const [snapshot,aircraft] = await Promise.all([(await baggageServices()).get(iata),(await aircraftC1Services()).list(iata)]);
   return <WorkspaceShell user={result.user}>
     <Link href="/carriers" className="back">← Change carrier</Link>
     <p className="eyebrow">CARRIER WORKSPACE / {result.carrier.iata}</p>
     <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl} /><h1>{result.carrier.name}</h1></div>
-    <BaggageWeights key={iata} iata={iata} initial={snapshot} />
+    <BaggageWeights key={iata} iata={iata} initial={snapshot} passengerOperations={carrierCarriesPassengers(aircraft.rows)} />
     <nav className="section-navigation" aria-label="Carrier setup sections"><Link className="section-link secondary" href={`/carrier/${encodeURIComponent(iata)}/passenger-weights`}>← B3. PASSENGERS</Link><Link className="section-link" href={`/carrier/${encodeURIComponent(iata)}/uld-specifications`}>NEXT: B5. ULD SPEC →</Link></nav>
   </WorkspaceShell>;
 }

@@ -1,4 +1,5 @@
 import type { DisplayConfigurationStatus } from "@/domain/configuration-status";
+import type { AircraftOperatingRole } from "@/domain/aircraft-c1";
 import {
   deriveD9ClassSummaries,
   type AircraftD9Snapshot,
@@ -39,7 +40,8 @@ export function d9ConfigurationStatuses(configuration:D9Configuration, areas:D9C
   } as const;
 }
 
-export function aircraftD9Status(snapshot:AircraftD9Snapshot, formula?:D9IndexFormula):DisplayConfigurationStatus {
+export function aircraftD9Status(snapshot:AircraftD9Snapshot, formula?:D9IndexFormula, role:AircraftOperatingRole="PASSENGER"):DisplayConfigurationStatus {
+  if (role === "FREIGHTER") return "not_required";
   if (!snapshot.configurations.length) return "incomplete";
   const states = snapshot.configurations.map(configuration=>d9ConfigurationStatuses(configuration,snapshot.cabinAreas,snapshot.classes,formula,snapshot.excludedRows).page);
   return states.every(state=>state === "configured") ? "configured" : states.every(state=>state === "incomplete") ? "incomplete" : "partial";

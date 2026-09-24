@@ -148,3 +148,4 @@ test("D5 requires optional Balance Arm boundaries as a pair", () =>
     () => validate("cabinAreas", [{ ...area, startArm: 9, endArm: null }]),
     /both Balance Arm From and To/,
   ));
+test("D5 requires only Flight Deck Locations for a Freighter",()=>assert.equal(aircraftD5Status({...snap,cabinAreas:[],cabinCrewLocations:[]},"FREIGHTER"),"configured"));

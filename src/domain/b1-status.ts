@@ -40,7 +40,8 @@ export function b1CommodityStatus(snapshot:Pick<CommoditySnapshot,"rows">):Confi
   return valid?"configured":"partial";
 }
 
-export function b1Statuses(details:DetailsSnapshot,density:DensitySnapshot,classes:ClassSnapshot,commodities:CommoditySnapshot){
-  const units=b1UnitsStatus(details),densities=b1DensityStatus(density),classCodes=b1ClassStatus(classes),commodityCodes=b1CommodityStatus(commodities);
-  return{units,densities,classCodes,commodityCodes,page:aggregateConfigurationStatuses([units,densities,classCodes,commodityCodes])};
+export function b1Statuses(details:DetailsSnapshot,density:DensitySnapshot,classes:ClassSnapshot,commodities:CommoditySnapshot,passengerOperations=true){
+  const units=b1UnitsStatus(details),densities=b1DensityStatus(density),classCodes=passengerOperations?b1ClassStatus(classes):"not_required" as const,commodityCodes=b1CommodityStatus(commodities);
+  const assessed:ConfigurationStatus[]=passengerOperations?[units,densities,b1ClassStatus(classes),commodityCodes]:[units,densities,commodityCodes];
+  return{units,densities,classCodes,commodityCodes,page:aggregateConfigurationStatuses(assessed)};
 }

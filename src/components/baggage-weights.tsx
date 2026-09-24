@@ -10,7 +10,7 @@ import { categories,defaultPlanningRecord,newBaggageRecord,pieceFields,validateB
 import { b4Statuses } from "@/domain/b4-status";
 import {displayUnit} from "@/domain/display-standards";
 const pieceLabels={male:"Adult Male",female:"Adult Female",child:"Child",all:"All Passengers (optional)",summer:"Summer (optional)",winter:"Winter (optional)"};
-export function BaggageWeights({iata,initial}:{iata:string;initial:BaggageSnapshot}){
+export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;initial:BaggageSnapshot;passengerOperations:boolean}){
  const [saved,setSaved]=useState(initial);
  const weightUnit=displayUnit(saved.unit);
  const volumeUnit=saved.volumeUnit==="m3"?"m³":saved.volumeUnit==="ft3"?"ft³":saved.volumeUnit;
@@ -79,6 +79,7 @@ export function BaggageWeights({iata,initial}:{iata:string;initial:BaggageSnapsh
   </article>;
  }
  if(!saved.canView)return <section className="overview"><SectionHeader id="baggage-title" title="4. BAGGAGE WEIGHTS AND PLANNING" reference="(AHM565 Sheet B4)"/><p>These settings are not available for your account.</p></section>;
+ if(!passengerOperations)return <section className="overview carrier-details passenger-weights baggage-weights"><SectionHeader id="baggage-title" title="4. BAGGAGE WEIGHTS AND PLANNING" reference="(AHM565 Sheet B4)"><ConfigurationStatusBadge status="not_required" variant="large"/></SectionHeader><p>This carrier currently operates only Freighter aircraft. Passenger baggage weights and planning assumptions are not required; any existing data is retained.</p></section>;
  return <section className="overview carrier-details passenger-weights baggage-weights">
   <SectionHeader id="baggage-title" title="4. BAGGAGE WEIGHTS AND PLANNING" reference="(AHM565 Sheet B4)"><div className="page-heading-actions"><PageHelp title="B4. Baggage Weights and Planning">
    <section><h3>Purpose</h3><p>Use this Page to define the baggage weights and any planning assumptions used by the carrier.</p></section>

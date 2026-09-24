@@ -38,15 +38,17 @@ export async function GET(_request:Request,{params}:{params:Promise<{iata:string
     const {iata,typeCode,subtype}=await params;
     const [details,density,classes,commodities,crew,passengers,baggage,uld,c1,c2,c4,c5,c7,c8,c11,d2,d3,d4,d5,d6,d8,d9,d11,e11,e12,e2,e3,e4,e5,f1,g1,h1]=await (await dashboardStatusServices()).get(iata,typeCode,subtype);
     const incomplete="incomplete" as const;
+    const operatingRole=c1?.operatingRole??"PASSENGER";
+    const passengerOperations=operatingRole!=="FREIGHTER";
     const c4Page=c4?aircraftC4Status(c4):incomplete;
     const c5Page=c5&&c2?aircraftC5Statuses(c5.values,aircraftC5ApplicabilityFromC2(c2)).page:incomplete;
     const c11Page=c11?aircraftC11Status(c11):incomplete;
     const d9Formula=c4&&c4Page==="configured"?{referenceArm:c4.values.referenceArm,constantC:c4.values.constantC}:undefined;
     const statuses={
       A2:details?a2CarrierContactsStatus(details):incomplete,A5:c2?a5AutomaticDocumentsStatus(c2):incomplete,
-      B1:details&&density&&classes&&commodities?b1Statuses(details,density,classes,commodities).page:incomplete,B2:crew?b2Statuses(crew).page:incomplete,B3:passengers?b3Statuses(passengers).page:incomplete,B4:baggage?b4Statuses(baggage).page:incomplete,B5:uld?b5Completion(uld).page:incomplete,
-      C1:c1?aircraftC1Statuses(c1).page:incomplete,C2:c2?aircraftC2Statuses(c2).page:incomplete,C3:c2?aircraftC2Statuses(c2).page:incomplete,C4:c4Page,"C5.1":c5Page,"C5.2":c5Page==="configured"?"auto":incomplete,C7:c7?aircraftC7Statuses(c7.values,c5?.values.maximumWeights.mrw||null).page:incomplete,C8:c8?aircraftC8Statuses(c8.values).page:incomplete,"C11.1":c11Page,"C11.2":c11Page==="configured"?"auto":incomplete,
-      D2:d2?aircraftD2Status(d2):incomplete,D3:d3?aircraftD3Status(d3):incomplete,D4:d4?aircraftD4Status(d4):incomplete,D5:d5?aircraftD5Status(d5):incomplete,D6:d6?aircraftD6Status(d6):incomplete,D8:d8?aircraftD8Status(d8):incomplete,D9:d9?aircraftD9Status(d9,d9Formula):incomplete,D11:d11?aircraftD11Status(d11):incomplete,
+      B1:details&&density&&classes&&commodities?b1Statuses(details,density,classes,commodities,passengerOperations).page:incomplete,B2:crew?b2Statuses(crew).page:incomplete,B3:passengerOperations?(passengers?b3Statuses(passengers).page:incomplete):"not_required",B4:passengerOperations?(baggage?b4Statuses(baggage).page:incomplete):"not_required",B5:uld?b5Completion(uld).page:incomplete,
+      C1:c1?aircraftC1Statuses(c1).page:incomplete,C2:c2?aircraftC2Statuses(c2,operatingRole).page:incomplete,C3:c2?aircraftC2Statuses(c2,operatingRole).page:incomplete,C4:c4Page,"C5.1":c5Page,"C5.2":c5Page==="configured"?"auto":incomplete,C7:c7?aircraftC7Statuses(c7.values,c5?.values.maximumWeights.mrw||null).page:incomplete,C8:c8?aircraftC8Statuses(c8.values).page:incomplete,"C11.1":c11Page,"C11.2":c11Page==="configured"?"auto":incomplete,
+      D2:d2?aircraftD2Status(d2):incomplete,D3:d3?aircraftD3Status(d3):incomplete,D4:d4?aircraftD4Status(d4):incomplete,D5:d5?aircraftD5Status(d5,operatingRole):incomplete,D6:d6?aircraftD6Status(d6):incomplete,D8:d8?aircraftD8Status(d8,operatingRole):incomplete,D9:d9?aircraftD9Status(d9,d9Formula,operatingRole):incomplete,D11:d11?aircraftD11Status(d11):incomplete,
       "E1.1":e11?aircraftE11Status(e11):incomplete,"E1.2":e12?aircraftE12Status(e12):incomplete,E2:e2?aircraftE2Status(e2):incomplete,E3:e3?aircraftE3Status(e3):incomplete,E4:e4?aircraftE4Status(e4):incomplete,E5:e5?aircraftE5Status(e5):incomplete,
       F1:f1?aircraftF1Status(f1):incomplete,G1:aircraftG1DashboardStatus(g1,d2?.uldApplicable),H1:h1?aircraftH1Status(h1):incomplete,
     } as const;

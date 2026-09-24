@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { saveAircraftC2 } from "@/app/aircraft-c2-actions";
 import { SectionHeader } from "@/components/section-header";
+import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
+import type { AircraftOperatingRole } from "@/domain/aircraft-c1";
 import type {
   AircraftC2Snapshot,
   AircraftC2Values,
@@ -36,7 +38,7 @@ const outputFields: {
 
 const macCodes = new Set(["MACDLW", "MACZFW", "MACTOW", "MACLAW"]);
 
-export function AircraftC2({ iata, initial }: { iata: string; initial: AircraftC2Snapshot }) {
+export function AircraftC2({ iata, initial, operatingRole }: { iata: string; initial: AircraftC2Snapshot; operatingRole:AircraftOperatingRole }) {
   const [saved, setSaved] = useState(initial);
   const [draft, setDraft] = useState<AircraftC2Values>(valueFrom(initial));
   const [editingSection, setEditingSection] = useState<EditingSection>(null);
@@ -255,9 +257,9 @@ export function AircraftC2({ iata, initial }: { iata: string; initial: AircraftC
       <div className="c2-section">
         <div className="c2-section-heading">
           <h3>Passenger Trim Output</h3>
-          {sectionActions("trim", "Passenger Trim Output")}
+          {operatingRole==="FREIGHTER"?<ConfigurationStatusBadge status="not_required"/>:sectionActions("trim", "Passenger Trim Output")}
         </div>
-        <p>Select each Passenger Trim method used by this aircraft and give selected methods a unique priority.</p>
+        {operatingRole==="FREIGHTER"?<p className="muted">Passenger Trim Output is not required for a Freighter aircraft. Any previously saved data is retained.</p>:<><p>Select each Passenger Trim method used by this aircraft and give selected methods a unique priority.</p>
         <div className="c2-trim-grid">
           {draft.trimOptions.map((row, index) => (
             <div className="c2-trim-row" key={row.option}>
@@ -304,7 +306,7 @@ export function AircraftC2({ iata, initial }: { iata: string; initial: AircraftC
             }))}
           />
           <small>This standalone remark applies to Passenger Trim Output as a whole and is not attached to an individual option.</small>
-        </div>
+        </div></>}
       </div>
 
       <div className="c2-section">

@@ -155,3 +155,4 @@ test("D9 builds missing cabin rows from D5 values", () => {
 test("D9 requires one complete class summary", () => {
   assert.equal(d9ConfigurationStatuses({ ...configuration, rows: [row("0A", [0, 0, 0, 0], 1)] }, areas, classes, formula).classInfo, "incomplete");
 });
+test("D9 is not required for a Freighter",()=>assert.equal(aircraftD9Status({...snapshot,configurations:[]},formula,"FREIGHTER"),"not_required"));

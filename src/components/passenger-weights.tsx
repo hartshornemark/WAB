@@ -18,7 +18,7 @@ function WeightFields({value,editing,onChange,prefix,unit,remarks=false}:{value:
     {remarks && <div><label htmlFor={prefix+"-remarks"}>Remarks</label>{editing ? <textarea id={prefix+"-remarks"} rows={2} maxLength={2000} value={value.remarks} onChange={e=>onChange({...value,remarks:e.target.value})}/> : <p className="passenger-remarks">{value.remarks||"No remarks."}</p>}</div>}
   </>;
 }
-export function PassengerWeights({iata,initial}:{iata:string;initial:PassengerSnapshot}) {
+export function PassengerWeights({iata,initial,passengerOperations}:{iata:string;initial:PassengerSnapshot;passengerOperations:boolean}) {
   const [saved,setSaved]=useState(initial);
   const [editing,setEditing]=useState<PassengerSection|null>(null);
   const [defaults,setDefaults]=useState(()=>passengerDraft(initial.defaultWeights));
@@ -87,6 +87,7 @@ export function PassengerWeights({iata,initial}:{iata:string;initial:PassengerSn
     </>;
   }
   if(!saved.canView) return <section className="overview"><h2>3. PASSENGER WEIGHTS</h2><p>These settings are not available for your account.</p></section>;
+  if(!passengerOperations)return <section className="overview carrier-details passenger-weights" aria-labelledby="passenger-title"><SectionHeader id="passenger-title" title="3. PASSENGER WEIGHTS" reference="(AHM565 Sheet B3)"><ConfigurationStatusBadge status="not_required" variant="large"/></SectionHeader><p>This carrier currently operates only Freighter aircraft. Passenger weights are not required; any existing data is retained.</p></section>;
   const allShownRows=editing==="classes"?rows:savedRowDrafts();
   const shownRows=openVariation===null?[]:allShownRows.filter(row=>openVariation==="__STANDARD__"?row.variation===null:row.variation===openVariation);
   const shownVariations=editing==="variations"?variations:saved.variations;

@@ -2,7 +2,7 @@
 import{useEffect,useState,useTransition}from"react";
 import{SectionHeader}from"@/components/section-header";
 import{saveAircraftC1,searchAircraftManufacturers}from"@/app/aircraft-actions";
-import{aircraftVariant,type AircraftC1Snapshot,type AircraftC1Values}from"@/domain/aircraft-c1";
+import{aircraftVariant,type AircraftC1Snapshot,type AircraftC1Values,type AircraftOperatingRole}from"@/domain/aircraft-c1";
 import{aircraftC1Statuses}from"@/domain/aircraft-c1-status";
 import{ConfigurationStatusBadge}from"@/components/configuration-status-badge";
 
@@ -17,7 +17,7 @@ const groups:{key:keyof Omit<AircraftC1Values,"remarks">;label:string;options:[s
 
 export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapshot}){
   const[saved,setSaved]=useState(initial);
-  const[draft,setDraft]=useState({aircraftName:initial.aircraftName,variantCodes:initial.variantCodes,values:initial.values,manufacturerId:initial.manufacturerId});
+  const[draft,setDraft]=useState({aircraftName:initial.aircraftName,variantCodes:initial.variantCodes,operatingRole:initial.operatingRole,values:initial.values,manufacturerId:initial.manufacturerId});
   const[variantInput,setVariantInput]=useState("");
   const[editing,setEditing]=useState(!initial.exists);
   const[manufacturerQuery,setManufacturerQuery]=useState(initial.manufacturerName);
@@ -35,7 +35,7 @@ export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapsho
   },[canChooseManufacturer,draft.manufacturerId,manufacturerQuery]);
 
   function choose(key:keyof AircraftC1Values,value:string){setDraft(d=>({...d,values:{...d.values,[key]:value}}));}
-  function reset(){setDraft({aircraftName:saved.aircraftName,variantCodes:saved.variantCodes,values:saved.values,manufacturerId:saved.manufacturerId});setVariantInput("");setManufacturerQuery(saved.manufacturerName);setManufacturers([]);setError("");}
+  function reset(){setDraft({aircraftName:saved.aircraftName,variantCodes:saved.variantCodes,operatingRole:saved.operatingRole,values:saved.values,manufacturerId:saved.manufacturerId});setVariantInput("");setManufacturerQuery(saved.manufacturerName);setManufacturers([]);setError("");}
   function addVariant(){const code=aircraftVariant(variantInput);if(!code||draft.variantCodes.includes(code))return;setDraft(d=>({...d,variantCodes:[...d.variantCodes,code].sort()}));setVariantInput("");}
   function save(){
     setError("");
@@ -44,7 +44,7 @@ export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapsho
       const r=await saveAircraftC1(iata,saved.typeCode,saved.subtype,saved.revision,draft);
       if(!r.ok){setError(r.error);return;}
       setSaved(r.snapshot);
-      setDraft({aircraftName:r.snapshot.aircraftName,variantCodes:r.snapshot.variantCodes,values:r.snapshot.values,manufacturerId:r.snapshot.manufacturerId});
+      setDraft({aircraftName:r.snapshot.aircraftName,variantCodes:r.snapshot.variantCodes,operatingRole:r.snapshot.operatingRole,values:r.snapshot.values,manufacturerId:r.snapshot.manufacturerId});
       setManufacturerQuery(r.snapshot.manufacturerName);
       setManufacturers([]);
       setEditing(false);
@@ -68,7 +68,7 @@ export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapsho
         <div><dt>Master Series or Sub-Type</dt><dd>{saved.subtype}</dd></div>
         <div><dt>Aircraft Identity Name</dt><dd>{saved.identityName}</dd></div>
       </dl>
-      {editing?<div className="details-field aircraft-name"><label htmlFor="aircraft-name">Aircraft Name</label><input id="aircraft-name" value={draft.aircraftName} onChange={e=>setDraft(d=>({...d,aircraftName:e.target.value}))} maxLength={64}/><small>Aircraft name as it will appear on the load sheet.</small></div>:<dl><div><dt>Aircraft Name</dt><dd>{saved.aircraftName}</dd></div></dl>}
+      {editing?<><div className="details-field aircraft-name"><label htmlFor="aircraft-name">Aircraft Name</label><input id="aircraft-name" value={draft.aircraftName} onChange={e=>setDraft(d=>({...d,aircraftName:e.target.value}))} maxLength={64}/><small>Aircraft name as it will appear on the load sheet.</small></div><fieldset className="c1-operating-role"><legend>Aircraft Operating Role</legend><div className="radio-options">{(["PASSENGER","FREIGHTER","COMBI"] as AircraftOperatingRole[]).map(role=><label key={role}><input type="radio" name="operating-role" checked={draft.operatingRole===role} onChange={()=>setDraft(d=>({...d,operatingRole:role}))}/><span>{role.charAt(0)+role.slice(1).toLowerCase()}</span></label>)}</div><small>Freighter aircraft exclude passenger-only pages. Combi aircraft retain both passenger and freight requirements.</small></fieldset></>:<dl><div><dt>Aircraft Name</dt><dd>{saved.aircraftName}</dd></div><div><dt>Aircraft Operating Role</dt><dd>{saved.operatingRole.charAt(0)+saved.operatingRole.slice(1).toLowerCase()}</dd></div></dl>}
       <div className="c1-variants"><div><strong>Carrier Variants / Models</strong><p>Use the Master Series for shared configuration, then add the variants operated by this carrier.</p></div><div className="c1-variant-list">{(editing?draft.variantCodes:saved.variantCodes).map(code=><span key={code}>{saved.typeCode}-{code}{editing&&code!==saved.subtype&&<button type="button" aria-label={`Remove ${code}`} onClick={()=>setDraft(d=>({...d,variantCodes:d.variantCodes.filter(x=>x!==code)}))}>×</button>}</span>)}</div>{editing&&<div className="c1-variant-add"><label htmlFor="carrier-variant">Add Carrier Variant</label><div><input id="carrier-variant" value={variantInput} onChange={e=>setVariantInput(aircraftVariant(e.target.value))} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();addVariant()}}} maxLength={4} placeholder="e.g. 214"/><button type="button" className="secondary" onClick={addVariant}>ADD VARIANT</button></div></div>}</div>
     </div>
     <div className="c1-units">

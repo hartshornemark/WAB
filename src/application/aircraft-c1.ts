@@ -24,7 +24,7 @@ export function createAircraftC1(auth:AuthService,carriers:CarrierRepository,rep
         if(!current.canAssignManufacturer)throw new AircraftC1Denied();
         await repo.assignManufacturer(typeCode,subtype,manufacturerId);
       }
-      return repo.save(iata,typeCode,subtype,revision,clean.aircraftName,variantCodes,clean.values);
+      return repo.save(iata,typeCode,subtype,revision,clean.aircraftName,variantCodes,clean.operatingRole,clean.values);
     }
   };
 }

@@ -14,3 +14,4 @@ test("D8 calculates Balance Arm Centroid from a decimal Index Per Weight Unit",(
 test("D8 requires C4 before calculating Balance Arm Centroid",()=>assert.throws(()=>validateD8Rows([row(1,"0A")],areas,null),/Configure C4/));
 
 test("each D8 cabin-area section reports its own completion",()=>{assert.equal(d8CabinAreaStatus([row(1,"0A")],2),"partial");assert.equal(d8CabinAreaStatus([row(1,"0A"),row(2,"0A")],2),"configured")});
+test("D8 is not required for a Freighter",()=>assert.equal(aircraftD8Status(snap([]),"FREIGHTER"),"not_required"));
