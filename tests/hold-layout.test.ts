@@ -15,6 +15,22 @@ test("all checked bulk and ULD holds are drawn, separately grouped by deck",()=>
 test("unchecked sections are excluded even if stale rows exist",()=>{const snap=d2({rows:[hold,{...hold,name:"A",holdType:"ULD"}]});assert.deepEqual(buildHoldLayout(snap,d4()).holds.map(h=>h.name),["5"])});
 test("incomplete D2 cannot render a diagram",()=>assert.throws(()=>buildHoldLayout(d2({uldApplicable:null}),d4()),/Complete all applicable/));
 test("D2 can be configured without limits but a diagram cannot invent them",()=>assert.match(holdLayoutUnavailable(d2({bulkBalanceLimitsRequired:false,rows:[{...hold,balanceFrom:null,balanceTo:null}]}))!,/From and To/));
+test("A320-200 uses global aircraft-type hold boundaries when optional D2 limits are blank",()=>{
+  const a320Hold={...hold,name:"1",balanceFrom:null,balanceTo:null};
+  const a320D2=d2({typeCode:"320",subtype:"200",bulkBalanceLimitsRequired:false,rows:[a320Hold]});
+  assert.equal(holdLayoutUnavailable(a320D2),null);
+  const layout=buildHoldLayout(a320D2,d4({typeCode:"320",subtype:"200",doors:[]}));
+  assert.equal(layout.usesGlobalHoldBoundaries,true);
+  assert.equal(layout.holds[0].x,holdLayoutX(12.205,A320_LAYOUT));
+  assert.ok(Math.abs(layout.holds[0].width-(12.205-7.255)*A320_LAYOUT.span/A320_LAYOUT.length)<1e-8);
+});
+test("carrier-supplied A320 hold boundaries override the global aircraft-type defaults",()=>{
+  const a320Hold={...hold,name:"1",balanceCentroid:9.5,balanceFrom:8,balanceTo:11};
+  const layout=buildHoldLayout(d2({typeCode:"320",subtype:"200",rows:[a320Hold]}),d4({typeCode:"320",subtype:"200",doors:[]}));
+  assert.equal(layout.usesGlobalHoldBoundaries,false);
+  assert.equal(layout.holds[0].x,holdLayoutX(11,A320_LAYOUT));
+  assert.ok(Math.abs(layout.holds[0].width-(11-8)*A320_LAYOUT.span/A320_LAYOUT.length)<1e-8);
+});
 test("unsupported aircraft calibration and denied view are blocked",()=>{assert.match(holdLayoutUnavailable(d2({typeCode:"320"}))!,/calibrated/);assert.match(holdLayoutUnavailable(d2({canView:false}))!,/permission/);assert.equal(buildHoldLayout(d2(),d4({canView:false})).doors.length,0)});
 test("invalid door position reports the D4 error instead of substituting a location",()=>{const snap=d4();snap.doors[0].forwardArm=45.287;snap.doors[0].aftArm=46.240;assert.throws(()=>buildHoldLayout(d2(),snap),/Door 5/)});
 test("new saved weights and door positions are used on subsequent builds",()=>{const snap=d4();snap.doors[0].forwardArm=25.4;const layout=buildHoldLayout(d2({rows:[{...hold,maxWeight:1600}]}),snap);assert.equal(layout.holds[0].maxWeight,1600);assert.equal(layout.doors[0].width,holdLayoutX(25.4)-holdLayoutX(26.240))});

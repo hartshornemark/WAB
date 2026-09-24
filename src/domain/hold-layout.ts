@@ -12,6 +12,7 @@ export type AircraftLayoutCalibration = {
   cropLeft: number; cropRight: number; holdY: number; holdHeight: number;
   leftDoorY: number; rightDoorY: number; labelCharWidth: number;
   holdArmOffsets?: Readonly<Record<string, number>>;
+  holdArmDefaults?: Readonly<Record<string, Readonly<{ from: number; to: number }>>>;
 };
 
 // Each outline has its own longitudinal and vertical calibration. Both vectors
@@ -38,6 +39,15 @@ export const A320_LAYOUT = {
   // farther aft than the longitudinal station overlay. Correct the drawing
   // only; the carrier's saved D2 balance-arm values remain authoritative.
   holdArmOffsets: { "3": -3.068, "4": -3.068, "5": -3.068 },
+  // Physical hold boundaries established from the Airbus A320-200 general
+  // arrangement drawing. They let every carrier use the global aircraft-type
+  // layout when optional D2 From/To values have not been supplied.
+  holdArmDefaults: {
+    "1": { from: 7.255, to: 12.205 },
+    "3": { from: 21.412, to: 24.480 },
+    "4": { from: 24.480, to: 27.548 },
+    "5": { from: 27.548, to: 31.212 },
+  },
 } satisfies AircraftLayoutCalibration;
 export const AIRCRAFT_LAYOUTS = [A319_LAYOUT, A320_LAYOUT] as const;
 export function aircraftLayoutFor(typeCode: string, subtype: string): AircraftLayoutCalibration | undefined {
@@ -49,6 +59,14 @@ export function holdLayoutX(arm: number, aircraft: AircraftLayoutCalibration = A
 export function applicableHolds(d2: AircraftD2Snapshot) {
   return d2.rows.filter(r => r.holdType === "BLK" ? d2.bulkApplicable === true : d2.uldApplicable === true);
 }
+function effectiveHoldArms(row: AircraftD2HoldRow, aircraft: AircraftLayoutCalibration) {
+  const from = row.balanceFrom, to = row.balanceTo;
+  if (from !== null || to !== null) {
+    return typeof from === "number" && Number.isFinite(from) && typeof to === "number" && Number.isFinite(to) && from < to
+      ? { from, to } : null;
+  }
+  return aircraft.holdArmDefaults?.[row.name] ?? null;
+}
 export function holdLayoutUnavailable(d2: AircraftD2Snapshot): string | null {
   if (!d2.canView) return "You do not have permission to view the hold layout.";
   const aircraft = aircraftLayoutFor(d2.typeCode, d2.subtype);
@@ -58,9 +76,10 @@ export function holdLayoutUnavailable(d2: AircraftD2Snapshot): string | null {
   const rows = applicableHolds(d2);
   if (!rows.length) return "No applicable holds are available.";
   for (const row of rows) {
-    if (row.balanceFrom === null || row.balanceTo === null || !Number.isFinite(row.balanceFrom) || !Number.isFinite(row.balanceTo) || row.balanceFrom >= row.balanceTo)
-      return `Hold ${row.name}: supply valid Balance Arm From and To values in D2 to draw its length.`;
-    if (holdLayoutX(row.balanceTo, aircraft) < aircraft.cropLeft || holdLayoutX(row.balanceFrom, aircraft) > aircraft.cropRight)
+    const arms = effectiveHoldArms(row, aircraft);
+    if (!arms)
+      return `Hold ${row.name}: no global aircraft-type boundary is available. Supply valid Balance Arm From and To values in D2 to draw its length.`;
+    if (holdLayoutX(arms.to, aircraft) < aircraft.cropLeft || holdLayoutX(arms.from, aircraft) > aircraft.cropRight)
       return `Hold ${row.name} falls outside the calibrated hold view. Check its D2 limits.`;
   }
   return null;
@@ -73,7 +92,7 @@ export type LayoutSubdivision = {
 export type LayoutHold = AircraftD2HoldRow & { x: number; width: number; subdivisions: LayoutSubdivision[] };
 export type LayoutDoor = { holdId: string; deckCode: string; x: number; width: number; orientation: "L" | "R" | "C" };
 export type HoldLayout = {
-  typeCode: string; subtype: string; doorsIncluded: boolean;
+  typeCode: string; subtype: string; doorsIncluded: boolean; usesGlobalHoldBoundaries: boolean;
   holds: LayoutHold[]; doors: LayoutDoor[]; decks: { code: string; name: string }[];
 };
 function fallbackSubdivisions(row: AircraftD2HoldRow, x: number, width: number): LayoutSubdivision[] {
@@ -86,10 +105,13 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
   const reason = holdLayoutUnavailable(d2);
   if (reason) throw new Error(reason);
   const aircraft = aircraftLayoutFor(d2.typeCode, d2.subtype)!;
-  const holds = applicableHolds(d2).map(row => {
+  const applicable = applicableHolds(d2);
+  const usesGlobalHoldBoundaries = applicable.some(row => row.balanceFrom === null && row.balanceTo === null && !!aircraft.holdArmDefaults?.[row.name]);
+  const holds = applicable.map(row => {
+    const arms = effectiveHoldArms(row, aircraft)!;
     const armOffset = aircraft.holdArmOffsets?.[row.name] ?? 0;
-    const x = holdLayoutX(row.balanceTo! + armOffset, aircraft);
-    const width = holdLayoutX(row.balanceFrom! + armOffset, aircraft) - x;
+    const x = holdLayoutX(arms.to + armOffset, aircraft);
+    const width = holdLayoutX(arms.from + armOffset, aircraft) - x;
     let subdivisions: LayoutSubdivision[] = [];
     if (row.holdType === "BLK") {
       const areas = row.compartments.flatMap(compartment => compartment.areas.map(area => {
@@ -119,7 +141,7 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
     } else {
       subdivisions = fallbackSubdivisions(row, x, width);
     }
-    return { ...row, x, width, subdivisions };
+    return { ...row, balanceFrom: arms.from, balanceTo: arms.to, x, width, subdivisions };
   });
   const sameAircraft = d2.typeCode === d4.typeCode && d2.subtype === d4.subtype;
   // D4 must be configured, and each applicable hold must have its own door.
@@ -135,6 +157,6 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
       throw new Error(`Door ${hold.name}: its D4 Start/End values fall outside the calibrated aircraft view. Check D4 before viewing the layout.`);
     doors.push({ holdId: hold.name, deckCode: hold.deckCode, x: holdLayoutX(to, aircraft), width: holdLayoutX(from, aircraft) - holdLayoutX(to, aircraft), orientation: door.orientation! });
   }
-  return { typeCode: d2.typeCode, subtype: d2.subtype, holds, doors, doorsIncluded,
+  return { typeCode: d2.typeCode, subtype: d2.subtype, holds, doors, doorsIncluded, usesGlobalHoldBoundaries,
     decks: [...new Set(holds.map(h => h.deckCode))].map(code => ({ code, name: d2.deckTypes.find(d => d.code === code)?.name ?? code })) };
 }

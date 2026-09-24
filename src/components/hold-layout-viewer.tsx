@@ -28,7 +28,7 @@ function LayoutDialog({ iata, layout, onClose }: { iata: string; layout: HoldLay
   return <dialog className="hold-layout-dialog" ref={ref} aria-labelledby={titleId} onCancel={onClose}>
     <header><div><h2 id={titleId}>HOLD LAYOUT</h2><p>{iata} / {layout.typeCode}-{layout.subtype} · {layout.doorsIncluded ? "Holds and Doors" : "Holds Only — D4 is not yet configured"}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></header>
     {layout.decks.map(deck => <section key={deck.code} className="hold-layout-deck"><h3>{deck.name}</h3><HoldDiagram layout={layout} deckCode={deck.code}/></section>)}
-    <p className="hold-layout-caption">Tail Left · Nose Right. Hold Lengths and Door Positions use saved Balance Arms. Hold Widths are schematic.</p>
+    <p className="hold-layout-caption">Tail Left · Nose Right. {layout.usesGlobalHoldBoundaries ? "Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent." : "Hold lengths use saved carrier Balance Arms."} Door positions use saved D4 values. Hold Widths are schematic.</p>
   </dialog>;
 }
 function HoldDiagram({ layout, deckCode }: { layout: HoldLayout; deckCode: string }) {
