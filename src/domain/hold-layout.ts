@@ -31,7 +31,7 @@ export const A320_LAYOUT = {
   typeCode: "320", subtype: "200", length: 37.57, noseArm: 0,
   // The Airbus plan occupies x=123.5..337.8 after the engine-bounded crop.
   tailX: 337.8, span: 214.3, centreY: 359.5,
-  asset: "/aircraft-layouts/a320-200-fuselage.svg",
+  asset: "/aircraft-layouts/a320-200-fuselage",
   cropLeft: 102, cropRight: 338,
   holdY: 348.5, holdHeight: 22, leftDoorY: 344, rightDoorY: 374,
   labelCharWidth: 0.58,

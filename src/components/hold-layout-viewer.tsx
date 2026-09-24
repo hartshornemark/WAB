@@ -26,19 +26,18 @@ function LayoutDialog({ iata, layout, onClose }: { iata: string; layout: HoldLay
   const ref = useRef<HTMLDialogElement>(null), titleId = useId();
   useEffect(() => { const dialog = ref.current!; dialog.showModal(); return () => dialog.close(); }, []);
   return <dialog className="hold-layout-dialog" ref={ref} aria-labelledby={titleId} onCancel={onClose}>
-    <header><div><h2 id={titleId}>HOLD LAYOUT</h2><p>{iata} / {layout.typeCode}-{layout.subtype} · {layout.doorsIncluded ? "Holds and Doors" : "Holds Only — D4 is not yet configured"}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></header>
+    <header><div><h2 id={titleId}>HOLD LAYOUT</h2><p>{iata} / {layout.typeCode}-{layout.subtype}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></header>
     {layout.decks.map(deck => <section key={deck.code} className="hold-layout-deck"><h3>{deck.name}</h3><HoldDiagram layout={layout} deckCode={deck.code}/></section>)}
-    <p className="hold-layout-caption">Tail Left · Nose Right. {layout.usesGlobalHoldBoundaries ? "Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent." : "Hold lengths use saved carrier Balance Arms."} Door positions use saved D4 values. Hold Widths are schematic.</p>
+    <p className="hold-layout-caption">Tail Left · Nose Right. {layout.usesGlobalHoldBoundaries ? "Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent." : "Hold lengths use saved carrier Balance Arms."} Aircraft doors are shown in the official plan. Hold widths are schematic.</p>
   </dialog>;
 }
 function HoldDiagram({ layout, deckCode }: { layout: HoldLayout; deckCode: string }) {
   const aircraft = aircraftLayoutFor(layout.typeCode, layout.subtype)!;
-  const holds = layout.holds.filter(h => h.deckCode === deckCode), doors = layout.doors.filter(d => d.deckCode === deckCode);
-  const hasLeft = doors.some(d => d.orientation === "L");
-  const viewWidth = 236, viewHeight = hasLeft ? 81.25 : 72;
+  const holds = layout.holds.filter(h => h.deckCode === deckCode);
+  const viewWidth = 236, viewHeight = 72;
   const viewX = aircraft.tailX - aircraft.span / 2 - viewWidth / 2;
   const viewY = aircraft.centreY - viewHeight / 2;
-  return <svg className="hold-layout-svg" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}${layout.doorsIncluded ? "; doors shown" : "; no doors shown"}`}>
+  return <svg className="hold-layout-svg" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
     <image href={aircraft.asset} x="102" y="327.25" width="236" height="72"/>
     {holds.map(hold => {
       return <g key={hold.name}><title>Hold {hold.name}; Balance Arm {hold.balanceFrom!.toFixed(3)}–{hold.balanceTo!.toFixed(3)} m</title>
@@ -50,13 +49,6 @@ function HoldDiagram({ layout, deckCode }: { layout: HoldLayout; deckCode: strin
           <text x={segment.x + segment.width - 1.15} y={aircraft.holdY + 3.7} textAnchor="end"
             fontSize="2.5" fontWeight="700" fill="#334155">{segment.id}</text>
         </g>)}
-      </g>;
-    })}
-    {doors.map(door => {
-      const y = door.orientation === "L" ? aircraft.leftDoorY : door.orientation === "C" ? aircraft.centreY : aircraft.rightDoorY;
-      return <g key={door.holdId} fill="#245F9F"><title>Door {door.holdId} · {door.orientation === "L" ? "Left" : door.orientation === "R" ? "Right" : "Centre"}</title>
-        <path d={`M${door.x} ${y}h${door.width} M${door.x} ${y-1.4}v2.8 M${door.x+door.width} ${y-1.4}v2.8`} fill="none" stroke="#245F9F" strokeWidth="0.6"/>
-        <text x={door.x+door.width/2} y={door.orientation === "L" ? y-2.4 : y+4.9} textAnchor="middle" fontSize="2.5" fontWeight="700">DOOR</text>
       </g>;
     })}
   </svg>;
