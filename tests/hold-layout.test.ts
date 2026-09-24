@@ -49,7 +49,7 @@ test("A320 doors may provide access outside the associated D2 hold limits",()=>{
   const layout=buildHoldLayout(a320D2,a320D4);
   assert.equal(layout.doorsIncluded,true);
   assert.equal(layout.doors.length,1);
-  assert.equal(layout.holds[0].x,holdLayoutX(31.212-3.068,A320_LAYOUT));
+  assert.equal(layout.holds[0].x,holdLayoutX(31.212-2.735,A320_LAYOUT));
   assert.equal(layout.doors[0].x,holdLayoutX(26.720,A320_LAYOUT));
 });
 test("bulk Areas divide their Hold by saved weight and retain their identifiers",()=>{

@@ -35,10 +35,10 @@ export const A320_LAYOUT = {
   cropLeft: 102, cropRight: 338,
   holdY: 348.5, holdHeight: 22, leftDoorY: 344, rightDoorY: 374,
   labelCharWidth: 0.58,
-  // The isolated Airbus plan places the aft cargo bay group two AKH widths
-  // farther aft than the longitudinal station overlay. Correct the drawing
-  // only; the carrier's saved D2 balance-arm values remain authoritative.
-  holdArmOffsets: { "3": -3.068, "4": -3.068, "5": -3.068 },
+  // Align the complete aft cargo group with the aft cargo-door edge in the
+  // isolated Airbus plan. Correct the drawing only; the carrier's saved D2
+  // balance-arm values remain authoritative.
+  holdArmOffsets: { "3": -2.735, "4": -2.735, "5": -2.735 },
   // Physical hold boundaries established from the Airbus A320-200 general
   // arrangement drawing. They let every carrier use the global aircraft-type
   // layout when optional D2 From/To values have not been supplied.
