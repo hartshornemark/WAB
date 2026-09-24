@@ -1,0 +1,68 @@
+begin;
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"b5c937a4-db85-4b47-bb59-23c99cc6799d","role":"authenticated"}',true);
+insert into "Basic_Carrier_Record"."Carrier_Flight_Variations" values ('TST','Temporary test','ZZ');
+insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Male","Female","Child","Infant") values ('ZZ','F',93,75,35,0);
+insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Flight_Type_Variation","Male","Female","Child","Infant","Passenger_Weights_Include_Handbaggage","Hand_Baggage_Weight") values ('ZZ','F','TST',93,75,35,0,false,0);
+do $$ declare n integer; begin
+if (select count(*) from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" where "Carrier_IATA"='ZZ')<>2 then raise exception 'FAIL SA read'; end if;
+begin insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Male","Female","Child","Infant") values ('ZZ','F',93,75,35,0); raise exception 'FAIL duplicate default'; exception when unique_violation then null; end;
+begin insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Flight_Type_Variation","Male","Female","Child","Infant") values ('ZZ','F','TST',93,75,35,0); raise exception 'FAIL duplicate variant'; exception when unique_violation then null; end;
+begin insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Male","Female","Child","Infant") values ('ZZ','Q',93,75,35,0); raise exception 'FAIL unknown class'; exception when foreign_key_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Flight_Type_Variation"='BAD' where "Flight_Type_Variation"='TST'; raise exception 'FAIL missing adopted variant'; exception when foreign_key_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Male"=0; raise exception 'FAIL zero male'; exception when check_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Female"=null; raise exception 'FAIL missing female'; exception when not_null_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Infant"=-1; raise exception 'FAIL negative infant'; exception when check_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Adult"=0; raise exception 'FAIL zero adult'; exception when check_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Hand_Baggage_Weight"=-1; raise exception 'FAIL negative hand'; exception when check_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Passenger_Weights_Include_Handbaggage"=false,"Hand_Baggage_Weight"=null; raise exception 'FAIL missing hand'; exception when check_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Remarks"=repeat('x',2001); raise exception 'FAIL long remarks'; exception when check_violation then null; end;
+begin delete from "Basic_Carrier_Record"."Carrier_Flight_Variations" where "Flight_Type_Variation"='TST'; raise exception 'FAIL variant removal'; exception when foreign_key_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Flight_Variations" set "Flight_Type_Variation"='TS2' where "Flight_Type_Variation"='TST'; raise exception 'FAIL variant rename'; exception when foreign_key_violation then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Class_Codes" set "Carrier_Class_1_Code"='Q' where "Carrier_IATA"='ZZ'; raise exception 'FAIL class rename'; exception when foreign_key_violation then null; end;
+begin delete from "Basic_Carrier_Record"."Carrier_Class_Codes" where "Carrier_IATA"='ZZ'; raise exception 'FAIL class removal'; exception when foreign_key_violation then null; end;
+update "Basic_Carrier_Record"."Carrier_Class_Codes" set "Carrier_Class_1_Code"='C',"Carrier_Class_2_Code"='F' where "Carrier_IATA"='ZZ';
+update "Basic_Carrier_Record"."Carrier_Flight_Variations" set "Flight_Type_Variation_Description"='Changed label' where "Flight_Type_Variation"='TST';
+update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Passenger_Weights_Include_Handbaggage"=true where "Flight_Type_Variation"='TST';
+if not exists(select 1 from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" where "Flight_Type_Variation"='TST' and "Hand_Baggage_Weight"=0) then raise exception 'FAIL retained hand weight'; end if;
+end $$;
+reset role;
+insert into application_security.organisations(organisation_id,organisation_name,organisation_type) values ('a5aa0000-0000-4000-8000-000000000001','Temporary carrier details verification','AIRLINE');
+insert into application_security.organisation_users(organisation_id,user_id) values ('a5aa0000-0000-4000-8000-000000000001','b5c937a4-db85-4b47-bb59-23c99cc6799d');
+insert into application_security.organisation_carrier_access(organisation_id,carrier_iata) values ('a5aa0000-0000-4000-8000-000000000001','ZZ');
+insert into application_security.user_carrier_access(user_carrier_access_id,organisation_id,user_id,carrier_iata) values ('a5aa0000-0000-4000-8000-000000000002','a5aa0000-0000-4000-8000-000000000001','b5c937a4-db85-4b47-bb59-23c99cc6799d','ZZ');
+insert into application_security.user_carrier_roles(user_carrier_access_id,role_id) select 'a5aa0000-0000-4000-8000-000000000002',role_id from application_security.roles where role_code='CONFIGURATION_EDITOR';
+update application_security.user_global_roles set active=false where user_id='b5c937a4-db85-4b47-bb59-23c99cc6799d';
+set local role authenticated;
+do $$ declare n integer; begin
+if (select count(*) from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS")<>2 then raise exception 'FAIL editor read'; end if;
+update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Male"=1; get diagnostics n=row_count; if n<>0 then raise exception 'FAIL editor update'; end if;
+delete from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS"; get diagnostics n=row_count; if n<>0 then raise exception 'FAIL editor delete'; end if;
+begin insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Male","Female","Child","Infant") values ('ZZ','C',93,75,35,0); raise exception 'FAIL editor insert'; exception when insufficient_privilege then null; end;
+begin insert into "Basic_Carrier_Record"."Carrier_Flight_Variations" values ('BAD','Not permitted','ZZ'); raise exception 'FAIL editor variation'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+update application_security.user_carrier_roles set role_id=(select role_id from application_security.roles where role_code='CARRIER_ADMINISTRATOR') where user_carrier_access_id='a5aa0000-0000-4000-8000-000000000002';
+set local role authenticated;
+do $$ declare n integer; begin
+update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Male"=94; get diagnostics n=row_count; if n<>2 then raise exception 'FAIL CA update'; end if;
+insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Male","Female","Child","Infant") values ('ZZ','C',93,75,35,0);
+delete from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" where "Class_Code"='C'; get diagnostics n=row_count; if n<>1 then raise exception 'FAIL CA delete'; end if;
+begin insert into "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" ("Carrier_IATA","Class_Code","Male","Female","Child","Infant") values ('XY','F',93,75,35,0); raise exception 'FAIL cross carrier'; exception when insufficient_privilege then null; end;
+begin update "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS" set "Carrier_IATA"='XY'; raise exception 'FAIL owner change'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000099","role":"authenticated"}',true);
+set local role authenticated;
+do $$ begin
+if exists(select 1 from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS") then raise exception 'FAIL unassigned read'; end if;
+if exists(select 1 from "Basic_Carrier_Record"."Carrier_Flight_Variations") then raise exception 'FAIL unassigned variants'; end if;
+end $$;
+reset role;
+set local role anon;
+do $$ begin
+begin perform 1 from "Basic_Carrier_Record"."Carrier_Passenger_Weights_BYCLASS"; raise exception 'FAIL anon read'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+select 'PASS B3 constraints, relationships, SA/CA writes, editor read-only, cross-carrier/unassigned/anonymous denials' as result;
+rollback;

@@ -1,0 +1,6 @@
+import type{DisplayConfigurationStatus}from"@/domain/configuration-status";import type{AircraftE4Snapshot,E4AdditionalRow,E4ConfigurationRow}from"@/domain/aircraft-e4";
+export const e4ConfigurationComplete=(r:E4ConfigurationRow)=>Boolean(r.code&&r.crewCode&&r.pantryCode);
+export const e4AdditionalComplete=(r:E4AdditionalRow)=>Boolean(r.configurationCode&&r.serviceCode);
+export const e4MainStatus=(s:AircraftE4Snapshot):DisplayConfigurationStatus=>!s.applicabilityReviewed?"incomplete":!s.active?"skipped":s.configurations.length&&s.configurations.every(e4ConfigurationComplete)?"configured":s.configurations.length?"partial":"incomplete";
+export const e4AdditionalStatus=(s:AircraftE4Snapshot):DisplayConfigurationStatus=>!s.applicabilityReviewed?"incomplete":!s.active||!s.additionalActive?"skipped":s.additionalRows.length&&s.additionalRows.every(e4AdditionalComplete)?"configured":s.additionalRows.length?"partial":"incomplete";
+export function aircraftE4Status(s:AircraftE4Snapshot):DisplayConfigurationStatus{if(!s.applicabilityReviewed)return"incomplete";if(!s.active)return"skipped";const main=e4MainStatus(s),extra=e4AdditionalStatus(s);if(main==="configured"&&(!s.additionalActive||extra==="configured"))return"configured";if(main==="incomplete"&&(!s.additionalActive||extra==="incomplete"))return"incomplete";return"partial"}

@@ -1,0 +1,1 @@
+import type{AircraftD9Snapshot,D9Configuration}from'@/domain/aircraft-d9';export interface AircraftD9Repository{get(i:string,t:string,s:string):Promise<AircraftD9Snapshot>;save(i:string,t:string,s:string,r:string,original:string|null,c:D9Configuration):Promise<AircraftD9Snapshot>}

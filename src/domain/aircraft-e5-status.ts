@@ -1,0 +1,3 @@
+import type{DisplayConfigurationStatus}from"@/domain/configuration-status";import type{AircraftE5Snapshot,E5Row}from"@/domain/aircraft-e5";
+export const e5RowComplete=(r:E5Row,approach:AircraftE5Snapshot["approach"])=>Boolean(r.registration&&r.variantCode&&Number.isFinite(r.index)&&Number.isInteger(r.weight)&&(approach==="FLEET_WEIGHTS"||Number(r.weight)>0));
+export function aircraftE5Status(s:AircraftE5Snapshot):DisplayConfigurationStatus{if(!s.approach)return"incomplete";if(s.approach==="FLEET_WEIGHTS"&&(s.fleetWeight===null||s.fleetIndex===null))return s.rows.length?"partial":"incomplete";if(!s.rows.length)return"incomplete";return s.rows.some(r=>e5RowComplete(r,s.approach))?"configured":"partial"}

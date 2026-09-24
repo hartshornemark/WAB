@@ -1,0 +1,1 @@
+import type{AircraftD5Snapshot,D5Section}from"@/domain/aircraft-d5";export interface AircraftD5Repository{get(i:string,t:string,s:string):Promise<AircraftD5Snapshot>;save(i:string,t:string,s:string,r:string,section:D5Section,rows:unknown[]):Promise<AircraftD5Snapshot>}

@@ -1,0 +1,1 @@
+import type{AircraftF1Snapshot,F1Definition,F1WeightRow}from"@/domain/aircraft-f1";export interface AircraftF1Repository{get(i:string,t:string,s:string):Promise<AircraftF1Snapshot>;saveDefinitions(i:string,t:string,s:string,r:string,v:F1Definition[]):Promise<AircraftF1Snapshot>;saveRows(i:string,t:string,s:string,r:string,v:F1WeightRow[]):Promise<AircraftF1Snapshot>}

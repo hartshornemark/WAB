@@ -1,0 +1,6 @@
+import type{DisplayConfigurationStatus}from"@/domain/configuration-status";import type{AircraftE3Snapshot,E3ServiceRow,E3WaterRow}from"@/domain/aircraft-e3";
+const waterComplete=(r:E3WaterRow)=>!!r.code&&!!r.tankId&&Number.isInteger(r.weight)&&r.weight!==null&&r.weight>=0&&Number.isFinite(r.index);
+const serviceComplete=(r:E3ServiceRow)=>!!r.code&&!!r.description&&Number.isInteger(r.weight)&&r.weight!==0&&(r.balanceArm===null||Number.isFinite(r.balanceArm))&&Number.isFinite(r.index);
+export const e3WaterStatus=(s:AircraftE3Snapshot):DisplayConfigurationStatus=>!s.waterActive?"skipped":s.waterRows.length&&s.waterRows.every(waterComplete)?"configured":s.waterRows.length?"partial":"incomplete";
+export const e3ServiceStatus=(s:AircraftE3Snapshot):DisplayConfigurationStatus=>!s.serviceActive?"skipped":s.serviceRows.length&&s.serviceRows.every(serviceComplete)?"configured":s.serviceRows.length?"partial":"incomplete";
+export function aircraftE3Status(s:AircraftE3Snapshot):DisplayConfigurationStatus{const active=[s.waterActive?e3WaterStatus(s):null,s.serviceActive?e3ServiceStatus(s):null].filter(Boolean) as DisplayConfigurationStatus[];if(!active.length||active.every(x=>x==="configured"))return"configured";if(active.every(x=>x==="incomplete"))return"incomplete";return"partial"}

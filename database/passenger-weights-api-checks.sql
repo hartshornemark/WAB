@@ -1,0 +1,63 @@
+begin;
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"b5c937a4-db85-4b47-bb59-23c99cc6799d","role":"authenticated"}',true);
+do $$ declare s jsonb; t jsonb; original jsonb; rows jsonb; bad jsonb; begin
+s:="Basic_Carrier_Record".get_carrier_passenger_weights('ZZ'); original:=s;
+if not (s->>'canEdit')::boolean or s->>'unit'<>'KG' then raise exception 'FAIL snapshot'; end if;
+t:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','default',(s->'defaultWeights')||'{"includesHandBaggage":false,"handBaggage":5}'::jsonb);
+if t->'defaultWeights'->>'handBaggage'<>'5' then raise exception 'FAIL default roundtrip'; end if;
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','default',s->'defaultWeights'); raise exception 'FAIL stale save'; exception when serialization_failure then null; end;
+s:=t;
+for bad in select value from jsonb_array_elements('[{"male":0},{"child":-1},{"infant":null},{"handBaggage":null},{"female":75.5},{"includesHandBaggage":"false"}]') loop
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','default',(s->'defaultWeights')||bad); raise exception 'FAIL invalid default'; exception when invalid_parameter_value then null; end;
+end loop;
+s:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','variations','[{"code":"TST","description":"Temporary verification"}]');
+if jsonb_array_length(s->'variations')<>1 then raise exception 'FAIL variations'; end if;
+rows:=jsonb_build_array((s->'defaultWeights')||'{"id":null,"classCode":"F","variation":null,"remarks":"Default test"}'::jsonb,(s->'defaultWeights')||'{"id":null,"classCode":"F","variation":"TST","remarks":"Variation test"}'::jsonb);
+s:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','classes',rows);
+if jsonb_array_length(s->'rows')<>2 then raise exception 'FAIL class save'; end if;
+t:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','classes',s->'rows');
+if t->'rows'<>s->'rows' then raise exception 'FAIL stable row ids'; end if;
+s:=t;
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','variations','[]'); raise exception 'FAIL referenced variation delete'; exception when foreign_key_violation then null; end;
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','classes',jsonb_build_array((s->'rows'->0)||'{"classCode":"Q"}')); raise exception 'FAIL unconfigured class'; exception when foreign_key_violation then null; end;
+if ("Basic_Carrier_Record".get_carrier_passenger_weights('ZZ'))->'rows'<>s->'rows' then raise exception 'FAIL failed save not atomic'; end if;
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','variations','[{"code":"TST","description":"Same"},{"code":"TS2","description":"same"}]'); raise exception 'FAIL duplicate labels'; exception when unique_violation then null; end;
+s:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','classes','[]');
+s:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','variations','[]');
+if jsonb_array_length(s->'rows')<>0 or jsonb_array_length(s->'variations')<>0 then raise exception 'FAIL removal'; end if;
+update "Basic_Carrier_Record"."Basic_Carrier_Data" set "Carrier_Unit_Weight_KG"=false,"Carrier_Unit_Weight_LB"=true where "Carrier_IATA"='ZZ';
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','default',s->'defaultWeights'); raise exception 'FAIL stale unit'; exception when serialization_failure then null; end;
+update "Basic_Carrier_Record"."Basic_Carrier_Data" set "Carrier_Unit_Weight_KG"=true,"Carrier_Unit_Weight_LB"=false where "Carrier_IATA"='ZZ';
+end $$;
+reset role;
+insert into application_security.organisations(organisation_id,organisation_name,organisation_type) values ('a5aa0000-0000-4000-8000-000000000001','Temporary carrier details verification','AIRLINE');
+insert into application_security.organisation_users(organisation_id,user_id) values ('a5aa0000-0000-4000-8000-000000000001','b5c937a4-db85-4b47-bb59-23c99cc6799d');
+insert into application_security.organisation_carrier_access(organisation_id,carrier_iata) values ('a5aa0000-0000-4000-8000-000000000001','ZZ');
+insert into application_security.user_carrier_access(user_carrier_access_id,organisation_id,user_id,carrier_iata) values ('a5aa0000-0000-4000-8000-000000000002','a5aa0000-0000-4000-8000-000000000001','b5c937a4-db85-4b47-bb59-23c99cc6799d','ZZ');
+insert into application_security.user_carrier_roles(user_carrier_access_id,role_id) select 'a5aa0000-0000-4000-8000-000000000002',role_id from application_security.roles where role_code='CONFIGURATION_EDITOR';
+update application_security.user_global_roles set active=false where user_id='b5c937a4-db85-4b47-bb59-23c99cc6799d';
+set local role authenticated;
+do $$ declare s jsonb; n integer; begin
+s:="Basic_Carrier_Record".get_carrier_passenger_weights('ZZ');
+if not (s->>'canView')::boolean or (s->>'canEdit')::boolean then raise exception 'FAIL editor readonly'; end if;
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','default',s->'defaultWeights'); raise exception 'FAIL editor RPC'; exception when insufficient_privilege then null; end;
+update "Basic_Carrier_Record"."Carrier_Passenger_Weights_ALLFLIGHTS" set "Male"=1 where "Carrier_IATA"='ZZ'; get diagnostics n=row_count;
+if n<>0 then raise exception 'FAIL editor direct write'; end if;
+end $$;
+reset role;
+update application_security.user_carrier_roles set role_id=(select role_id from application_security.roles where role_code='CARRIER_ADMINISTRATOR') where user_carrier_access_id='a5aa0000-0000-4000-8000-000000000002';
+set local role authenticated;
+do $$ declare s jsonb; begin
+s:="Basic_Carrier_Record".get_carrier_passenger_weights('ZZ');
+s:="Basic_Carrier_Record".save_carrier_passenger_weights('ZZ',s->>'revision','default',s->'defaultWeights');
+begin perform "Basic_Carrier_Record".save_carrier_passenger_weights('XY','','variations','[]'); raise exception 'FAIL cross-carrier write'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+set local role anon;
+do $$ begin
+begin perform "Basic_Carrier_Record".get_carrier_passenger_weights('ZZ'); raise exception 'FAIL anon'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+select 'PASS B3 RPC round trips, stale data/unit, validation, atomic failures, stable IDs, deletion, role restrictions' as result;
+rollback;

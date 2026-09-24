@@ -1,0 +1,1 @@
+import type{AircraftE11Input,AircraftE11Snapshot}from"@/domain/aircraft-e11";export interface AircraftE11Repository{get(i:string,t:string,s:string):Promise<AircraftE11Snapshot>;save(i:string,t:string,s:string,r:string,value:AircraftE11Input):Promise<AircraftE11Snapshot>}

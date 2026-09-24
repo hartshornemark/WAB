@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="940" height="540" viewBox="0 0 470 270" overflow="hidden">
+  <rect width="470" height="270" fill="#ffffff"/>
+
+  <!-- Aircraft and overlays share this 470 × 270 coordinate system. -->
+  <g id="aircraft" transform="rotate(180 235 135) translate(0 -280)">
+
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="284.8" y="145" width="39.7" height="43" rx="4"
+          fill="#2f6cc5" fill-opacity=".24" stroke="#2f6cc5" stroke-width="1.6"/>
+    <text x="304.65" y="161" text-anchor="middle" fill="#17335f" font-size="8" font-weight="700">HOLD 1</text>
+    <text x="304.65" y="174" text-anchor="middle" fill="#17335f" font-size="5.2">9.858–13.107 m</text>
+
+    <rect x="151.3" y="145" width="54" height="43" rx="4"
+          fill="#2f855a" fill-opacity=".24" stroke="#2f855a" stroke-width="1.6"/>
+    <text x="178.3" y="161" text-anchor="middle" fill="#17335f" font-size="8" font-weight="700">HOLD 4</text>
+    <text x="178.3" y="174" text-anchor="middle" fill="#17335f" font-size="5.2">19.608–24.028 m</text>
+
+    <rect x="111.6" y="151" width="39.7" height="37" rx="4"
+          fill="#d89b28" fill-opacity=".24" stroke="#d89b28" stroke-width="1.6"/>
+    <text x="131.45" y="164" text-anchor="middle" fill="#17335f" font-size="8" font-weight="700">HOLD 5</text>
+    <text x="131.45" y="176" text-anchor="middle" fill="#17335f" font-size="5.2">24.028–27.270 m</text>
+
+    <g fill="none" stroke="#c53b4c" stroke-width="3">
+      <path d="M303 207 H323 M303 202 V212 M323 202 V212"/>
+      <path d="M152 207 H174 M152 202 V212 M174 202 V212"/>
+      <path d="M96 207 H113 M96 202 V212 M113 202 V212"/>
+    </g>
+    <g fill="#a7283b" font-size="6.5" font-weight="700" text-anchor="middle">
+      <text x="313" y="223">DOOR 1</text>
+      <text x="163" y="223">DOOR 4</text>
+      <text x="104.5" y="223">DOOR 5</text>
+    </g>
+  </g>
+</svg>

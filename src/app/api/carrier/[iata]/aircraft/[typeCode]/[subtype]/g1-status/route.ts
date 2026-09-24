@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";import{aircraftG1Services}from"@/composition/services";import{aircraftG1Status}from"@/domain/aircraft-g1-status";
+export async function GET(_request:Request,{params}:{params:Promise<{iata:string;typeCode:string;subtype:string}>}){try{const{iata,typeCode,subtype}=await params,snapshot=await(await aircraftG1Services()).get(iata,typeCode,subtype);return NextResponse.json({status:aircraftG1Status(snapshot)})}catch{return NextResponse.json({status:"incomplete"},{status:503})}}

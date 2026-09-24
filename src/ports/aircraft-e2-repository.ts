@@ -1,0 +1,1 @@
+import type{AircraftE2Snapshot,E2CrewRow,E2PantryRow}from"@/domain/aircraft-e2";export interface AircraftE2Repository{get(i:string,t:string,s:string):Promise<AircraftE2Snapshot>;saveCrew(i:string,t:string,s:string,r:string,v:E2CrewRow[]):Promise<AircraftE2Snapshot>;savePantry(i:string,t:string,s:string,r:string,v:E2PantryRow[]):Promise<AircraftE2Snapshot>}

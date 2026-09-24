@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Configuration Dashboard</title>
+<style>
+  :root{--navy:#132e57;--blue:#3568bf;--page:#f4f7fd;--line:#ccd9ee;--muted:#596e8f;--green:#2f6e46;--green-bg:#e7f5eb;--amber:#8a6411;--amber-bg:#fff5d8;--red:#9b2c2c;--red-bg:#fcecec;--grey:#657186;--grey-bg:#edf1f6;--white-bg:#fff;--auto:#245f9f;--auto-bg:#e5f0fb;--white:#fff}
+  *{box-sizing:border-box} body{margin:0;background:var(--page);color:var(--navy);font:16px/1.4 Arial,Helvetica,sans-serif} .topbar{height:104px;background:#29487e;color:white;display:flex;align-items:center;padding:0 54px;justify-content:space-between}.brand{display:flex;align-items:center;gap:18px;font-weight:700;letter-spacing:2px}.wb{font-size:32px;font-weight:300;border-right:1px solid rgba(255,255,255,.5);padding-right:20px}.user{display:flex;align-items:center;gap:24px;font-size:14px}.signout{border:1px solid #9cb1d3;border-radius:8px;padding:12px 20px;font-weight:700;color:#fff;text-decoration:none}.signout:hover{background:#3568bf}.brand{color:#fff;text-decoration:none}.dashboard-code-logo{display:grid;place-items:center;color:var(--blue);font-size:24px;font-weight:800}.dashboard-code-logo img{display:block;width:100%;height:100%;object-fit:contain}.dashboard-code-logo.has-logo [data-carrier-code]{display:none}
+  main{max-width:1360px;margin:auto;padding:36px 42px 64px}.crumb{font-size:13px;font-weight:700;letter-spacing:2px;color:var(--blue);margin-bottom:17px}.identity{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}.carrier-identity{display:flex;align-items:center;gap:18px}.carrier-logo{width:86px;height:86px;border-radius:12px;background:#fff;object-fit:contain;padding:8px;border:1px solid #e6edf8}.identity h1{font-size:40px;margin:0}.identity p{margin:4px 0 0;color:var(--muted);font-size:20px}.aircraft{text-align:right}.aircraft strong{display:block;font-size:22px}.aircraft span{color:var(--muted)}
+  .overall{background:white;border:1px solid var(--line);border-top:5px solid var(--blue);border-radius:13px;padding:28px 30px;margin-bottom:26px;display:grid;grid-template-columns:1fr 190px;gap:40px;align-items:center}.overall h2{margin:0 0 5px;font-size:26px}.overall .sub{color:var(--muted);margin-bottom:19px}.progress{height:12px;background:#e6ebf4;border-radius:8px;overflow:hidden}.progress>i{display:block;height:100%;background:var(--green);border-radius:8px}.legend{display:flex;gap:18px;margin-top:13px;color:var(--muted);font-size:13px}.percent{text-align:center}.percent b{display:block;font-size:54px;line-height:1;color:var(--green)}.percent span{font-size:13px;color:var(--muted);font-weight:700}.note{grid-column:1/-1;background:#f2f6fc;border-radius:7px;padding:10px 13px;color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;align-items:start}.section{background:white;border:1px solid var(--line);border-radius:12px;min-height:260px;padding:20px;display:flex;flex-direction:column}.section-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.letter{font-size:38px;font-weight:700;line-height:1}.name{color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.45px;margin:6px 0 0;white-space:nowrap}.section-pct{text-align:right;font-size:30px;font-weight:700}.section-pct small{display:block;font-size:9px;color:var(--muted);font-weight:700;white-space:nowrap}.section .progress{height:8px;margin:18px 0 14px}.badge{display:inline-flex;align-items:center;gap:7px;border-radius:20px;padding:7px 11px;font-size:11px;font-weight:800;letter-spacing:.5px;white-space:nowrap}.badge.green{background:var(--green-bg);color:var(--green)}.badge.amber{background:var(--amber-bg);color:var(--amber)}.badge.red{background:var(--red-bg);color:var(--red)}.badge.grey{background:var(--grey-bg);color:var(--grey)}.badge.white{background:#fff;color:var(--grey);border:1px solid #d2d9e3}.plane{font-size:14px}.pages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:66px;align-content:start;justify-content:start;gap:8px;margin-top:17px}.page{position:relative;isolation:isolate;width:100%;height:66px;border-radius:8px;padding:3px 3px 16px;text-align:center;border:1px solid;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none}.page[href]{cursor:pointer}.page[href]:hover,.page[href]:focus-visible{transform:translateY(-1px);box-shadow:0 3px 8px rgba(19,46,87,.18);outline:2px solid var(--blue);outline-offset:1px}.page::before{content:"";position:absolute;z-index:-1;inset:2px 8px 12px;opacity:.16;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8c.9 0 1.6.7 1.6 1.6v5.7l6.3 4.1v2.2l-6.3-2v4.7l2.1 1.5v1.6L12 20l-3.7 1.2v-1.6l2.1-1.5v-4.7l-6.3 2v-2.2l6.3-4.1V3.4c0-.9.7-1.6 1.6-1.6Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8c.9 0 1.6.7 1.6 1.6v5.7l6.3 4.1v2.2l-6.3-2v4.7l2.1 1.5v1.6L12 20l-3.7 1.2v-1.6l2.1-1.5v-4.7l-6.3 2v-2.2l6.3-4.1V3.4c0-.9.7-1.6 1.6-1.6Z'/%3E%3C/svg%3E") center/contain no-repeat}.page b{display:block;font-size:16px;line-height:1}.page small{display:flex;align-items:center;justify-content:center;min-height:12px;margin-top:2px;font-size:6.8px;font-weight:800;letter-spacing:.12px;line-height:1.05;overflow-wrap:anywhere}.page-detail{position:absolute;left:3px;right:3px;bottom:4px;display:flex;align-items:center;justify-content:center;min-height:10px;color:currentColor;font-size:7px;font-weight:700;line-height:1.05;white-space:nowrap}.page-detail.two-line{bottom:3px;min-height:16px;line-height:1.08;white-space:normal}.page.green{background:var(--green-bg);color:var(--green);border-color:#abd4b8}.page.auto{background:var(--auto-bg);color:var(--auto);border-color:#9fc2e6}.page.amber{background:var(--amber-bg);color:var(--amber);border-color:#dfc57d}.page.red{background:var(--red-bg);color:var(--red);border-color:#e6aaaa}.page.grey{background:var(--grey-bg);color:var(--grey);border-color:#d2d9e3}.page.white{background:#fff;color:var(--grey);border-color:#d2d9e3;cursor:default}.placeholder{margin:auto;text-align:center;color:var(--grey)}.placeholder b{font-size:21px;display:block;margin-bottom:8px}.placeholder span{font-size:12px}.section.configured .section-pct{color:var(--green)}.section.dim .progress>i{background:#a3adba}.section.dim .section-pct{color:var(--grey)}.section.partial .progress>i{background:var(--amber)}.section.partial .section-pct{color:var(--amber)}.section.incomplete .progress>i{background:var(--red)}.section.incomplete .section-pct{color:var(--red)}.page-disclosure{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}.page-disclosure summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:34px;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:#f7f9fd;color:var(--navy);font-size:10px;font-weight:800;letter-spacing:.5px;cursor:pointer;list-style:none}.page-disclosure summary::-webkit-details-marker{display:none}.page-disclosure summary::after{content:"+";display:grid;place-items:center;width:19px;height:19px;border-radius:50%;background:#e7edf7;color:var(--blue);font-size:16px;line-height:1}.page-disclosure[open] summary::after{content:"−"}.page-disclosure .pages{margin-top:10px}.page-disclosure[open] summary{background:#edf2fc;border-color:#b8c9e4}
+  @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.identity{align-items:flex-start;flex-direction:column;gap:18px}.aircraft{text-align:left}} @media(max-width:620px){main{padding:25px 18px}.topbar{padding:0 20px}.grid{grid-template-columns:1fr}.overall{grid-template-columns:1fr}.percent{text-align:left}.identity h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/carriers"><span class="wb">W/B</span><span>CARRIER CONFIGURATION</span></a><div class="user"><a class="signout" data-carrier-dashboard href="/carrier/ZZ/dashboard">CHANGE AIRCRAFT</a><a class="signout" data-carrier-home href="/carrier/ZZ">CARRIER HOME</a></div></header>
+<main>
+  <div class="crumb">CONFIGURATION DASHBOARD / ZZ / 319-100</div>
+  <div class="identity"><div class="carrier-identity"><div class="carrier-logo dashboard-code-logo"><img data-carrier-logo alt="" hidden><span data-carrier-code>ZZ</span></div><div><h1 data-carrier-name>ZZ Airline Company</h1><p>Configuration progress and completion</p></div></div><div class="aircraft"><strong data-aircraft-name>Airbus A319-111</strong><span data-aircraft-code>Aircraft Type 319 · Series/Sub-Type 100</span></div></div>
+  <section class="overall"><div><h2>Overall Configuration</h2><div class="sub">25 of 33 currently assessed pages are configured or generated automatically.</div><div class="progress"><i style="width:76%"></i></div><div class="legend"><span>25 Configured Pages</span><span>1 Partial</span><span>7 Incomplete</span></div></div><div class="percent"><b style="color:var(--amber)">76%</b><span>OF ASSESSED RULES</span><div style="margin-top:13px"><span class="badge amber"><span class="plane">✈</span> PARTIALLY CONFIGURED</span></div></div><div class="note"><strong>Provisional dashboard:</strong> supported placeholders and rules-pending pages are treated as incomplete until their completion rules and screens are implemented. AUTO pages count as complete when their source page is configured. Skipped, unsupported, not required and out-of-scope pages remain visible but are excluded from percentages.</div></section>
+  <div class="grid">
+    <section class="section incomplete" data-dashboard-section="A"><div class="section-top"><div><div class="letter">A</div><div class="name">CONTACT INFORMATION</div></div><div class="section-pct">0%<small>0 OF 2 PAGES</small></div></div><div class="progress"><i style="width:0%"></i></div><span class="badge red"><span class="plane">✈</span> NOT CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><div class="page white"><b>A1</b><small>NOT REQUIRED</small><span class="page-detail two-line">Suppliers<br>Contacts</span></div><a class="page red" data-live-status="a2" data-status-endpoint="/api/carrier/ZZ/a2-status" href="/carrier/ZZ"><b>A2</b><small>NOT CONFIGURED</small><span class="page-detail two-line">Carriers<br>Contacts</span></a><div class="page grey"><b>A3</b><small>UNSUPPORTED</small><span class="page-detail">Revisions</span></div><div class="page grey"><b>A4</b><small>UNSUPPORTED</small><span class="page-detail two-line">Effective<br>Pages</span></div><a class="page red" data-live-status="a5" href="/carrier/ZZ/a5"><b>A5</b><small>NOT CONFIGURED</small><span class="page-detail two-line">Automatic<br>Documents</span></a></div></details></section>
+    <section class="section"><div class="section-top"><div><div class="letter">B</div><div class="name">STANDARDS, UNITS AND CODES</div></div><div class="section-pct" style="color:var(--green)">100%<small>5 OF 5 PAGES</small></div></div><div class="progress"><i style="width:100%"></i></div><span class="badge green"><span class="plane">✈</span> CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><a class="page green" href="/carrier/ZZ?sheet=B1"><b>B1</b><small>CONFIGURED</small><span class="page-detail">Units &amp; Codes</span></a><a class="page green" href="/carrier/ZZ/crew-weights"><b>B2</b><small>CONFIGURED</small><span class="page-detail">Crew</span></a><a class="page green" href="/carrier/ZZ/passenger-weights"><b>B3</b><small>CONFIGURED</small><span class="page-detail">Passengers</span></a><a class="page green" href="/carrier/ZZ/baggage-weights"><b>B4</b><small>CONFIGURED</small><span class="page-detail">Baggage</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/uld-specifications"><b>B5</b><small>CONFIGURED</small><span class="page-detail">ULD Spec</span></a></div></details></section>
+    <section class="section"><div class="section-top"><div><div class="letter">C</div><div class="name">AIRCRAFT INFORMATION</div></div><div class="section-pct" style="color:var(--green)">100%<small>10 ASSESSED PAGES</small></div></div><div class="progress"><i style="width:100%"></i></div><span class="badge green"><span class="plane">✈</span> CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages">
+<a class="page green" href="/carrier/ZZ/aircraft/319/100"><b>C1</b><small>CONFIGURED</small><span class="page-detail">Units</span></a>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c2"><b>C2</b><small>CONFIGURED</small><span class="page-detail two-line">Loadsheet<br>Information</span></a>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c2"><b>C3</b><small>CONFIGURED</small><span class="page-detail two-line">Supplementary<br>Information</span></a>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c4"><b>C4</b><small>CONFIGURED</small><span class="page-detail">Formulae</span></a>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c5"><b>C5.1</b><small>CONFIGURED</small><span class="page-detail">CG Limits</span></a>
+<a class="page auto" href="/carrier/ZZ/aircraft/319/100/c5"><b>C5.2</b><small>AUTO</small><span class="page-detail">Envelopes</span></a>
+<a class="page grey" href="/carrier/ZZ/aircraft/319/100/c6"><b>C6</b><small>SKIPPED</small><span class="page-detail">Curtailments</span></a>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c7"><b>C7</b><small>CONFIGURED</small><span class="page-detail">Ideal Trim</span></a>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c8"><b>C8</b><small>CONFIGURED</small><span class="page-detail two-line">FUEL<br>Standard</span></a>
+<div class="page grey"><b>C9</b><small>UNSUPPORTED</small><span class="page-detail two-line">FUEL<br>Cumulative</span></div>
+<div class="page grey"><b>C10</b><small>UNSUPPORTED</small><span class="page-detail two-line">FUEL<br>Non-Standard</span></div>
+<a class="page green" href="/carrier/ZZ/aircraft/319/100/c11"><b>C11.1</b><small>CONFIGURED</small><span class="page-detail">STAB</span></a>
+<a class="page auto" href="/carrier/ZZ/aircraft/319/100/c11"><b>C11.2</b><small>AUTO</small><span class="page-detail">Chart</span></a>
+</div></details></section>
+    <section class="section configured"><div class="section-top"><div><div class="letter">D</div><div class="name">CONFIGURATION INFORMATION</div></div><div class="section-pct">100%<small>7 OF 7 PAGES</small></div></div><div class="progress"><i style="width:100%"></i></div><span class="badge green"><span class="plane">✈</span> CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><div class="page grey"><b>D1</b><small>OUT OF SCOPE</small><span class="page-detail two-line">Dimensions &amp;<br>Limits</span></div><a class="page green" href="/carrier/ZZ/aircraft/319/100/d2"><b>D2</b><small>CONFIGURED</small><span class="page-detail two-line">Holds &amp;<br>Compartments</span></a><a class="page grey" href="/carrier/ZZ/aircraft/319/100/d3"><b>D3</b><small>SKIPPED</small><span class="page-detail two-line">ULD<br>Configurations</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/d4"><b>D4</b><small>CONFIGURED</small><span class="page-detail two-line">Doors &amp;<br>Locks</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/d5"><b>D5</b><small>CONFIGURED</small><span class="page-detail two-line">Cabin &amp;<br>Equipment</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/d6"><b>D6</b><small>CONFIGURED</small><span class="page-detail two-line">Water, Galley &amp;<br>Other Locations</span></a><div class="page white"><b>D7</b><small>NOT REQUIRED</small><span class="page-detail">Seating</span></div><a class="page green" href="/carrier/ZZ/aircraft/319/100/d8"><b>D8</b><small>CONFIGURED</small><span class="page-detail">Seatplan</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/d9"><b>D9</b><small>CONFIGURED</small><span class="page-detail">Configurations</span></a><div class="page grey"><b>D10</b><small>UNSUPPORTED</small><span class="page-detail two-line">Structural<br>Limitations I</span></div><a class="page green" href="/carrier/ZZ/aircraft/319/100/d11"><b>D11</b><small>CONFIGURED</small><span class="page-detail two-line">Structural<br>Limitations II</span></a></div></details></section>
+    <section class="section partial" data-dashboard-section="E"><div class="section-top"><div><div class="letter">E</div><div class="name">DRY OPERATING WEIGHT</div></div><div class="section-pct">50%<small>3 OF 6 PAGES</small></div></div><div class="progress"><i style="width:50%"></i></div><span class="badge amber"><span class="plane">✈</span> PARTIALLY CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><a class="page green" href="/carrier/ZZ/aircraft/319/100/e1-1"><b>E1.1</b><small>CONFIGURED</small><span class="page-detail two-line">Dry Operating<br>Weight</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/e1-2"><b>E1.2</b><small>CONFIGURED</small><span class="page-detail">Registrations</span></a><a class="page green" href="/carrier/ZZ/aircraft/319/100/e2"><b>E2</b><small>CONFIGURED</small><span class="page-detail two-line">Crew &amp; Pantry<br>Codes</span></a><a class="page amber" data-live-status="e3" href="/carrier/ZZ/aircraft/319/100/e3"><b>E3</b><small>PARTIAL</small><span class="page-detail two-line">Service Weight<br>Adjustments</span></a><a class="page red" data-live-status="e4" href="/carrier/ZZ/aircraft/319/100/e4"><b>E4</b><small>NOT CONFIGURED</small><span class="page-detail two-line">Weight<br>Configurations</span></a><a class="page red" data-live-status="e5" href="/carrier/ZZ/aircraft/319/100/e5"><b>E5</b><small>NOT CONFIGURED</small><span class="page-detail two-line">Fleet/Aircraft<br>Weights</span></a></div></details></section>
+    <section class="section incomplete" data-dashboard-section="F"><div class="section-top"><div><div class="letter">F</div><div class="name">LIMITING WEIGHTS</div></div><div class="section-pct">0%<small>0 OF 1 PAGE</small></div></div><div class="progress"><i style="width:0%"></i></div><span class="badge red">NOT CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><a class="page red" data-live-status="f1" href="/carrier/ZZ/aircraft/319/100/f1"><b>F1</b><small>NOT CONFIGURED</small><span class="page-detail two-line">Aircraft Limiting<br>Weights</span></a><div class="page grey"><b>F2</b><small>UNSUPPORTED</small><span class="page-detail two-line">Minimum Weight<br>Tables</span></div></div></details></section>
+    <section class="section dim" data-dashboard-section="G"><div class="section-top"><div><div class="letter">G</div><div class="name">ULD COMPATIBILITY</div></div><div class="section-pct">0%<small>0 ASSESSED PAGES</small></div></div><div class="progress"><i style="width:0%"></i></div><span class="badge white">NOT REQUIRED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><a class="page white" href="/carrier/ZZ/aircraft/319/100/g1"><b>G1</b><small>NOT REQUIRED</small><span class="page-detail two-line">ULD<br>Compatibility</span></a></div></details></section>
+    <section class="section incomplete" data-dashboard-section="H"><div class="section-top"><div><div class="letter">H</div><div class="name">BUSINESS RULES</div></div><div class="section-pct">0%<small>0 OF 1 PAGE</small></div></div><div class="progress"><i style="width:0%"></i></div><span class="badge red">NOT CONFIGURED</span><details class="page-disclosure"><summary>SHOW PAGES</summary><div class="pages"><a class="page red" data-live-status="h1" href="/carrier/ZZ/aircraft/319/100/h1"><b>H1</b><small>NOT CONFIGURED</small><span class="page-detail">Special Loads</span></a><div class="page grey"><b>H2</b><small>UNSUPPORTED</small><span class="page-detail two-line">Aircraft Business<br>Rules</span></div><div class="page grey"><b>H3</b><small>UNSUPPORTED</small><span class="page-detail two-line">Career Business<br>Rules</span></div></div></details></section>
+  </div>
+</main>
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const clean = (value, fallback, pattern) => { const candidate = (value || fallback).toUpperCase(); return pattern.test(candidate) ? candidate : fallback; };
+  const carrierMode = params.get('mode') === 'carrier';
+  const iata = clean(params.get('iata'), 'ZZ', /^[A-Z0-9]{2}$/);
+  const type = carrierMode ? '' : clean(params.get('type'), '319', /^[A-Z0-9]{3}$/);
+  const subtype = carrierMode ? '' : clean(params.get('subtype'), '100', /^[A-Z0-9-]{1,8}$/);
+  const carrierName = params.get('carrier') || iata;
+  const aircraftName = carrierMode ? 'Aircraft setup required' : params.get('aircraft') || `${type}-${subtype}`;
+  const logo = params.get('logo');
+  const carrierBase = `/carrier/${encodeURIComponent(iata)}`;
+  const aircraftBase = carrierMode ? `${carrierBase}/aircraft` : `${carrierBase}/aircraft/${encodeURIComponent(type)}/${encodeURIComponent(subtype)}`;
+  const rewritePath = value => {
+    if (carrierMode) return value
+      .replace('/api/carrier/ZZ/aircraft/319/100', `/api${carrierBase}`)
+      .replace('/api/carrier/ZZ', `/api${carrierBase}`)
+      .replace('/carrier/ZZ/aircraft/319/100/uld-specifications', `${carrierBase}/uld-specifications`)
+      .replace(/\/carrier\/ZZ\/aircraft\/319\/100[^"?#]*/g, `${carrierBase}/aircraft`)
+      .replace('/carrier/ZZ', carrierBase);
+    return value
+      .replace('/api/carrier/ZZ/aircraft/319/100', `/api${aircraftBase}`)
+      .replace('/api/carrier/ZZ', `/api${carrierBase}`)
+      .replace('/carrier/ZZ/aircraft/319/100', aircraftBase)
+      .replace('/carrier/ZZ', carrierBase);
+  };
+  document.querySelector('.crumb').textContent = carrierMode ? `CONFIGURATION DASHBOARD / ${iata}` : `CONFIGURATION DASHBOARD / ${iata} / ${type}-${subtype}`;
+  document.querySelector('[data-carrier-code]').textContent = iata;
+  if (logo) {
+    try {
+      const logoUrl = new URL(logo, location.origin);
+      if (['https:','http:'].includes(logoUrl.protocol)) {
+        const logoImage = document.querySelector('[data-carrier-logo]');
+        logoImage.src = logoUrl.href;
+        logoImage.alt = `${carrierName} logo`;
+        logoImage.hidden = false;
+        logoImage.parentElement.classList.add('has-logo');
+      }
+    } catch {}
+  }
+  document.querySelector('[data-carrier-name]').textContent = carrierName;
+  document.querySelector('[data-aircraft-name]').textContent = aircraftName;
+  document.querySelector('[data-aircraft-code]').textContent = carrierMode ? 'Complete C1 to add the first aircraft' : `Aircraft Type ${type} · Series/Sub-Type ${subtype}`;
+  if (carrierMode) {
+    const changeAircraft=document.querySelector('[data-carrier-dashboard]');
+    if(changeAircraft){changeAircraft.textContent='ADD AIRCRAFT';changeAircraft.setAttribute('href',`${carrierBase}/aircraft`);}
+    const note=document.querySelector('.overall .note');
+    if(note)note.innerHTML='<strong>Carrier dashboard:</strong> Carrier-level pages show their current status. C1 and aircraft-specific pages remain Not Configured until the first aircraft is added.';
+  }
+  document.querySelectorAll('a[href]').forEach(link => link.setAttribute('href', rewritePath(link.getAttribute('href'))));
+  document.querySelectorAll('[data-status-endpoint]').forEach(item => item.dataset.statusEndpoint = rewritePath(item.dataset.statusEndpoint));
+  const labels = {configured:'CONFIGURED',partial:'PARTIAL',incomplete:'NOT CONFIGURED',skipped:'SKIPPED',not_active:'NOT ACTIVE',not_required:'NOT REQUIRED',auto:'AUTO',loading:'LOADING',unavailable:'STATUS UNAVAILABLE'};
+  const classes = {configured:'green',partial:'amber',incomplete:'red',skipped:'grey',not_active:'grey',not_required:'white',auto:'auto',loading:'grey',unavailable:'grey'};
+  const statusText = page => page.querySelector('small')?.textContent?.trim() || '';
+  const isExcluded = page => ['UNSUPPORTED','OUT OF SCOPE','NOT REQUIRED','SKIPPED','NOT ACTIVE','LOADING','STATUS UNAVAILABLE'].includes(statusText(page));
+  const isComplete = page => ['CONFIGURED','AUTO'].includes(statusText(page));
+  const updateSection = section => {
+    const pages = [...section.querySelectorAll('.page')];
+    const pending = pages.some(page => statusText(page) === 'STATUS UNAVAILABLE') ? 'STATUS UNAVAILABLE' : pages.some(page => statusText(page) === 'LOADING') ? 'LOADING' : null;
+    if (pending) {
+      section.classList.remove('configured','partial','incomplete');
+      section.classList.add('dim');
+      const pct=section.querySelector('.section-pct');if(pct)pct.innerHTML=`—<small>${pending}</small>`;
+      const bar=section.querySelector('.progress > i');if(bar)bar.style.width='0%';
+      const badge=section.querySelector('.badge');if(badge){badge.className='badge grey';badge.textContent=pending}
+      return;
+    }
+    const assessed = pages.filter(page => !isExcluded(page));
+    if (!assessed.length) {
+      section.classList.remove('configured','partial','incomplete');
+      section.classList.add('dim');
+      const pct=section.querySelector('.section-pct');if(pct)pct.innerHTML='0%<small>0 ASSESSED PAGES</small>';
+      const bar=section.querySelector('.progress > i');if(bar)bar.style.width='0%';
+      const badge=section.querySelector('.badge');if(badge){badge.className='badge white';badge.textContent='NOT REQUIRED'}
+      return;
+    }
+    section.classList.remove('dim');
+    const complete = assessed.filter(isComplete).length;
+    const percent = assessed.length ? Math.round(complete / assessed.length * 100) : 0;
+    const state = complete === assessed.length ? 'configured' : complete > 0 || assessed.some(page => statusText(page) === 'PARTIAL') ? 'partial' : 'incomplete';
+    section.classList.remove('configured','partial','incomplete');
+    section.classList.add(state);
+    const pct = section.querySelector('.section-pct');
+    if (pct) pct.innerHTML = `${percent}%<small>${complete} OF ${assessed.length} PAGES</small>`;
+    const bar = section.querySelector('.progress > i');
+    if (bar) bar.style.width = `${percent}%`;
+    const badge = section.querySelector('.badge');
+    if (badge) {
+      badge.className = `badge ${state === 'configured' ? 'green' : state === 'partial' ? 'amber' : 'red'}`;
+      badge.innerHTML = `<span class="plane">✈</span> ${state === 'configured' ? 'CONFIGURED' : state === 'partial' ? 'PARTIALLY CONFIGURED' : 'NOT CONFIGURED'}`;
+    }
+  };
+  const updateOverall = () => {
+    const overall = document.querySelector('.overall');
+    if (!overall) return;
+    const pages = [...document.querySelectorAll('.grid .page')];
+    const pending = pages.some(page => statusText(page) === 'STATUS UNAVAILABLE') ? 'STATUS UNAVAILABLE' : pages.some(page => statusText(page) === 'LOADING') ? 'LOADING' : null;
+    if (pending) {
+      const sub = overall.querySelector('.sub');if(sub)sub.textContent=pending === 'LOADING' ? 'Loading configuration status…' : 'Configuration status is temporarily unavailable.';
+      const bar=overall.querySelector('.progress > i');if(bar)bar.style.width='0%';
+      overall.querySelectorAll('.legend span').forEach(item=>item.textContent='—');
+      const pct=overall.querySelector('.percent > b');if(pct){pct.textContent='—';pct.style.color='var(--grey)'}
+      const badge=overall.querySelector('.badge');if(badge){badge.className='badge grey';badge.textContent=pending}
+      return;
+    }
+    const assessed = pages.filter(page => !isExcluded(page));
+    const complete = assessed.filter(isComplete).length;
+    const partial = assessed.filter(page => statusText(page) === 'PARTIAL').length;
+    const incomplete = assessed.length - complete - partial;
+    const percent = assessed.length ? Math.round(complete / assessed.length * 100) : 0;
+    const sub = overall.querySelector('.sub');
+    if (sub) sub.textContent = `${complete} of ${assessed.length} currently assessed pages are configured or generated automatically.`;
+    const bar = overall.querySelector('.progress > i');
+    if (bar) bar.style.width = `${percent}%`;
+    const legend = overall.querySelectorAll('.legend span');
+    if (legend[0]) legend[0].textContent = `${complete} Configured Pages`;
+    if (legend[1]) legend[1].textContent = `${partial} Partial`;
+    if (legend[2]) legend[2].textContent = `${incomplete} Incomplete`;
+    const state = complete === assessed.length ? 'configured' : complete > 0 || partial > 0 ? 'partial' : 'incomplete';
+    const pct = overall.querySelector('.percent > b');
+    if (pct) { pct.textContent = `${percent}%`; pct.style.color = state === 'configured' ? 'var(--green)' : state === 'partial' ? 'var(--amber)' : 'var(--red)'; }
+    const badge = overall.querySelector('.badge');
+    if (badge) {
+      badge.className = `badge ${state === 'configured' ? 'green' : state === 'partial' ? 'amber' : 'red'}`;
+      badge.innerHTML = `<span class="plane">✈</span> ${state === 'configured' ? 'CONFIGURED' : state === 'partial' ? 'PARTIALLY CONFIGURED' : 'NOT CONFIGURED'}`;
+    }
+  };
+  const dynamicCodes = new Set(['A2','A5','B1','B2','B3','B4','B5','C1','C2','C3','C4','C5.1','C5.2','C7','C8','C11.1','C11.2','D2','D3','D4','D5','D6','D8','D9','D11','E1.1','E1.2','E2','E3','E4','E5','F1','G1','H1']);
+  const tiles = new Map([...document.querySelectorAll('.page')].map(tile => [tile.querySelector('b')?.textContent?.trim(),tile]).filter(([code]) => dynamicCodes.has(code)));
+  const applyStatus = (tile,status) => {
+    if (!tile || !classes[status]) return;
+    tile.classList.remove('green','amber','red','grey','white','auto');
+    tile.classList.add(classes[status]);
+    tile.dataset.statusSource = 'live';
+    const label = tile.querySelector('small');
+    if (label) label.textContent = labels[status];
+  };
+  // Never display another carrier's template values or false completion values while live status is loading.
+  tiles.forEach(tile => applyStatus(tile,'loading'));
+  document.querySelectorAll('.grid > .section').forEach(updateSection);
+  updateOverall();
+  fetch(carrierMode ? `/api${carrierBase}/dashboard-status` : `/api${aircraftBase}/dashboard-status`, {credentials:'same-origin', cache:'no-store'})
+    .then(async response => {
+      if (!response.ok) throw new Error(`Dashboard status request failed (${response.status}).`);
+      return response.json();
+    })
+    .then(({statuses}) => Object.entries(statuses).forEach(([code,status]) => applyStatus(tiles.get(code),status)))
+    .catch(error => { console.error(error); tiles.forEach(tile => applyStatus(tile,'unavailable')); })
+    .finally(() => { document.querySelectorAll('.grid > .section').forEach(updateSection); updateOverall(); });
+})();
+</script>
+</body>
+</html>

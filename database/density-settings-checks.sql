@@ -1,0 +1,50 @@
+begin;
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"b5c937a4-db85-4b47-bb59-23c99cc6799d","role":"authenticated"}',true);
+do $$ declare s jsonb; r text; begin
+s:="Basic_Carrier_Record".get_carrier_densities('ZZ');
+if not (s->>'canEdit')::boolean or s#>>'{values,baggage}'<>'176' then raise exception 'FAIL original administrator read'; end if;
+r:=s->>'revision';
+s:="Basic_Carrier_Record".save_carrier_densities('ZZ',r,'{"baggage":"176.25","cargo":"212","mail":""}');
+if s#>>'{values,baggage}'<>'176.25' or s#>>'{values,mail}'<>'' then raise exception 'FAIL density save'; end if;
+begin perform "Basic_Carrier_Record".save_carrier_densities('ZZ',r,'{"baggage":"176","cargo":"212","mail":"212"}');raise exception 'FAIL stale';exception when serialization_failure then null;end;
+begin perform "Basic_Carrier_Record".save_carrier_densities('ZZ',s->>'revision','{"baggage":"0","cargo":"212","mail":"212"}');raise exception 'FAIL zero';exception when invalid_parameter_value then null;end;
+begin update "Basic_Carrier_Record"."Carrier_Units_of_Measure" set "Density_General_Cargo"=-1 where "Carrier_IATA"='ZZ';raise exception 'FAIL negative direct';exception when check_violation then null;end;
+begin update "Basic_Carrier_Record"."Carrier_Units_of_Measure" set "Density_General_Cargo"='NaN'::float8 where "Carrier_IATA"='ZZ';raise exception 'FAIL NaN';exception when check_violation then null;end;
+begin update "Basic_Carrier_Record"."Carrier_Units_of_Measure" set "Carrier_IATA"='XY' where "Carrier_IATA"='ZZ';raise exception 'FAIL identity';exception when insufficient_privilege then null;end;
+update "Basic_Carrier_Record"."Basic_Carrier_Data" set "Carrier_Unit_Weight_KG"=false,"Carrier_Unit_Weight_LB"=true,"Carrier_Unit_Volume_m3"=false,"Carrier_Unit_Volume_ft3"=true where "Carrier_IATA"='ZZ';
+s:="Basic_Carrier_Record".get_carrier_densities('ZZ');
+if s->>'weightUnit'<>'LB' or s->>'volumeUnit'<>'ft3' or abs((s#>>'{values,baggage}')::float8-176.25*0.028316846592/0.45359237)>1e-9 or s#>>'{values,mail}'<>'' then raise exception 'FAIL conversion';end if;
+update "Basic_Carrier_Record"."Basic_Carrier_Data" set "Carrier_Unit_Weight_KG"=true,"Carrier_Unit_Weight_LB"=false,"Carrier_Unit_Volume_m3"=true,"Carrier_Unit_Volume_ft3"=false where "Carrier_IATA"='ZZ';
+s:="Basic_Carrier_Record".get_carrier_densities('ZZ');if abs((s#>>'{values,baggage}')::float8-176.25)>1e-9 then raise exception 'FAIL round trip';end if;
+end $$;
+reset role;
+insert into application_security.organisations(organisation_id,organisation_name,organisation_type) values ('a5aa0000-0000-4000-8000-000000000001','Temporary carrier details verification','AIRLINE');
+insert into application_security.organisation_users(organisation_id,user_id) values ('a5aa0000-0000-4000-8000-000000000001','b5c937a4-db85-4b47-bb59-23c99cc6799d');
+insert into application_security.organisation_carrier_access(organisation_id,carrier_iata) values ('a5aa0000-0000-4000-8000-000000000001','ZZ');
+insert into application_security.user_carrier_access(user_carrier_access_id,organisation_id,user_id,carrier_iata) values ('a5aa0000-0000-4000-8000-000000000002','a5aa0000-0000-4000-8000-000000000001','b5c937a4-db85-4b47-bb59-23c99cc6799d','ZZ');
+insert into application_security.user_carrier_roles(user_carrier_access_id,role_id) select 'a5aa0000-0000-4000-8000-000000000002',role_id from application_security.roles where role_code='CONFIGURATION_EDITOR';
+update application_security.user_global_roles set active=false where user_id='b5c937a4-db85-4b47-bb59-23c99cc6799d';
+
+set local role authenticated;
+do $$ declare n integer; s jsonb;begin
+s:="Basic_Carrier_Record".get_carrier_densities('ZZ');if not (s->>'canView')::boolean or (s->>'canEdit')::boolean then raise exception 'FAIL editor rights';end if;
+update "Basic_Carrier_Record"."Carrier_Units_of_Measure" set "Density_Checked_Baggage"=1 where "Carrier_IATA"='ZZ';get diagnostics n=row_count;if n<>0 then raise exception 'FAIL editor direct update';end if;
+begin perform "Basic_Carrier_Record".save_carrier_densities('ZZ',s->>'revision','{"baggage":"1","cargo":"1","mail":"1"}');raise exception 'FAIL editor RPC';exception when insufficient_privilege then null;end;
+end $$;
+reset role;
+update application_security.user_carrier_roles set role_id=(select role_id from application_security.roles where role_code='CARRIER_ADMINISTRATOR') where user_carrier_access_id='a5aa0000-0000-4000-8000-000000000002';
+set local role authenticated;
+do $$ declare s jsonb; begin
+s:="Basic_Carrier_Record".get_carrier_densities('ZZ');s:="Basic_Carrier_Record".save_carrier_densities('ZZ',s->>'revision','{"baggage":"176","cargo":"212","mail":"212"}');if s#>>'{values,mail}'<>'212' then raise exception 'FAIL CA save';end if;
+begin perform "Basic_Carrier_Record".save_carrier_densities('XY','','{"baggage":"1","cargo":"1","mail":"1"}');raise exception 'FAIL cross-carrier';exception when insufficient_privilege then null;end;
+end $$;
+reset role;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000099","role":"authenticated"}',true);
+set local role authenticated;
+do $$ declare s jsonb;begin s:="Basic_Carrier_Record".get_carrier_densities('ZZ');if (s->>'canView')::boolean or s#>>'{values,baggage}'<>'' then raise exception 'FAIL unassigned read';end if;end $$;
+reset role;set local role anon;
+do $$ begin begin perform "Basic_Carrier_Record".get_carrier_densities('ZZ');raise exception 'FAIL anon';exception when insufficient_privilege then null;end;end $$;
+reset role;
+select 'PASS administrator save, positive validation, stale protection, unit conversion, editor/cross-carrier/anonymous denials' as result;
+rollback;

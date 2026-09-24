@@ -1,0 +1,2 @@
+import type{AircraftH1Snapshot,H1ExceptionRow,H1SpecialLoadRow}from"@/domain/aircraft-h1";
+export interface AircraftH1Repository{get(i:string,t:string,s:string):Promise<AircraftH1Snapshot>;saveApplicability(i:string,t:string,s:string,r:string,d:boolean,a:boolean,l:boolean):Promise<AircraftH1Snapshot>;saveExceptions(i:string,t:string,s:string,r:string,k:"DGR"|"IATA_SPECIAL",v:H1ExceptionRow[]):Promise<AircraftH1Snapshot>;saveSpecialLoads(i:string,t:string,s:string,r:string,v:H1SpecialLoadRow[]):Promise<AircraftH1Snapshot>}

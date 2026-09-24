@@ -1,0 +1,80 @@
+begin;
+
+alter table "Basic_Carrier_Record"."Aircraft_Compartments"
+  alter column "Compartment_Max_Volume" type double precision using "Compartment_Max_Volume"::double precision,
+  alter column "Compartment_Index_Per_Weight_Unit" type double precision using "Compartment_Index_Per_Weight_Unit"::double precision,
+  alter column "Compartment_BA_Centroid" drop not null;
+
+create table "Basic_Carrier_Record"."Aircraft_Compartment_Areas"(
+  "Carrier_IATA" varchar(2) not null,
+  "Aircraft_Type_IATA" varchar(3) not null,
+  "Aircraft_Series_Subtype" varchar(4) not null,
+  "Hold_Name_ID" varchar(1) not null,
+  "Compartment_ID" varchar(3) not null,
+  "Area_ID" varchar(3) not null,
+  primary key("Carrier_IATA","Aircraft_Type_IATA","Aircraft_Series_Subtype","Hold_Name_ID","Compartment_ID","Area_ID"),
+  foreign key("Carrier_IATA","Aircraft_Type_IATA","Hold_Name_ID","Compartment_ID","Aircraft_Series_Subtype") references "Basic_Carrier_Record"."Aircraft_Compartments"("Carrier_IATA","Aircraft_Type_IATA","Hold_Name_ID","Compartment_ID","Aircraft_Series_Subtype") on update cascade on delete cascade,
+  check("Area_ID" ~ '^[A-Z0-9]{1,3}$')
+);
+alter table "Basic_Carrier_Record"."Aircraft_Compartment_Areas" enable row level security;
+create policy perm_aircraft_select on "Basic_Carrier_Record"."Aircraft_Compartment_Areas" for select to authenticated using(private.has_carrier_permission("Carrier_IATA",'AIRCRAFT_CONFIG_VIEW') or private.has_global_permission('AIRCRAFT_CONFIG_VIEW'));
+create policy perm_aircraft_insert on "Basic_Carrier_Record"."Aircraft_Compartment_Areas" for insert to authenticated with check(private.has_carrier_permission("Carrier_IATA",'AIRCRAFT_CONFIG_EDIT') or private.has_global_permission('AIRCRAFT_CONFIG_EDIT'));
+create policy perm_aircraft_update on "Basic_Carrier_Record"."Aircraft_Compartment_Areas" for update to authenticated using(private.has_carrier_permission("Carrier_IATA",'AIRCRAFT_CONFIG_EDIT') or private.has_global_permission('AIRCRAFT_CONFIG_EDIT')) with check(private.has_carrier_permission("Carrier_IATA",'AIRCRAFT_CONFIG_EDIT') or private.has_global_permission('AIRCRAFT_CONFIG_EDIT'));
+create policy perm_aircraft_delete on "Basic_Carrier_Record"."Aircraft_Compartment_Areas" for delete to authenticated using(private.has_carrier_permission("Carrier_IATA",'AIRCRAFT_CONFIG_DELETE') or private.has_global_permission('AIRCRAFT_CONFIG_DELETE') or private.has_global_permission('AIRCRAFT_CONFIG_EDIT'));
+grant select,insert,update,delete on "Basic_Carrier_Record"."Aircraft_Compartment_Areas" to authenticated;
+
+insert into "Basic_Carrier_Record"."Aircraft_Compartments"("Carrier_IATA","Aircraft_Type_IATA","Aircraft_Series_Subtype","Hold_Name_ID","Compartment_ID","Compartment_Max_Weight","Compartment_Max_Volume","Compartment_BA_Centroid","Compartment_BA_Start","Compartment_BA_End","Compartment_Index_Per_Weight_Unit")
+select h."Carrier_IATA",h."Aircraft_Type_IATA",h."Aircraft_Series_Subtype",h."Hold_Name_ID",btrim(h."Hold_Name_ID"),h."Hold_MAX_Weight",h."Hold_MAX_Volume",h."Hold_BA_Centroid",h."Hold_BA_Start",h."Hold_BA_End",h."Hold_Index_Per_Weight_Unit"
+from "Basic_Carrier_Record"."Aircraft_Holds" h
+where not exists(select 1 from "Basic_Carrier_Record"."Aircraft_Compartments" c where c."Carrier_IATA"=h."Carrier_IATA" and c."Aircraft_Type_IATA"=h."Aircraft_Type_IATA" and c."Aircraft_Series_Subtype"=h."Aircraft_Series_Subtype" and c."Hold_Name_ID"=h."Hold_Name_ID");
+
+alter table "Basic_Carrier_Record"."Carrier_ULD_Positions" add column "Compartment_ID" varchar(3);
+update "Basic_Carrier_Record"."Carrier_ULD_Positions" set "Compartment_ID"=btrim("Hold_Name_ID") where "ULD_Row_Type"='POSITION';
+alter table "Basic_Carrier_Record"."Carrier_ULD_Positions"
+  add constraint "Carrier_ULD_Positions_Compartment_FK" foreign key("Carrier_IATA","Aircraft_Type_IATA","Hold_Name_ID","Compartment_ID","Aircraft_Series_Subtype") references "Basic_Carrier_Record"."Aircraft_Compartments"("Carrier_IATA","Aircraft_Type_IATA","Hold_Name_ID","Compartment_ID","Aircraft_Series_Subtype") on update cascade on delete restrict,
+  add constraint "Carrier_ULD_Positions_Compartment_check" check(("ULD_Row_Type"='POSITION' and "Compartment_ID" is not null) or ("ULD_Row_Type"='GROUP_LIMIT' and "Compartment_ID" is null));
+
+create or replace function "Basic_Carrier_Record".get_aircraft_d2(p_iata text,p_type_code text,p_subtype text) returns jsonb language plpgsql stable security invoker set search_path='' as $$
+declare tc text:=upper(btrim(p_type_code));st text:=upper(btrim(p_subtype));can_view boolean:=(select auth.uid()) is not null and (private.has_carrier_permission(p_iata,'AIRCRAFT_CONFIG_VIEW') or private.has_global_permission('AIRCRAFT_CONFIG_VIEW'));can_edit boolean:=private.has_carrier_permission(p_iata,'AIRCRAFT_CONFIG_EDIT') or private.has_global_permission('AIRCRAFT_CONFIG_EDIT');cfg "Basic_Carrier_Record"."Aircraft_Hold_Configuration"%rowtype;all_rows jsonb;
+begin
+if not can_view then raise exception 'Not authorised' using errcode='42501';end if;
+if not exists(select 1 from "Basic_Carrier_Record"."Basic_Aircraft_Data" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st) then raise exception 'Aircraft not found' using errcode='23503';end if;
+select * into cfg from "Basic_Carrier_Record"."Aircraft_Hold_Configuration" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st;
+select coalesce(jsonb_agg(jsonb_build_object('name',btrim(h."Hold_Name_ID"),'holdType',btrim(h."Hold_Type"),'deckCode',h."Hold_Deck_Location",'maxWeight',h."Hold_MAX_Weight",'maxVolume',h."Hold_MAX_Volume",'lateralCentroid',h."Hold_LA_Centroid",'lateralFrom',h."Hold_LA_Start",'lateralTo',h."Hold_LA_End",'balanceCentroid',h."Hold_BA_Centroid",'balanceFrom',h."Hold_BA_Start",'balanceTo',h."Hold_BA_End",'indexPerWeightUnit',h."Hold_Index_Per_Weight_Unit",'compartments',coalesce((select jsonb_agg(jsonb_build_object('id',btrim(c."Compartment_ID"),'areas',coalesce((select jsonb_agg(btrim(a."Area_ID") order by btrim(a."Area_ID")) from "Basic_Carrier_Record"."Aircraft_Compartment_Areas" a where a."Carrier_IATA"=c."Carrier_IATA" and a."Aircraft_Type_IATA"=c."Aircraft_Type_IATA" and a."Aircraft_Series_Subtype"=c."Aircraft_Series_Subtype" and a."Hold_Name_ID"=c."Hold_Name_ID" and a."Compartment_ID"=c."Compartment_ID"),'[]'::jsonb)) order by btrim(c."Compartment_ID")) from "Basic_Carrier_Record"."Aircraft_Compartments" c where c."Carrier_IATA"=h."Carrier_IATA" and c."Aircraft_Type_IATA"=h."Aircraft_Type_IATA" and c."Aircraft_Series_Subtype"=h."Aircraft_Series_Subtype" and c."Hold_Name_ID"=h."Hold_Name_ID"),'[]'::jsonb)) order by btrim(h."Hold_Type"),btrim(h."Hold_Name_ID")),'[]'::jsonb) into all_rows from "Basic_Carrier_Record"."Aircraft_Holds" h where h."Carrier_IATA"=p_iata and h."Aircraft_Type_IATA"=tc and h."Aircraft_Series_Subtype"=st;
+return jsonb_build_object('canView',can_view,'canEdit',can_edit,'revision',md5(jsonb_build_object('bulkApplicable',cfg."Bulk_Holds_Applicable",'uldApplicable',cfg."ULD_Holds_Applicable",'rows',all_rows)::text),'typeCode',tc,'subtype',st,'bulkApplicable',cfg."Bulk_Holds_Applicable",'uldApplicable',cfg."ULD_Holds_Applicable",'bulkBalanceLimitsRequired',false,'uldBalanceLimitsRequired',false,'rows',all_rows,'deckTypes',coalesce((select jsonb_agg(jsonb_build_object('code',d."Deck_Code",'name',d."Deck_Display_Name") order by d."Deck_Display_Name") from "Basic_Carrier_Record"."MASTER_Deck_Types" d where d."Deck_Category"='Deadload'),'[]'::jsonb));
+end$$;
+
+create or replace function "Basic_Carrier_Record".save_aircraft_d2(p_iata text,p_type_code text,p_subtype text,p_revision text,p_section text,p_values jsonb) returns jsonb language plpgsql security invoker set search_path='' as $$
+declare tc text:=upper(btrim(p_type_code));st text:=upper(btrim(p_subtype));section_code text:=upper(btrim(p_section));hold_type_code text;applicable boolean;rows_data jsonb;current_data jsonb;item jsonb;comp jsonb;area jsonb;hold_name text;deck_code text;compartment_id text;max_weight integer;max_volume double precision;balance_centroid double precision;balance_from double precision;balance_to double precision;index_value double precision;
+begin
+if not(private.has_carrier_permission(p_iata,'AIRCRAFT_CONFIG_EDIT') or private.has_global_permission('AIRCRAFT_CONFIG_EDIT')) then raise exception 'Not authorised' using errcode='42501';end if;
+if section_code not in('BULK','ULD') or p_values is null or jsonb_typeof(p_values->'rows')<>'array' or jsonb_typeof(p_values->'applicable')<>'boolean' then raise exception 'Invalid D2 values' using errcode='22023';end if;
+perform 1 from "Basic_Carrier_Record"."Basic_Aircraft_Data" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st for update;if not found then raise exception 'Aircraft not found' using errcode='23503';end if;
+current_data:="Basic_Carrier_Record".get_aircraft_d2(p_iata,tc,st);if p_revision is distinct from current_data->>'revision' then raise exception 'Aircraft D2 changed' using errcode='40001';end if;
+applicable:=(p_values->>'applicable')::boolean;rows_data:=p_values->'rows';hold_type_code:=case section_code when 'BULK' then 'BLK' else 'ULD' end;
+if (not applicable and jsonb_array_length(rows_data)<>0) or (applicable and jsonb_array_length(rows_data)=0) then raise exception 'Check applicable D2 rows' using errcode='22023';end if;
+insert into "Basic_Carrier_Record"."Aircraft_Hold_Configuration"("Carrier_IATA","Aircraft_Type_IATA","Aircraft_Series_Subtype","Bulk_Holds_Applicable","ULD_Holds_Applicable","Bulk_Balance_Limits_Required","ULD_Balance_Limits_Required","Updated_At") values(p_iata,tc,st,case when section_code='BULK' then applicable end,case when section_code='ULD' then applicable end,false,false,now()) on conflict("Carrier_IATA","Aircraft_Type_IATA","Aircraft_Series_Subtype") do update set "Bulk_Holds_Applicable"=case when section_code='BULK' then applicable else "Aircraft_Hold_Configuration"."Bulk_Holds_Applicable" end,"ULD_Holds_Applicable"=case when section_code='ULD' then applicable else "Aircraft_Hold_Configuration"."ULD_Holds_Applicable" end,"Updated_At"=now();
+for hold_name in select btrim(h."Hold_Name_ID") from "Basic_Carrier_Record"."Aircraft_Holds" h where h."Carrier_IATA"=p_iata and h."Aircraft_Type_IATA"=tc and h."Aircraft_Series_Subtype"=st and btrim(h."Hold_Type")=hold_type_code and not exists(select 1 from jsonb_array_elements(rows_data) r where upper(btrim(r->>'name'))=btrim(h."Hold_Name_ID")) loop
+ delete from "Basic_Carrier_Record"."Carrier_ULD_Position_Configurations" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st and "Hold_Name_ID"=hold_name;
+ delete from "Basic_Carrier_Record"."Aircraft_Compartment_Areas" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st and "Hold_Name_ID"=hold_name;
+ delete from "Basic_Carrier_Record"."Aircraft_Compartments" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st and "Hold_Name_ID"=hold_name;
+ delete from "Basic_Carrier_Record"."Aircraft_Holds" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st and "Hold_Name_ID"=hold_name;
+end loop;
+for item in select value from jsonb_array_elements(rows_data) loop
+ hold_name:=upper(btrim(item->>'name'));deck_code:=upper(btrim(item->>'deckCode'));max_weight:=(item->>'maxWeight')::integer;max_volume:=(item->>'maxVolume')::double precision;index_value:=(item->>'indexPerWeightUnit')::double precision;balance_centroid:=nullif(item->>'balanceCentroid','')::double precision;balance_from:=nullif(item->>'balanceFrom','')::double precision;balance_to:=nullif(item->>'balanceTo','')::double precision;
+ if hold_name !~ '^[A-Z0-9]$' or max_weight<=0 or max_volume<=0 or index_value is null or (balance_from is null)<>(balance_to is null) or (balance_from is not null and (balance_from>balance_to or (balance_centroid is not null and balance_centroid not between balance_from and balance_to))) then raise exception 'Invalid hold values' using errcode='22023';end if;
+ insert into "Basic_Carrier_Record"."Aircraft_Holds"("Carrier_IATA","Aircraft_Type_IATA","Aircraft_Series_Subtype","Hold_Name_ID","Hold_MAX_Weight","Hold_MAX_Volume","Hold_BA_Centroid","Hold_BA_Start","Hold_BA_End","Hold_Index_Per_Weight_Unit","Hold_Type","Hold_Deck_Location") values(p_iata,tc,st,hold_name,max_weight,max_volume,balance_centroid,balance_from,balance_to,index_value,hold_type_code,deck_code) on conflict("Carrier_IATA","Aircraft_Type_IATA","Hold_Name_ID","Aircraft_Series_Subtype") do update set "Hold_MAX_Weight"=excluded."Hold_MAX_Weight","Hold_MAX_Volume"=excluded."Hold_MAX_Volume","Hold_BA_Centroid"=excluded."Hold_BA_Centroid","Hold_BA_Start"=excluded."Hold_BA_Start","Hold_BA_End"=excluded."Hold_BA_End","Hold_Index_Per_Weight_Unit"=excluded."Hold_Index_Per_Weight_Unit","Hold_Type"=excluded."Hold_Type","Hold_Deck_Location"=excluded."Hold_Deck_Location";
+ if jsonb_typeof(item->'compartments')<>'array' then raise exception 'Invalid compartments' using errcode='22023';end if;
+ for comp in select value from jsonb_array_elements(item->'compartments') loop
+  compartment_id:=upper(btrim(comp->>'id'));if compartment_id !~ '^[A-Z0-9]{1,3}$' or jsonb_typeof(comp->'areas')<>'array' then raise exception 'Invalid compartment' using errcode='22023';end if;
+  insert into "Basic_Carrier_Record"."Aircraft_Compartments"("Carrier_IATA","Aircraft_Type_IATA","Aircraft_Series_Subtype","Hold_Name_ID","Compartment_ID","Compartment_Max_Weight","Compartment_Max_Volume","Compartment_BA_Centroid","Compartment_BA_Start","Compartment_BA_End","Compartment_Index_Per_Weight_Unit") values(p_iata,tc,st,hold_name,compartment_id,max_weight,max_volume,balance_centroid,balance_from,balance_to,index_value) on conflict("Carrier_IATA","Aircraft_Type_IATA","Compartment_ID","Hold_Name_ID","Aircraft_Series_Subtype") do update set "Compartment_Max_Weight"=excluded."Compartment_Max_Weight","Compartment_Max_Volume"=excluded."Compartment_Max_Volume","Compartment_BA_Centroid"=excluded."Compartment_BA_Centroid","Compartment_BA_Start"=excluded."Compartment_BA_Start","Compartment_BA_End"=excluded."Compartment_BA_End","Compartment_Index_Per_Weight_Unit"=excluded."Compartment_Index_Per_Weight_Unit";
+  delete from "Basic_Carrier_Record"."Aircraft_Compartment_Areas" where "Carrier_IATA"=p_iata and "Aircraft_Type_IATA"=tc and "Aircraft_Series_Subtype"=st and "Hold_Name_ID"=hold_name and "Compartment_ID"=compartment_id;
+  if section_code='ULD' and jsonb_array_length(comp->'areas')>0 then raise exception 'ULD compartments cannot contain Areas' using errcode='22023';end if;
+  for area in select value from jsonb_array_elements(comp->'areas') loop if btrim(area#>>'{}') !~ '^[A-Z0-9]{1,3}$' then raise exception 'Invalid area' using errcode='22023';end if;insert into "Basic_Carrier_Record"."Aircraft_Compartment_Areas" values(p_iata,tc,st,hold_name,compartment_id,upper(btrim(area#>>'{}')));end loop;
+ end loop;
+ delete from "Basic_Carrier_Record"."Aircraft_Compartments" c where c."Carrier_IATA"=p_iata and c."Aircraft_Type_IATA"=tc and c."Aircraft_Series_Subtype"=st and c."Hold_Name_ID"=hold_name and not exists(select 1 from jsonb_array_elements(item->'compartments') x where upper(btrim(x->>'id'))=btrim(c."Compartment_ID"));
+end loop;
+return "Basic_Carrier_Record".get_aircraft_d2(p_iata,tc,st);end$$;
+
+notify pgrst,'reload schema';
+commit;

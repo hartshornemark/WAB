@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";import{aircraftH1Services}from"@/composition/services";import{aircraftH1Status}from"@/domain/aircraft-h1-status";
+export async function GET(_request:Request,{params}:{params:Promise<{iata:string;typeCode:string;subtype:string}>}){try{const{iata,typeCode,subtype}=await params,s=await(await aircraftH1Services()).get(iata,typeCode,subtype);return NextResponse.json({status:aircraftH1Status(s)})}catch{return NextResponse.json({status:"incomplete"},{status:503})}}

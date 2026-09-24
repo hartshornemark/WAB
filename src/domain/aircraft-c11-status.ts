@@ -1,0 +1,2 @@
+import type{AircraftC11Snapshot}from"@/domain/aircraft-c11";import type{ConfigurationStatus}from"@/domain/configuration-status";
+export function aircraftC11Status(s:AircraftC11Snapshot):ConfigurationStatus{if(!s.exists)return"incomplete";const v=s.values,a=[v.macFwdLimit,v.macAftLimit,v.stabMaxValue,v.stabMinValue,v.variationFwd,v.variationAft];return a.every(Number.isFinite)&&v.macFwdLimit<=v.variationFwd&&v.variationFwd<v.variationAft&&v.variationAft<=v.macAftLimit?"configured":"partial"}

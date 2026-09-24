@@ -1,0 +1,9 @@
+import {AuthenticationRequired,CarrierUnavailable} from "@/domain/models";
+import {UldDenied,UldConflict,UldInvalid,validateUlds} from "@/domain/uld-specifications";
+import type {AuthService} from "@/ports/auth-service";
+import type {CarrierRepository} from "@/ports/carrier-repository";
+import type {UldRepository} from "@/ports/uld-repository";
+export function createUldSpecifications(auth:AuthService,carriers:CarrierRepository,repository:UldRepository){
+ async function check(iata:string){if(!await auth.currentUser())throw new AuthenticationRequired();if(!iata||iata.length>32||!await carriers.findAuthorised(iata))throw new CarrierUnavailable();}
+ return {async get(iata:string,typeCode:string,subtype:string){await check(iata);return repository.get(iata,typeCode,subtype);},async save(iata:string,typeCode:string,subtype:string,revision:string,input:unknown){await check(iata);const current=await repository.get(iata,typeCode,subtype);if(!current.canEdit)throw new UldDenied();if(current.revision!==revision)throw new UldConflict();if(!current.utilisesUlds)throw new UldInvalid("Select that this Aircraft Type Can Accept Unit Load Devices first.");if(!current.weightUnit||!current.volumeUnit)throw new UldInvalid("Save Weight and Volume Units on B1 first.");const rows=validateUlds(input,current);if(rows.length===0)throw new UldInvalid("Configure at least one ULD Type while this page applies.");return repository.save(iata,typeCode,subtype,revision,rows);},async saveApplicability(iata:string,typeCode:string,subtype:string,revision:string,utilisesUlds:boolean){await check(iata);const current=await repository.get(iata,typeCode,subtype);if(!current.canEdit)throw new UldDenied();if(current.revision!==revision)throw new UldConflict();return repository.saveApplicability(iata,typeCode,subtype,revision,utilisesUlds);}};
+}

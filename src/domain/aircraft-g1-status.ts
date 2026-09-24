@@ -1,0 +1,3 @@
+import type{DisplayConfigurationStatus}from"@/domain/configuration-status";import type{AircraftG1Snapshot}from"@/domain/aircraft-g1";
+export function aircraftG1Status(s:AircraftG1Snapshot):DisplayConfigurationStatus{if(s.applicable===false)return"not_required";if(s.applicable===null||!s.bays.length||!s.uldTypes.length)return"incomplete";const expected=s.bays.length*s.uldTypes.length,answered=s.rows.filter(r=>typeof r.compatible==="boolean").length;if(answered===expected)return"configured";return answered?"partial":"incomplete"}
+export function aircraftG1DashboardStatus(s:AircraftG1Snapshot|null,d2UldApplicable:boolean|null|undefined):DisplayConfigurationStatus{if(d2UldApplicable===false)return"not_required";return s?aircraftG1Status(s):"incomplete"}

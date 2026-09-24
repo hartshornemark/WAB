@@ -1,0 +1,1 @@
+import type{AircraftE5Snapshot,E5Approach,E5Row}from"@/domain/aircraft-e5";export interface AircraftE5Repository{get(i:string,t:string,s:string):Promise<AircraftE5Snapshot>;saveApproach(i:string,t:string,s:string,r:string,a:E5Approach):Promise<AircraftE5Snapshot>;saveRows(i:string,t:string,s:string,r:string,v:E5Row[]):Promise<AircraftE5Snapshot>}

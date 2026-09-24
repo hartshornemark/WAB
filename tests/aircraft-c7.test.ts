@@ -1,0 +1,12 @@
+import test from"node:test";import assert from"node:assert/strict";import{calculateAircraftC7Point,trimAircraftC7LineToMaximum,validateAircraftC7Section}from"../src/domain/aircraft-c7";
+test("sorts C7 points and accepts Index or MAC",()=>{const result=validateAircraftC7Section({enabled:true,points:[{weight:50000,indexValue:null,macValue:25},{weight:35000,indexValue:51,macValue:null}]},"idealTrim",70000);assert.deepEqual(result.points.map(row=>row.weight),[35000,50000])});
+test("allows an enabled section to be saved before its first point",()=>assert.deepEqual(validateAircraftC7Section({enabled:true,points:[]},"tippingLimits",70000),{enabled:true,points:[]}));
+test("retains points when a section is disabled",()=>assert.equal(validateAircraftC7Section({enabled:false,points:[{weight:35000,indexValue:51,macValue:null}]},"idealTrim",70000).points.length,1));
+test("rejects duplicate weights",()=>assert.throws(()=>validateAircraftC7Section({enabled:true,points:[{weight:35000,indexValue:1,macValue:null},{weight:35000,indexValue:2,macValue:null}]},"idealTrim",70000),/only once/));
+test("rejects weights above MRW",()=>assert.throws(()=>validateAircraftC7Section({enabled:true,points:[{weight:70001,indexValue:1,macValue:null}]},"idealTrim",70000),/MRW/));
+test("requires either Index or MAC",()=>assert.throws(()=>validateAircraftC7Section({enabled:true,points:[{weight:35000,indexValue:null,macValue:null}]},"idealTrim",70000),/Index or/));
+const formula={datum:0,referenceArm:18.85,constantK:50,constantC:838.7,macRcLength:4.1935,lemacLerc:17.8};
+test("retains a decimal Index and calculates MAC",()=>{const point=calculateAircraftC7Point({weight:50000,indexValue:62.58,macValue:null},"INDEX",formula);assert.equal(point.indexValue,62.58);assert.equal(point.macValue,30.07075)});
+test("calculates Index from MAC",()=>{const point=calculateAircraftC7Point({weight:50000,indexValue:null,macValue:30.07075},"MAC",formula);assert.ok(Math.abs((point.indexValue??0)-62.58)<0.00001)});
+test("trims an Ideal Trim line at an individual envelope maximum",()=>{const points=trimAircraftC7LineToMaximum([{weight:40000,indexValue:50},{weight:60000,indexValue:70},{weight:80000,indexValue:90}],70000);assert.deepEqual(points,[{weight:40000,indexValue:50},{weight:60000,indexValue:70},{weight:70000,indexValue:80}])});
+test("retains the complete Ideal Trim line when the maximum is above it",()=>{const points=[{weight:40000,indexValue:50},{weight:60000,indexValue:70}];assert.deepEqual(trimAircraftC7LineToMaximum(points,70000),points)});

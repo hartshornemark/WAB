@@ -1,0 +1,8 @@
+import type{DisplayConfigurationStatus}from"@/domain/configuration-status";import type{AircraftH1Snapshot,H1ExceptionRow,H1SpecialLoadRow}from"@/domain/aircraft-h1";
+const exceptionComplete=(r:H1ExceptionRow)=>!!r.code&&!!r.incompatibleWith&&r.code!==r.incompatibleWith;
+const loadComplete=(r:H1SpecialLoadRow)=>!!r.holdId&&!!r.code&&Number.isInteger(r.maximumQuantity)&&Number(r.maximumQuantity)>=0;
+const rowStatus=<T,>(active:boolean,rows:T[],complete:(r:T)=>boolean):DisplayConfigurationStatus=>!active?"not_active":rows.length&&rows.every(complete)?"configured":rows.length?"partial":"incomplete";
+export const h1DgrStatus=(s:AircraftH1Snapshot)=>!s.dgrActive?"not_active" as const:!s.applicabilityReviewed?"incomplete" as const:rowStatus(true,s.dgrRows,exceptionComplete);
+export const h1IataStatus=(s:AircraftH1Snapshot)=>!s.iataActive?"not_active" as const:!s.applicabilityReviewed?"incomplete" as const:rowStatus(true,s.iataRows,exceptionComplete);
+export const h1SpecialLoadsStatus=(s:AircraftH1Snapshot)=>!s.specialLoadsActive?"not_active" as const:!s.applicabilityReviewed?"incomplete" as const:rowStatus(true,s.specialLoadRows,loadComplete);
+export function aircraftH1Status(s:AircraftH1Snapshot):DisplayConfigurationStatus{if(!s.applicabilityReviewed)return"incomplete";const active=[s.dgrActive?h1DgrStatus(s):null,s.iataActive?h1IataStatus(s):null,s.specialLoadsActive?h1SpecialLoadsStatus(s):null].filter(Boolean) as DisplayConfigurationStatus[];if(!active.length||active.every(x=>x==="configured"))return"configured";if(active.every(x=>x==="incomplete"))return"incomplete";return"partial"}

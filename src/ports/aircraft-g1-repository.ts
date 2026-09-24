@@ -1,0 +1,2 @@
+import type{AircraftG1Snapshot,G1CompatibilityRow}from"@/domain/aircraft-g1";
+export interface AircraftG1Repository{get(iata:string,typeCode:string,subtype:string):Promise<AircraftG1Snapshot>;save(iata:string,typeCode:string,subtype:string,revision:string,rows:G1CompatibilityRow[]):Promise<AircraftG1Snapshot>}

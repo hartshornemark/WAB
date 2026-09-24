@@ -1,0 +1,3 @@
+import type{DisplayConfigurationStatus}from"@/domain/configuration-status";import type{AircraftF1Snapshot,F1WeightRow}from"@/domain/aircraft-f1";
+export const f1WeightRowComplete=(r:F1WeightRow)=>Boolean(r.persisted&&r.tableName&&r.variantCode&&(r.tableName==="ALL"||r.registration)&&r.zeroFuelWeight&&r.landingWeight&&r.takeOffWeight&&r.rampTaxiWeight&&r.zeroFuelWeight<=r.landingWeight&&r.landingWeight<=r.takeOffWeight&&r.takeOffWeight<=r.rampTaxiWeight);
+export function aircraftF1Status(s:AircraftF1Snapshot):DisplayConfigurationStatus{const saved=s.rows.filter(r=>r.persisted);if(!saved.length)return"incomplete";return saved.every(f1WeightRowComplete)?"configured":"partial"}
