@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { A319_LAYOUT, A320_LAYOUT, buildHoldLayout, holdLayoutUnavailable, holdLayoutX } from "../src/domain/hold-layout";
 import type { AircraftD2Snapshot, AircraftD2HoldRow } from "../src/domain/aircraft-d2";
 import type { AircraftD4Snapshot } from "../src/domain/aircraft-d4";
@@ -11,6 +14,20 @@ test("D2 configured and D4 incomplete produces holds only",()=>{const layout=bui
 test("aircraft hold overlays remain centred on their calibrated fuselage",()=>{
   assert.equal(A319_LAYOUT.holdY+A319_LAYOUT.holdHeight/2,A319_LAYOUT.centreY);
   assert.equal(A320_LAYOUT.holdY+A320_LAYOUT.holdHeight/2,A320_LAYOUT.centreY);
+});
+test("aircraft vector assets and image frames require an explicit calibration review when changed",()=>{
+  const assetHash=(name:string)=>createHash("sha256").update(readFileSync(join(process.cwd(),"src/assets/aircraft-layouts",name))).digest("hex");
+  // These vectors, their crops and the image frame form one coordinate system.
+  // A changed hash is intentional friction: review the rendered overlay, then
+  // update this contract together with the aircraft calibration.
+  assert.equal(assetHash("a319-100-fuselage.svg"),"1800f1d814208e34c17d7ad7a91cc4abdd7f18f8251ae91ad8ef6ab1e1cdb4d6");
+  assert.equal(assetHash("a320-200-fuselage.svg"),"f5de949b13d92da8bcf889a0644390edde83e33a1ed35146279e51b19e47e0f7");
+  assert.deepEqual(A319_LAYOUT.imageFrame,{x:102,y:327.25,width:236,height:72});
+  assert.deepEqual(A320_LAYOUT.imageFrame,{x:102,y:327.25,width:236,height:72});
+  assert.deepEqual(
+    [A319_LAYOUT.tailX,A319_LAYOUT.span,A319_LAYOUT.centreY,A319_LAYOUT.holdY,A319_LAYOUT.holdHeight],
+    [330.3,192.9,363,352,22],
+  );
 });
 test("configured D4 adds current saved doors and correct datum positions",()=>{const layout=buildHoldLayout(d2(),d4());assert.equal(layout.doorsIncluded,true);assert.equal(layout.doors[0].x,holdLayoutX(26.240));assert.ok(Math.abs(layout.holds[0].width-(27.270-24.028)*A319_LAYOUT.span/A319_LAYOUT.length)<1e-8);assert.equal(holdLayoutX(A319_LAYOUT.noseArm),A319_LAYOUT.tailX)});
 test("partial D4 never leaks doors missing required data into the diagram",()=>{const snap=d4();snap.doors[0].orientation=null;assert.deepEqual(buildHoldLayout(d2(),snap).doors,[])});

@@ -9,6 +9,7 @@ import { balanceArmFromIndexPerWeightUnit, validIndexPerWeightUnitFormula } from
 export type AircraftLayoutCalibration = {
   typeCode: string; subtype: string; length: number; noseArm: number;
   tailX: number; span: number; centreY: number; asset: string;
+  imageFrame: Readonly<{ x: number; y: number; width: number; height: number }>;
   cropLeft: number; cropRight: number; holdY: number; holdHeight: number;
   leftDoorY: number; rightDoorY: number; labelCharWidth: number;
   holdArmOffsets?: Readonly<Record<string, number>>;
@@ -23,6 +24,7 @@ export const A319_LAYOUT = {
   // The Airbus plan occupies x=137.4..330.3 after the engine-bounded crop.
   tailX: 330.3, span: 192.9, centreY: 363,
   asset: "/aircraft-layouts/a319-100-fuselage",
+  imageFrame: { x: 102, y: 327.25, width: 236, height: 72 },
   cropLeft: 102, cropRight: 338,
   holdY: 352, holdHeight: 22, leftDoorY: 347, rightDoorY: 377,
   labelCharWidth: 0.58,
@@ -32,6 +34,7 @@ export const A320_LAYOUT = {
   // The Airbus plan occupies x=123.5..337.8 after the engine-bounded crop.
   tailX: 337.8, span: 214.3, centreY: 359.5,
   asset: "/aircraft-layouts/a320-200-fuselage",
+  imageFrame: { x: 102, y: 327.25, width: 236, height: 72 },
   cropLeft: 102, cropRight: 338,
   holdY: 348.5, holdHeight: 22, leftDoorY: 344, rightDoorY: 374,
   labelCharWidth: 0.58,

@@ -37,8 +37,9 @@ function HoldDiagram({ layout, deckCode }: { layout: HoldLayout; deckCode: strin
   const viewWidth = 236, viewHeight = 72;
   const viewX = aircraft.tailX - aircraft.span / 2 - viewWidth / 2;
   const viewY = aircraft.centreY - viewHeight / 2;
+  const image = aircraft.imageFrame;
   return <svg className="hold-layout-svg" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
-    <image href={aircraft.asset} x="102" y="327.25" width="236" height="72"/>
+    <image href={aircraft.asset} x={image.x} y={image.y} width={image.width} height={image.height}/>
     {holds.map(hold => {
       return <g key={hold.name}><title>Hold {hold.name}; Balance Arm {hold.balanceFrom!.toFixed(3)}–{hold.balanceTo!.toFixed(3)} m</title>
         <rect x={hold.x} y={aircraft.holdY} width={hold.width} height={aircraft.holdHeight} rx={Math.min(6.2, aircraft.holdHeight/4)} fill="none" stroke="#939393" strokeWidth="0.32"/>
