@@ -9,7 +9,7 @@ import type { AircraftD4Snapshot } from "../src/domain/aircraft-d4";
 import type { AircraftD3Snapshot } from "../src/domain/aircraft-d3";
 const hold: AircraftD2HoldRow = { name:"5",holdType:"BLK",deckCode:"LOWER",maxWeight:1497,maxVolume:7.22,balanceCentroid:24.649,balanceFrom:24.028,balanceTo:27.270,indexPerWeightUnit:0.00840,lateralCentroid:null,lateralFrom:null,lateralTo:null,compartments:[] };
 const d2 = (patch:Partial<AircraftD2Snapshot>={}):AircraftD2Snapshot => ({canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",bulkApplicable:true,uldApplicable:false,bulkBalanceLimitsRequired:true,uldBalanceLimitsRequired:true,rows:[hold],deckTypes:[{code:"LOWER",name:"Lower Deck"}],...patch});
-const d4 = (patch:Partial<AircraftD4Snapshot>={}):AircraftD4Snapshot => ({canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",doors:[{holdId:"5",holdType:"BLK",deckName:"Lower Deck",forwardArm:25.287,aftArm:26.240,height:.773,orientation:"R"}],...patch});
+const d4 = (patch:Partial<AircraftD4Snapshot>={}):AircraftD4Snapshot => ({canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",doorsActive:true,locksActive:false,missingRestraintsActive:false,doors:[{holdId:"5",holdType:"BLK",deckName:"Lower Deck",forwardArm:25.287,aftArm:26.240,height:.773,orientation:"R"}],...patch});
 test("D2 configured and D4 incomplete produces holds only",()=>{const layout=buildHoldLayout(d2(),d4({doors:[]}));assert.equal(layout.doorsIncluded,false);assert.equal(layout.doors.length,0);assert.equal(layout.holds.length,1)});
 test("aircraft hold overlays remain centred on their calibrated fuselage",()=>{
   assert.equal(A319_LAYOUT.holdY+A319_LAYOUT.holdHeight/2,A319_LAYOUT.centreY);

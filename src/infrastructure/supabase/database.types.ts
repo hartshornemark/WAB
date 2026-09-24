@@ -79,6 +79,7 @@ export type Database = {
       delete_aircraft_d3_configuration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_hold_id:string;p_code:string};Returns:Json};
       get_aircraft_d4:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d4:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_doors:Json};Returns:Json};
+      save_aircraft_d4_applicability:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_section:string;p_active:boolean};Returns:Json};
       get_aircraft_d5:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d5:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_section:string;p_rows:Json};Returns:Json};
       get_aircraft_d6:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};

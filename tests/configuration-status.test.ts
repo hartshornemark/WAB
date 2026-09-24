@@ -5,6 +5,7 @@ const complete=():AircraftC5Values=>({curtailed:false,inputMode:"INDEX",effectiv
 
 test("uses the approved exact uppercase status labels",()=>assert.deepEqual([configurationStatusLabels.incomplete,configurationStatusLabels.partial,configurationStatusLabels.configured],["INCOMPLETE","PARTIALLY CONFIGURED","CONFIGURED"]));
 test("uses the concise neutral status labels",()=>assert.deepEqual([configurationStatusLabels.skipped,configurationStatusLabels.unsupported,configurationStatusLabels.out_of_scope],["SKIPPED","UNSUPPORTED","OUT OF SCOPE"]));
+test("labels an unselected optional page",()=>assert.equal(configurationStatusLabels.optional,"OPTIONAL"));
 test("aggregates only all-green pages as configured",()=>{assert.equal(aggregateConfigurationStatuses(["configured","configured"]),"configured");assert.equal(aggregateConfigurationStatuses(["incomplete","incomplete"]),"incomplete");assert.equal(aggregateConfigurationStatuses(["configured","incomplete"]),"partial")});
 test("marks a complete C5.1 page and every visible section configured",()=>assert.deepEqual(aircraftC5Statuses(complete()),{status:"configured",tow:"configured",law:"configured",zfw:"configured",page:"configured"}));
 test("marks C5.1 partial when an envelope is incomplete",()=>{const value=complete();value.envelopes.law.aft.pop();const statuses=aircraftC5Statuses(value);assert.equal(statuses.law,"partial");assert.equal(statuses.page,"partial")});

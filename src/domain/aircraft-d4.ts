@@ -1,6 +1,6 @@
 export type DoorOrientation="L"|"R"|"C";
 export type AircraftD4Door={holdId:string;holdType:string;deckName:string;forwardArm:number|null;aftArm:number|null;height:number|null;orientation:DoorOrientation|null};
-export type AircraftD4Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;doors:AircraftD4Door[]};
+export type AircraftD4Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;doorsActive:boolean;locksActive:boolean;missingRestraintsActive:boolean;doors:AircraftD4Door[]};
 export class AircraftD4Invalid extends Error{} export class AircraftD4Denied extends Error{} export class AircraftD4Conflict extends Error{}
 const finite=(value:unknown,label:string,positive=false)=>{const n=typeof value==="number"?value:Number(value);if(value===null||value===""||typeof value==="boolean"||!Number.isFinite(n)||Math.abs(n)>1e9||(positive&&n<=0))throw new AircraftD4Invalid(`Enter a valid ${label}.`);return n};
 const optionalPositive=(value:unknown,label:string)=>value===null||value===""?null:finite(value,label,true);
