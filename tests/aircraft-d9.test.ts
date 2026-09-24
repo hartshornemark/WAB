@@ -85,6 +85,14 @@ test("D9 calculates Total Seats and Balance Arm Centroid", () => {
   assert.deepEqual(result.rows.map((value) => value.centroid), [12.25, 18.25]);
 });
 
+test("D9 preserves configuration codes containing up to three letters or numbers", () => {
+  assert.equal(validateD9Configuration({ ...configuration, code: "y10" }, areas, classes, formula).code, "Y10");
+  assert.throws(
+    () => validateD9Configuration({ ...configuration, code: "Y100" }, areas, classes, formula),
+    AircraftD9Invalid,
+  );
+});
+
 test("D9 suggests its description from class codes and configuration-wide seat totals", () => {
   assert.equal(suggestD9Description(configuration.rows, classes), "C28");
   const oneClass: D9Class[] = [

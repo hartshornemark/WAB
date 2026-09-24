@@ -71,7 +71,7 @@ export function validateD9Configuration(value:unknown, areas:D9CabinArea[], clas
   const configuration = value as Partial<D9Configuration>;
   const code = String(configuration.code ?? "").trim().toUpperCase();
   const activeSlots = new Set(classes.filter(carrierClass => carrierClass.code && carrierClass.name).map(carrierClass => carrierClass.slot));
-  if (!/^[A-Z0-9]$/.test(code)) throw new AircraftD9Invalid("Configuration Code must be one letter or number.");
+  if (!/^[A-Z0-9]{1,3}$/.test(code)) throw new AircraftD9Invalid("Configuration Code must contain 1–3 letters or numbers.");
   if (!activeSlots.size) throw new AircraftD9Invalid("Configure at least one carrier class before D9.");
   if (!validIndexPerWeightUnitFormula(formula)) throw new AircraftD9Invalid("Configure C4 before calculating Balance Arm Centroid.");
   if (!Array.isArray(configuration.rows)) throw new AircraftD9Invalid("Check the Cabin Area rows.");
