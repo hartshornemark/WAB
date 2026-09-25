@@ -560,3 +560,12 @@
 
 .b4-operation-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;border:0;padding:0;margin:1rem 0 0}.b4-operation-options label{display:flex;align-items:flex-start;gap:.75rem;padding:1rem;border:1px solid var(--border,#cbd8ee);border-radius:12px;cursor:pointer}.b4-operation-options label.selected{background:#eef4ff;border-color:#3e6fc6}.b4-operation-options input{margin-top:.2rem}.b4-operation-options span{display:grid;gap:.35rem}.b4-operation-options small{color:var(--muted,#52698c);line-height:1.4}@media(max-width:760px){.b4-operation-options{grid-template-columns:1fr}}
 .c1-operating-role{margin-top:20px;padding:18px;border:1px solid var(--line);border-radius:14px}.c1-operating-role legend{font-weight:800;color:var(--navy);padding:0 8px}.c1-operating-role small{display:block;margin-top:10px;color:var(--muted)}
+
+/* Shared save feedback: colour is supplemented by text and an activity indicator. */
+.save-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:18px}
+.save-actions>.save-action,.save-actions>.save-exit{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:150px;height:48px;white-space:nowrap;font-weight:800}
+.save-actions>.save-action--saving,.save-actions>.save-action--saving:disabled{background:#ABD4B8;border-color:#ABD4B8;color:#183B26;opacity:1;cursor:wait}
+.save-actions>.save-action--saved,.save-actions>.save-action--saved:disabled{background:#2F6E46;border-color:#2F6E46;color:#fff;opacity:1;cursor:default}
+.save-spinner{width:14px;height:14px;position:absolute;left:10px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:save-spin .8s linear infinite}
+@keyframes save-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.save-spinner{animation:none}}

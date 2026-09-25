@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useState,useTransition } from "react";
+import { useRef,useState,useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { SectionHeader } from "@/components/section-header";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
+import { SaveActions } from "@/components/save-actions";
 import { PageHelp } from "@/components/page-help";
 import { saveBaggage,saveBaggageOperationMode,saveBaggageVariationMethod } from "@/app/baggage-actions";
 import { categories,defaultPlanningRecord,newBaggageRecord,pieceFields,validateBaggage,type BaggageRecord,type BaggageSection,type BaggageSnapshot,type BaggageVariationMethod } from "@/domain/baggage-weights";
@@ -15,10 +16,12 @@ export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;i
  const weightUnit=displayUnit(saved.unit);
  const volumeUnit=saved.volumeUnit==="m3"?"m³":saved.volumeUnit==="ft3"?"ft³":saved.volumeUnit;
  const router=useRouter();const [editing,setEditing]=useState<{section:BaggageSection;row:BaggageRecord}|null>(null);
+ const [saveComplete,setSaveComplete]=useState(false);
+ const saveInFlight=useRef(false);
  const [openVariation,setOpenVariation]=useState<string|null>(null);
  const [error,setError]=useState("");const [message,setMessage]=useState("");const [pending,startTransition]=useTransition();
  const completion=b4Statuses(saved);const suggestedPlanning=defaultPlanningRecord(saved);
- function begin(section:BaggageSection,row?:BaggageRecord){const next=row?structuredClone(row):newBaggageRecord(section);if(section==="defaults")next.values.method="STANDARD";setEditing({section,row:next});setError("");setMessage("");}
+ function begin(section:BaggageSection,row?:BaggageRecord){setSaveComplete(false);const next=row?structuredClone(row):newBaggageRecord(section);if(section==="defaults")next.values.method="STANDARD";setEditing({section,row:next});setError("");setMessage("");}
  function beginVariation(code:string){const row=newBaggageRecord("weights");row.values.variation=code;setOpenVariation(code);begin("weights",row);}
  function change(key:string,value:string){setEditing(e=>{
  if(!e)return e;const values={...e.row.values,[key]:value};
@@ -27,9 +30,22 @@ export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;i
  });}
  function chooseOperationMode(mode:"STANDARD"|"ACTUAL"){setError("");setMessage("");startTransition(async()=>{const result=await saveBaggageOperationMode(iata,saved.revision,mode);if(!result.ok){setError(result.error);return;}setSaved(result.snapshot);setEditing(null);setOpenVariation(null);setMessage(`${mode==="STANDARD"?"Standard":"Actual"} Baggage Weight Operations selected.`);router.refresh();});}
  function selectVariationMethod(code:string,method:BaggageVariationMethod,createTable=false){setError("");setMessage("");startTransition(async()=>{const result=await saveBaggageVariationMethod(iata,saved.revision,code,method);if(!result.ok){setError(result.error);return;}setSaved(result.snapshot);setMessage(method==="INHERIT"?`${code} will use the All Other Flights method and values.`:method==="ACTUAL"?`${code} will use Actual Baggage Weights.`:`${code} will use a separate Standard Weight table.`);if(createTable){const row=newBaggageRecord("weights");row.values.variation=code;setEditing({section:"weights",row});setOpenVariation(code);}router.refresh();});}
- function save(remove=false){if(!editing)return;const {section,row}=editing;setError("");
+ function save(remove=false){if(!editing||saveComplete||saveInFlight.current||pending)return;const {section,row}=editing;setError("");
   try{if(!remove)validateBaggage(section,row,saved);}catch(e){setError(e instanceof Error?e.message:"Check your entries.");return;}
-  startTransition(async()=>{try{const result=await saveBaggage(iata,saved.revision,section,row,remove);if(!result.ok){setError(result.error);return;}setSaved(result.snapshot);setEditing(null);setMessage(remove?"Record removed.":section==="planning"?"Planning assumptions reviewed and saved.":"Changes saved.");router.refresh();}catch{setError("Unable to save. Your entries are still here; please try again.");}});
+  saveInFlight.current=true;
+  startTransition(async()=>{try{
+   const result=await saveBaggage(iata,saved.revision,section,row,remove);
+   if(!result.ok){setError(result.error);return;}
+   setSaved(result.snapshot);
+   if(remove){setEditing(null);setMessage("Record removed.");}
+   else{
+    const stored=section==="defaults"?result.snapshot.defaults:result.snapshot[section].find(item=>row.id?item.id===row.id:item.values.classCode===row.values.classCode&&item.values.variation===row.values.variation&&(section==="planning"||item.values.category===row.values.category));
+    // Use the returned identity, including a newly inserted row's database ID.
+    // Keeping this session open renders the stored values until EXIT is selected.
+    setEditing({section,row:stored??row});setSaveComplete(true);setMessage("");
+   }
+   router.refresh();
+  }catch{setError("Unable to save. Your entries are still here; please try again.");}finally{saveInFlight.current=false;}});
  }
  function field(row:BaggageRecord,key:string,label:string,active:boolean,options?:{value:string;label:string}[],disabled=false,decimal=false){
   const id=`b4-${editing?.section??"view"}-${row.id??"new"}-${key}`;
@@ -40,7 +56,7 @@ export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;i
   const row=active?editing.row:source;
   return <article className="baggage-card" key={source.id??"new"}>
    <div className="details-heading"><h4>{title}</h4>{!editing&&saved.canEdit&&saved.unit&&<button type="button" className="secondary" onClick={()=>begin(section,source)}>{section==="planning"&&source.id===null?"REVIEW":"EDIT"}</button>}</div>
-   <form noValidate onSubmit={e=>{e.preventDefault();save();}}><fieldset disabled={pending}><legend className="sr-only">{title}</legend>
+   <form noValidate onSubmit={e=>{e.preventDefault();save();}}><fieldset disabled={pending||(active&&saveComplete)}><legend className="sr-only">{title}</legend>
    {section!=="defaults"&&<div className="passenger-weight-grid">
     {field(row,"variation","Flight Variation",active,[{value:"",label:section==="weights"?"All Other Flights":"All Flights"},...saved.variations.map(v=>({value:v.code,label:`${v.code} — ${v.description}`}))],row.baseline)}
     {field(row,"classCode","Class",active,[{value:"",label:"All Classes"},...saved.classes.map(c=>({value:c.code,label:`${c.code} — ${c.description}`}))],row.baseline)}
@@ -61,8 +77,9 @@ export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;i
    </div>}
    {active&&section==="planning"&&<p className="b4-note">If Average Bag Volume is blank, the Bag Density provided in <Link href={`/carrier/${encodeURIComponent(iata)}?sheet=B1`}><strong>1. STANDARD UNITS AND CODES</strong></Link> will be utilised.</p>}
    <label htmlFor={active?`remarks-${section}-${row.id??"new"}`:undefined}>Remarks</label>{active?<textarea id={`remarks-${section}-${row.id??"new"}`} rows={2} maxLength={2000} value={row.values.remarks} onChange={e=>change("remarks",e.target.value)}/>:<p className="passenger-remarks">{row.values.remarks}</p>}
-   {active&&<>{error&&<p role="alert" className="field-error">{error}</p>}<div className="logo-actions"><button type="submit">{pending?"Saving…":section==="planning"&&row.id===null?"SAVE REVIEW":"SAVE"}</button><button type="button" className="secondary" onClick={()=>{setEditing(null);setError("");}}>CANCEL</button>{row.id&&!row.baseline&&section!=="defaults"&&<button type="button" className="secondary" onClick={()=>{if(window.confirm("Remove this saved record?"))save(true);}}>REMOVE</button>}</div></>}
-   </fieldset></form>
+   </fieldset>
+   {active&&<>{error&&<p role="alert" className="field-error">{error}</p>}<SaveActions state={saveComplete?"saved":pending?"saving":"editing"} saveLabel={section==="planning"&&row.id===null?"SAVE REVIEW":"SAVE"} onCancel={()=>{setEditing(null);setError("");}} onExit={()=>{setEditing(null);setSaveComplete(false);setError("");}}>{row.id&&!row.baseline&&section!=="defaults"&&<button type="button" className="secondary" onClick={()=>{if(window.confirm("Remove this saved record?"))save(true);}}>REMOVE</button>}</SaveActions></>}
+   </form>
   </article>;
  }
  if(!saved.canView)return <section className="overview"><SectionHeader id="baggage-title" title="4. BAGGAGE WEIGHTS AND PLANNING" reference="(AHM565 Sheet B4)"/><p>These settings are not available for your account.</p></section>;
