@@ -1,5 +1,6 @@
 "use client";
-import { useState, useTransition } from "react";
+import {useSaveFeedback,SaveScope,SaveInput,SaveButton,SaveCancel,SaveSubmit} from "@/components/save-feedback";
+import { useState } from "react";
 import { saveAircraftD11, setAircraftD11FloorActive } from "@/app/aircraft-d11-actions";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
 import { SectionHeader } from "@/components/section-header";
@@ -28,13 +29,13 @@ function FloorSection({iata,saved,setSaved}:{iata:string;saved:AircraftD11Snapsh
   const [editing,setEditing]=useState(false);
   const [error,setError]=useState("");
   const [message,setMessage]=useState("");
-  const [pending,start]=useTransition();
+  const [pending,start,saveFeedback]=useSaveFeedback();
   const status=d11FloorStatus(saved);
   const begin=()=>{setDraft(saved.floorLimits.map(row=>({...row})));setEditing(true);setOpen(true);setError("");setMessage("")};
   const save=()=>start(async()=>{
     const result=await saveAircraftD11(iata,saved.typeCode,saved.subtype,saved.revision,draft);
     if(!result.ok){setError(result.error);return}
-    setSaved(result.snapshot);setEditing(false);setMessage("SAVED");
+    setError("");setSaved(result.snapshot);saveFeedback.complete(()=>{setEditing(false);setMessage("SAVED");});
   });
   const toggle=(applicable:boolean)=>start(async()=>{
     setError("");setMessage("");
@@ -42,16 +43,16 @@ function FloorSection({iata,saved,setSaved}:{iata:string;saved:AircraftD11Snapsh
     if(!result.ok){setError(result.error);return}
     setSaved(result.snapshot);setOpen(applicable);
   });
-  return <section className={`d11-card ${saved.floorActive?"":"d11-inactive"}`}>
+  return <SaveScope feedback={saveFeedback}>{<section className={`d11-card ${saved.floorActive?"":"d11-inactive"}`}>
     <div className="d4-heading">
       <label className="d6-applicability">
-        <input type="checkbox" checked={saved.floorActive} disabled={!saved.canEdit||pending||editing} onChange={event=>toggle(event.target.checked)}/>
+        <SaveInput type="checkbox" checked={saved.floorActive} disabled={!saved.canEdit||pending||editing} onChange={event=>toggle(event.target.checked)}/>
         <span><h3>2. FLOOR LOADING LIMITS</h3><p>{saved.floorActive?"One completed row is required for every hold identified in D2.":"Check this section to activate and configure it."}</p></span>
       </label>
       <div className="c5-heading-actions">
-        {saved.floorActive&&<button type="button" className="secondary" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?"CLOSE":"OPEN"}</button>}
+        {saved.floorActive&&<SaveButton type="button" className="secondary" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?"CLOSE":"OPEN"}</SaveButton>}
         {message&&<span className="form-success c5-inline-success">{message}</span>}
-        {saved.canEdit&&saved.floorActive&&!editing&&<button className="secondary" onClick={begin}>EDIT</button>}
+        {saved.canEdit&&saved.floorActive&&!editing&&<SaveButton className="secondary" onClick={begin}>EDIT</SaveButton>}
         <ConfigurationStatusBadge status={status}/>
       </div>
     </div>
@@ -59,10 +60,10 @@ function FloorSection({iata,saved,setSaved}:{iata:string;saved:AircraftD11Snapsh
       <FloorRows rows={editing?draft:saved.floorLimits} editing={editing} change={(index,value)=>setDraft(rows=>rows.map((row,rowIndex)=>rowIndex===index?{...row,floorLoadingLimit:value}:row))}/>
       {!saved.floorLimits.length&&!editing&&<p className="d2-empty">No D2 holds are available.</p>}
       {error&&<p className="field-error" role="alert">{error}</p>}
-      {editing&&<div className="d8-actions"><button className="secondary" disabled={pending} onClick={()=>{setEditing(false);setError("")}}>CANCEL</button><button disabled={pending} onClick={save}>{pending?"Saving…":"SAVE"}</button></div>}
+      {editing&&<div className="d8-actions"><SaveCancel className="secondary" disabled={pending} onClick={()=>{setEditing(false);setError("")}}>CANCEL</SaveCancel><SaveSubmit disabled={pending} onClick={save}>{pending?"Saving…":"SAVE"}</SaveSubmit></div>}
     </>}
     {!open&&error&&<p className="field-error" role="alert">{error}</p>}
-  </section>;
+  </section>}</SaveScope>;
 }
 
 function UnsupportedSection({title,description,columns}:{title:string;description:string;columns:string[]}) {
@@ -70,15 +71,15 @@ function UnsupportedSection({title,description,columns}:{title:string;descriptio
   return <section className="d11-card d11-unsupported">
     <div className="d4-heading">
       <label className="d6-applicability">
-        <input type="checkbox" checked={false} disabled aria-label={`${title} unsupported`}/>
+        <SaveInput type="checkbox" checked={false} disabled aria-label={`${title} unsupported`}/>
         <span><h3>{title}</h3><p>{description} Selection is disabled until the section is supported.</p></span>
       </label>
-      <div className="c5-heading-actions"><button type="button" className="secondary" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?"CLOSE":"OPEN"}</button><ConfigurationStatusBadge status="unsupported"/></div>
+      <div className="c5-heading-actions"><SaveButton type="button" className="secondary" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?"CLOSE":"OPEN"}</SaveButton><ConfigurationStatusBadge status="unsupported"/></div>
     </div>
     {open&&<div className="d11-disabled-table"><div>{columns.map(column=><strong key={column}>{column}</strong>)}</div><p>This section is disabled until support is introduced.</p></div>}
   </section>;
 }
 
 function FloorRows({rows,editing,change}:{rows:D11FloorLimit[];editing:boolean;change:(index:number,value:number|null)=>void}) {
-  return <div className="d11-table"><div className="d11-row d11-head"><span>Hold / Compartment</span><span>Hold Type</span><span>Deck</span><span>Floor Loading Limit (Kg/m²)</span></div>{rows.map((row,index)=><div className="d11-row" key={row.holdId}><strong>{row.holdId}</strong><span>{row.holdType}</span><span>{row.deckName}</span>{editing?<input aria-label={`Floor Loading Limit in Kg per square metre for hold ${row.holdId}`} inputMode="decimal" value={row.floorLoadingLimit??""} onChange={event=>change(index,numeric(event.target.value))}/>:<span>{shown(row.floorLoadingLimit)}</span>}</div>)}</div>;
+  return <div className="d11-table"><div className="d11-row d11-head"><span>Hold / Compartment</span><span>Hold Type</span><span>Deck</span><span>Floor Loading Limit (Kg/m²)</span></div>{rows.map((row,index)=><div className="d11-row" key={row.holdId}><strong>{row.holdId}</strong><span>{row.holdType}</span><span>{row.deckName}</span>{editing?<SaveInput aria-label={`Floor Loading Limit in Kg per square metre for hold ${row.holdId}`} inputMode="decimal" value={row.floorLoadingLimit??""} onChange={event=>change(index,numeric(event.target.value))}/>:<span>{shown(row.floorLoadingLimit)}</span>}</div>)}</div>;
 }

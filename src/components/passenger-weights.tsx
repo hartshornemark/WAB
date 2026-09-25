@@ -1,7 +1,8 @@
 "use client";
+import {useSaveFeedback,SaveScope,SaveInput,SaveTextarea,SaveButton,SaveSubmit,SaveCancel,SaveSelect} from "@/components/save-feedback";
 import { SectionHeader } from "@/components/section-header";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { savePassengerWeights } from "@/app/passenger-actions";
 import { passengerDraft, passengerFields, validatePassengerValues, validatePassengerRows, validateVariations, type PassengerDraft, type PassengerRowDraft, type PassengerSection, type PassengerSnapshot } from "@/domain/passenger-weights";
 import { b3Statuses } from "@/domain/b3-status";
@@ -11,11 +12,11 @@ function WeightFields({value,editing,onChange,prefix,unit,remarks=false}:{value:
   return <>
     <div className="passenger-weight-grid">{passengerFields.map(key => <div key={key}>
       <label htmlFor={prefix+"-"+key}>{labels[key]} ({unit})</label>
-      {editing ? <input id={prefix+"-"+key} type="number" inputMode="numeric" min={key==="infant"||key==="handBaggage"?0:1} step="1" max="2147483647" disabled={key==="handBaggage"&&value.includesHandBaggage} value={value[key]} onChange={e=>onChange({...value,[key]:e.target.value})}/> : <p className="passenger-value">{key==="handBaggage"&&value.includesHandBaggage?"Included":value[key]||"Not specified"}</p>}
+      {editing ? <SaveInput id={prefix+"-"+key} type="number" inputMode="numeric" min={key==="infant"||key==="handBaggage"?0:1} step="1" max="2147483647" disabled={key==="handBaggage"&&value.includesHandBaggage} value={value[key]} onChange={e=>onChange({...value,[key]:e.target.value})}/> : <p className="passenger-value">{key==="handBaggage"&&value.includesHandBaggage?"Included":value[key]||"Not specified"}</p>}
     </div>)}</div>
-    <label className="crew-checkbox"><input type="checkbox" checked={value.includesHandBaggage} disabled={!editing} onChange={e=>onChange({...value,includesHandBaggage:e.target.checked})}/>Passenger Weights include Hand Baggage</label>
+    <label className="crew-checkbox"><SaveInput type="checkbox" checked={value.includesHandBaggage} disabled={!editing} onChange={e=>onChange({...value,includesHandBaggage:e.target.checked})}/>Passenger Weights include Hand Baggage</label>
     <p className="muted">{value.includesHandBaggage?"Hand Baggage is included in Passenger Weights. Separate Hand-Baggage values are inactive.":"Enter a separate standard Hand Baggage weight. Infant and Hand Baggage weights may be zero."}</p>
-    {remarks && <div><label htmlFor={prefix+"-remarks"}>Remarks</label>{editing ? <textarea id={prefix+"-remarks"} rows={2} maxLength={2000} value={value.remarks} onChange={e=>onChange({...value,remarks:e.target.value})}/> : <p className="passenger-remarks">{value.remarks||"No remarks."}</p>}</div>}
+    {remarks && <div><label htmlFor={prefix+"-remarks"}>Remarks</label>{editing ? <SaveTextarea id={prefix+"-remarks"} rows={2} maxLength={2000} value={value.remarks} onChange={e=>onChange({...value,remarks:e.target.value})}/> : <p className="passenger-remarks">{value.remarks||"No remarks."}</p>}</div>}
   </>;
 }
 export function PassengerWeights({iata,initial,passengerOperations}:{iata:string;initial:PassengerSnapshot;passengerOperations:boolean}) {
@@ -27,7 +28,7 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
   const [openVariation,setOpenVariation]=useState<string|null>(null);
   const [error,setError]=useState("");
   const [message,setMessage]=useState("");
-  const [pending,startTransition]=useTransition();
+  const [pending,startTransition,saveFeedback]=useSaveFeedback();
   function begin(section:PassengerSection) {
     setDefaults(passengerDraft(saved.defaultWeights));
     setRows(saved.rows.map(r=>({...passengerDraft(r),id:r.id,classCode:r.classCode,variation:r.variation})));
@@ -35,7 +36,7 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
     setError("");setMessage("");setOpenVariation(null);setEditing(section);
   }
   function controls(section:PassengerSection) {
-    return section!=="classes"&&!editing&&saved.canEdit&&(section==="variations"||saved.unit)&&<button type="button" className="secondary" onClick={()=>begin(section)}>EDIT</button>;
+    return section!=="classes"&&!editing&&saved.canEdit&&(section==="variations"||saved.unit)&&<SaveButton type="button" className="secondary" onClick={()=>begin(section)}>EDIT</SaveButton>;
   }
   function savedRowDrafts(){return saved.rows.map(r=>({...passengerDraft(r),id:r.id,classCode:r.classCode,variation:r.variation}));}
   function beginTable(scope:string,create=false) {
@@ -55,7 +56,7 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
     startTransition(async()=>{
       try{
         const result=await savePassengerWeights(iata,saved.revision,"classes",input);
-        if(result.ok){setSaved(result.snapshot);setEditing(null);if(close)setOpenVariation(null);setMessage(success);}
+        if(result.ok){setError("");setSaved(result.snapshot);saveFeedback.complete(()=>{setEditing(null);if(close)setOpenVariation(null);setMessage(success);});}
         else setError(result.error);
       }catch{setError("Unable to save. Your entries are still here; please try again.");}
     });
@@ -75,7 +76,7 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
     startTransition(async()=>{
       try {
         const result=await savePassengerWeights(iata,saved.revision,section,input);
-        if(result.ok){setSaved(result.snapshot);setEditing(null);setMessage(section==="variations"?"Flight variations saved.": "Passenger weights saved.");}
+        if(result.ok){setError("");setSaved(result.snapshot);saveFeedback.complete(()=>{setEditing(null);setMessage(section==="variations"?"Flight variations saved.": "Passenger weights saved.");});}
         else setError(result.error);
       } catch {setError("Unable to save. Your entries are still here; please try again.");}
     });
@@ -83,11 +84,11 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
   function actions(section:PassengerSection) {
     return editing===section&&<>
       {error&&<p role="alert" className="field-error">{error}</p>}
-      <div className="logo-actions"><button type="submit">{pending?"Saving…":"Save"}</button><button type="button" className="secondary" onClick={()=>{setEditing(null);setError("");}}>Cancel</button></div>
+      <div className="logo-actions"><SaveSubmit type="submit">{pending?"Saving…":"Save"}</SaveSubmit><SaveCancel type="button" className="secondary" onClick={()=>{setEditing(null);setError("");}}>Cancel</SaveCancel></div>
     </>;
   }
-  if(!saved.canView) return <section className="overview"><h2>3. PASSENGER WEIGHTS</h2><p>These settings are not available for your account.</p></section>;
-  if(!passengerOperations)return <section className="overview carrier-details passenger-weights" aria-labelledby="passenger-title"><SectionHeader id="passenger-title" title="3. PASSENGER WEIGHTS" reference="(AHM565 Sheet B3)"><ConfigurationStatusBadge status="not_required" variant="large"/></SectionHeader><p>This carrier currently operates only Freighter aircraft. Passenger weights are not required; any existing data is retained.</p></section>;
+  if(!saved.canView) return <SaveScope feedback={saveFeedback}>{<section className="overview"><h2>3. PASSENGER WEIGHTS</h2><p>These settings are not available for your account.</p></section>}</SaveScope>;
+  if(!passengerOperations)return <SaveScope feedback={saveFeedback}>{<section className="overview carrier-details passenger-weights" aria-labelledby="passenger-title"><SectionHeader id="passenger-title" title="3. PASSENGER WEIGHTS" reference="(AHM565 Sheet B3)"><ConfigurationStatusBadge status="not_required" variant="large"/></SectionHeader><p>This carrier currently operates only Freighter aircraft. Passenger weights are not required; any existing data is retained.</p></section>}</SaveScope>;
   const allShownRows=editing==="classes"?rows:savedRowDrafts();
   const shownRows=openVariation===null?[]:allShownRows.filter(row=>openVariation==="__STANDARD__"?row.variation===null:row.variation===openVariation);
   const shownVariations=editing==="variations"?variations:saved.variations;
@@ -99,20 +100,20 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
     return <div className="passenger-table-panel-content">
       {scopeRows.map((row,index)=>{const rowIndex=active?rows.indexOf(row):index;return <fieldset className="passenger-set" key={row.id??`${scope}-${rowIndex}`}><legend className="sr-only">Passenger Weight Table row {index+1}</legend>
         <div className="passenger-set-heading">
-          <div><label htmlFor={active?`weight-class-${scope}-${index}`:undefined}>Class Scope</label>{active?<select id={`weight-class-${scope}-${index}`} value={row.classCode??""} onChange={e=>setRows(current=>current.map((r,i)=>i===rowIndex?{...r,classCode:e.target.value||null}:r))}><option value="">All Classes</option>{saved.classes.map(c=><option key={c.code} value={c.code}>{c.code} — {c.description}</option>)}</select>:<p>{row.classCode?`${row.classCode} — ${saved.classes.find(c=>c.code===row.classCode)?.description}`:"All Classes"}</p>}</div>
+          <div><label htmlFor={active?`weight-class-${scope}-${index}`:undefined}>Class Scope</label>{active?<SaveSelect id={`weight-class-${scope}-${index}`} value={row.classCode??""} onChange={e=>setRows(current=>current.map((r,i)=>i===rowIndex?{...r,classCode:e.target.value||null}:r))}><option value="">All Classes</option>{saved.classes.map(c=><option key={c.code} value={c.code}>{c.code} — {c.description}</option>)}</SaveSelect>:<p>{row.classCode?`${row.classCode} — ${saved.classes.find(c=>c.code===row.classCode)?.description}`:"All Classes"}</p>}</div>
           <div><label>Flight Variation</label><p>{variation?`${variation} — ${saved.variations.find(v=>v.code===variation)?.description}`:"Standard Flights (class override)"}</p></div>
-          {active&&<button type="button" className="secondary" aria-label={`Remove table row ${index+1}`} onClick={()=>setRows(current=>current.filter((_,i)=>i!==rowIndex))}>REMOVE ROW</button>}
+          {active&&<SaveButton type="button" className="secondary" aria-label={`Remove table row ${index+1}`} onClick={()=>setRows(current=>current.filter((_,i)=>i!==rowIndex))}>REMOVE ROW</SaveButton>}
         </div>
         <WeightFields value={row} editing={active} onChange={value=>setRows(current=>current.map((r,i)=>i===rowIndex?{...r,...value}:r))} prefix={`table-${scope}-${index}`} unit={displayUnit(saved.unit)||"unit not set"} remarks/>
       </fieldset>})}
       {active?<>
-        <button type="button" className="secondary" disabled={rows.length>=200} onClick={()=>setRows(current=>[...current,{...passengerDraft(saved.defaultWeights),id:null,classCode:null,variation}])}>{variation?"ADD CLASS ROW":"ADD CLASS OVERRIDE"}</button>
+        <SaveButton type="button" className="secondary" disabled={rows.length>=200} onClick={()=>setRows(current=>[...current,{...passengerDraft(saved.defaultWeights),id:null,classCode:null,variation}])}>{variation?"ADD CLASS ROW":"ADD CLASS OVERRIDE"}</SaveButton>
         <p className="muted">New rows begin with the Standard values. Changes and removals take effect only when you save.</p>
         {actions("classes")}
-      </>:scopeRows.length>0&&saved.canEdit&&<div className="logo-actions passenger-table-actions"><button type="button" className="secondary" onClick={()=>beginTable(scope)}>EDIT TABLE</button><button type="button" className="secondary" onClick={()=>removeTable(scope)} disabled={pending}>REMOVE TABLE</button></div>}
+      </>:scopeRows.length>0&&saved.canEdit&&<div className="logo-actions passenger-table-actions"><SaveButton type="button" className="secondary" onClick={()=>beginTable(scope)}>EDIT TABLE</SaveButton><SaveButton type="button" className="secondary" onClick={()=>removeTable(scope)} disabled={pending}>REMOVE TABLE</SaveButton></div>}
     </div>;
   }
-  return <section className="overview carrier-details passenger-weights" aria-labelledby="passenger-title">
+  return <SaveScope feedback={saveFeedback}>{<section className="overview carrier-details passenger-weights" aria-labelledby="passenger-title">
     <SectionHeader id="passenger-title" title="3. PASSENGER WEIGHTS" reference="(AHM565 Sheet B3)"><ConfigurationStatusBadge status={completion.page} variant="large"/></SectionHeader>
     <p>{saved.unit?`All weights are in ${displayUnit(saved.unit)}, as selected on Sheet B1.`:"Choose and save a weight unit on Sheet B1 before entering passenger weights."}</p>
     {!saved.canEdit&&<p className="muted">These settings are read-only for your account.</p>}
@@ -130,14 +131,14 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
       <p>Adopt suggested Flight Variations or add your own Codes and Descriptions. Save them before adding separate Passenger Weight Tables.</p>
       <p className="muted">A saved variation continues to use the Standard Passenger Weights until a separate table is added and saved below.</p>
       <form noValidate onSubmit={e=>{e.preventDefault();if(editing==="variations")save("variations");}}><fieldset disabled={pending}><legend className="sr-only">Flight variations</legend>
-        {editing==="variations"&&<div className="variation-suggestions"><h4>Suggested variations</h4><div className="logo-actions">{saved.masterVariations.map(v=><button key={v.code} type="button" className="secondary" disabled={variations.some(r=>r.code===v.code)||variations.length>=100} onClick={()=>setVariations(current=>[...current,{...v}])}>Add {v.description} ({v.code})</button>)}</div></div>}
+        {editing==="variations"&&<div className="variation-suggestions"><h4>Suggested variations</h4><div className="logo-actions">{saved.masterVariations.map(v=><SaveButton key={v.code} type="button" className="secondary" disabled={variations.some(r=>r.code===v.code)||variations.length>=100} onClick={()=>setVariations(current=>[...current,{...v}])}>Add {v.description} ({v.code})</SaveButton>)}</div></div>}
         {!shownVariations.length&&<p>No Flight Variations have been adopted. Standard/Default can still be used.</p>}
         {shownVariations.map((v,index)=><div className="variation-row" key={editing==="variations"?index:v.code}>
-          <div><label htmlFor={"variation-code-"+index}>Variation Code</label>{editing==="variations"?<input id={"variation-code-"+index} maxLength={3} value={v.code} onChange={e=>setVariations(current=>current.map((r,i)=>i===index?{...r,code:e.target.value.toUpperCase()}:r))}/>:<p className="passenger-value">{v.code}</p>}</div>
-          <div><label htmlFor={"variation-description-"+index}>Name / Description</label>{editing==="variations"?<input id={"variation-description-"+index} maxLength={64} value={v.description} onChange={e=>setVariations(current=>current.map((r,i)=>i===index?{...r,description:e.target.value}:r))}/>:<p>{v.description}</p>}</div>
-          {editing==="variations"&&<button className="secondary" type="button" aria-label={`Remove variation ${v.code||index+1}`} onClick={()=>setVariations(current=>current.filter((_,i)=>i!==index))}>Remove</button>}
+          <div><label htmlFor={"variation-code-"+index}>Variation Code</label>{editing==="variations"?<SaveInput id={"variation-code-"+index} maxLength={3} value={v.code} onChange={e=>setVariations(current=>current.map((r,i)=>i===index?{...r,code:e.target.value.toUpperCase()}:r))}/>:<p className="passenger-value">{v.code}</p>}</div>
+          <div><label htmlFor={"variation-description-"+index}>Name / Description</label>{editing==="variations"?<SaveInput id={"variation-description-"+index} maxLength={64} value={v.description} onChange={e=>setVariations(current=>current.map((r,i)=>i===index?{...r,description:e.target.value}:r))}/>:<p>{v.description}</p>}</div>
+          {editing==="variations"&&<SaveButton className="secondary" type="button" aria-label={`Remove variation ${v.code||index+1}`} onClick={()=>setVariations(current=>current.filter((_,i)=>i!==index))}>Remove</SaveButton>}
         </div>)}
-        {editing==="variations"&&<><button type="button" className="secondary" disabled={variations.length>=100} onClick={()=>setVariations(current=>[...current,{code:"",description:""}])}>Add Custom Variation</button><p className="muted">Use unique three-character codes and descriptions up to 64 characters. Remove linked weight sets before removing or changing a variation code.</p></>}
+        {editing==="variations"&&<><SaveButton type="button" className="secondary" disabled={variations.length>=100} onClick={()=>setVariations(current=>[...current,{code:"",description:""}])}>Add Custom Variation</SaveButton><p className="muted">Use unique three-character codes and descriptions up to 64 characters. Remove linked weight sets before removing or changing a variation code.</p></>}
         {actions("variations")}
       </fieldset></form>
     </section>
@@ -148,14 +149,14 @@ export function PassengerWeights({iata,initial,passengerOperations}:{iata:string
       <form noValidate onSubmit={e=>{e.preventDefault();if(editing==="classes")save("classes");}}><fieldset disabled={pending}><legend className="sr-only">Passenger weight tables by variation</legend>
         <div className="passenger-variation-coverage" aria-label="Flight Variation passenger-weight coverage">{saved.variations.map(variation=>{
           const count=saved.rows.filter(row=>row.variation===variation.code).length,open=openVariation===variation.code;
-          return <section className={`passenger-variation-item${open?" open":""}`} key={variation.code}><div className="passenger-variation-heading"><div className="passenger-variation-copy"><strong>{variation.code} — {variation.description}</strong><span>{count?`${count} saved table row${count===1?"":"s"}`:"Uses Standard Passenger Weights"}</span></div>{count?<button type="button" className={`passenger-table-selector${open?" selected":""}`} disabled={!!editing} aria-expanded={open} onClick={()=>setOpenVariation(current=>current===variation.code?null:variation.code)}>{open?"CLOSE TABLE":"OPEN TABLE"}</button>:<button type="button" className="secondary" disabled={!!editing||!saved.canEdit||!saved.unit} onClick={()=>addVariationTable(variation.code)}>ADD SEPARATE TABLE</button>}</div>{open&&tablePanel(variation.code)}</section>;
+          return <section className={`passenger-variation-item${open?" open":""}`} key={variation.code}><div className="passenger-variation-heading"><div className="passenger-variation-copy"><strong>{variation.code} — {variation.description}</strong><span>{count?`${count} saved table row${count===1?"":"s"}`:"Uses Standard Passenger Weights"}</span></div>{count?<SaveButton type="button" className={`passenger-table-selector${open?" selected":""}`} disabled={!!editing} aria-expanded={open} onClick={()=>setOpenVariation(current=>current===variation.code?null:variation.code)}>{open?"CLOSE TABLE":"OPEN TABLE"}</SaveButton>:<SaveButton type="button" className="secondary" disabled={!!editing||!saved.canEdit||!saved.unit} onClick={()=>addVariationTable(variation.code)}>ADD SEPARATE TABLE</SaveButton>}</div>{open&&tablePanel(variation.code)}</section>;
         })}
-        <section className={`passenger-variation-item${openVariation==="__STANDARD__"?" open":""}`}><div className="passenger-variation-heading"><div className="passenger-variation-copy"><strong>STANDARD FLIGHTS — CLASS OVERRIDES</strong><span>{saved.rows.filter(row=>row.variation===null).length?saved.rows.filter(row=>row.variation===null).length+" saved class override row(s)":"No class overrides"}</span></div>{saved.rows.some(row=>row.variation===null)?<button type="button" className={`passenger-table-selector${openVariation==="__STANDARD__"?" selected":""}`} disabled={!!editing} aria-expanded={openVariation==="__STANDARD__"} onClick={()=>setOpenVariation(current=>current==="__STANDARD__"?null:"__STANDARD__")}>{openVariation==="__STANDARD__"?"CLOSE TABLE":"OPEN TABLE"}</button>:<button type="button" className="secondary" disabled={!!editing||!saved.canEdit||!saved.unit} onClick={()=>beginTable("__STANDARD__",true)}>ADD CLASS OVERRIDE</button>}</div>{openVariation==="__STANDARD__"&&tablePanel("__STANDARD__")}</section>
+        <section className={`passenger-variation-item${openVariation==="__STANDARD__"?" open":""}`}><div className="passenger-variation-heading"><div className="passenger-variation-copy"><strong>STANDARD FLIGHTS — CLASS OVERRIDES</strong><span>{saved.rows.filter(row=>row.variation===null).length?saved.rows.filter(row=>row.variation===null).length+" saved class override row(s)":"No class overrides"}</span></div>{saved.rows.some(row=>row.variation===null)?<SaveButton type="button" className={`passenger-table-selector${openVariation==="__STANDARD__"?" selected":""}`} disabled={!!editing} aria-expanded={openVariation==="__STANDARD__"} onClick={()=>setOpenVariation(current=>current==="__STANDARD__"?null:"__STANDARD__")}>{openVariation==="__STANDARD__"?"CLOSE TABLE":"OPEN TABLE"}</SaveButton>:<SaveButton type="button" className="secondary" disabled={!!editing||!saved.canEdit||!saved.unit} onClick={()=>beginTable("__STANDARD__",true)}>ADD CLASS OVERRIDE</SaveButton>}</div>{openVariation==="__STANDARD__"&&tablePanel("__STANDARD__")}</section>
         </div>
-        {!saved.rows.length&&!saved.classWeightsReviewed&&!editing&&<div className="b3-standard-confirmation"><p>No separate Passenger Weight Tables are saved. Confirm that the Standard Passenger Weights apply to every Flight Variation.</p><button type="button" onClick={()=>persistRows([],"Standard Passenger Weights confirmed for all Flight Variations.")} disabled={pending||!saved.canEdit||!saved.unit}>CONFIRM STANDARD FOR ALL VARIATIONS</button></div>}
+        {!saved.rows.length&&!saved.classWeightsReviewed&&!editing&&<div className="b3-standard-confirmation"><p>No separate Passenger Weight Tables are saved. Confirm that the Standard Passenger Weights apply to every Flight Variation.</p><SaveButton type="button" onClick={()=>persistRows([],"Standard Passenger Weights confirmed for all Flight Variations.")} disabled={pending||!saved.canEdit||!saved.unit}>CONFIRM STANDARD FOR ALL VARIATIONS</SaveButton></div>}
         {!saved.rows.length&&saved.classWeightsReviewed&&<p className="b3-standard-confirmed">Reviewed: Standard Passenger Weights apply to all Flight Variations.</p>}
       </fieldset></form>
     </section>
     <p role="status" aria-live="polite">{message}</p>
-  </section>;
+  </section>}</SaveScope>;
 }

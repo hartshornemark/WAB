@@ -1,6 +1,7 @@
 "use client";
+import {useSaveFeedback,SaveScope,SaveInput,SaveButton,SaveCancel,SaveSubmit} from "@/components/save-feedback";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { saveAircraftD6, setAircraftD6Applicability } from "@/app/aircraft-d6-actions";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
 import { SectionHeader } from "@/components/section-header";
@@ -56,7 +57,7 @@ function D6Editor({ iata, snapshot, setSnapshot, section, title, status }: {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [pending, start] = useTransition();
+  const [pending, start,saveFeedback] = useSaveFeedback();
 
   const begin = () => {
     setDraft(source.map((row) => ({ ...row })));
@@ -99,10 +100,10 @@ function D6Editor({ iata, snapshot, setSnapshot, section, title, status }: {
       setError(result.error);
       return;
     }
-    setSnapshot(result.snapshot);
+    setError("");setSnapshot(result.snapshot);saveFeedback.complete(()=>{
     setEditing(false);
     setError("");
-    setMessage("SAVED");
+    setMessage("SAVED");});
   });
   const toggleApplicable = (applicable: boolean) => start(async () => {
     setError("");
@@ -126,10 +127,10 @@ function D6Editor({ iata, snapshot, setSnapshot, section, title, status }: {
     ? "Enter Index Per Weight Unit. Balance Arm Centroid is calculated from C4."
     : "Check this section to activate and configure it.";
 
-  return <section className={`d6-card ${visible ? "" : "d6-inactive"}`}>
+  return <SaveScope feedback={saveFeedback}>{<section className={`d6-card ${visible ? "" : "d6-inactive"}`}>
     <div className="d4-heading">
       <label className="d6-applicability">
-        <input
+        <SaveInput
           type="checkbox"
           checked={savedApplicable === true}
           disabled={!snapshot.canEdit || pending || editing}
@@ -139,7 +140,7 @@ function D6Editor({ iata, snapshot, setSnapshot, section, title, status }: {
       </label>
       <div className="c5-heading-actions">
         {message && <span className="form-success c5-inline-success">{message}</span>}
-        {snapshot.canEdit && savedApplicable === true && !editing && <button className="secondary" onClick={begin}>EDIT</button>}
+        {snapshot.canEdit && savedApplicable === true && !editing && <SaveButton className="secondary" onClick={begin}>EDIT</SaveButton>}
         <ConfigurationStatusBadge status={status} />
       </div>
     </div>
@@ -153,13 +154,13 @@ function D6Editor({ iata, snapshot, setSnapshot, section, title, status }: {
     {visible && !source.length && !editing && <p className="d2-empty">No rows have been configured.</p>}
     {error && <p className="field-error" role="alert">{error}</p>}
     {editing && <div className="d5-edit-footer">
-      <span><button className="secondary" onClick={add}>ADD ROW</button></span>
+      <span><SaveButton className="secondary" onClick={add}>ADD ROW</SaveButton></span>
       <div className="c7-actions">
-        <button className="secondary" disabled={pending} onClick={() => { setEditing(false); setError(""); }}>CANCEL</button>
-        <button disabled={pending} onClick={save}>{pending ? "Saving…" : "SAVE"}</button>
+        <SaveCancel className="secondary" disabled={pending} onClick={() => { setEditing(false); setError(""); }}>CANCEL</SaveCancel>
+        <SaveSubmit disabled={pending} onClick={save}>{pending ? "Saving…" : "SAVE"}</SaveSubmit>
       </div>
     </div>}
-  </section>;
+  </section>}</SaveScope>;
 }
 
 function D6Rows({ rows, section, editing, change, remove }: {
@@ -181,13 +182,13 @@ function D6Rows({ rows, section, editing, change, remove }: {
     </div>
     {rows.map((row, index) => <div className="d6-row" key={index}>
       {editing ? <>
-        <label><span>Short Code</span><input aria-label={`Short Code ${index + 1}`} value={row.id} maxLength={3} onChange={(event) => change(index, "id", event.target.value.toUpperCase())} /></label>
-        <label><span>{nameLabel}</span><input aria-label={`${nameLabel} ${index + 1}`} value={section === "waterLocations" ? (row as WaterLocation).name : (row as GalleyLocation).description} maxLength={64} onChange={(event) => change(index, section === "waterLocations" ? "name" : "description", event.target.value)} /></label>
-        <label><span>{weightLabel}</span><input aria-label={`${weightLabel} ${index + 1}`} inputMode="numeric" value={row.maxWeight ?? ""} onChange={(event) => change(index, "maxWeight", numeric(event.target.value))} /></label>
-        <label className="d6-disabled-cell"><span>Lateral Centroid</span><input aria-label={`Lateral Centroid ${index + 1}`} disabled value="" /></label>
-        <label className="d6-calculated-cell"><span>Balance Arm Centroid (Calculated)</span><input aria-label={`Balance Arm Centroid Calculated ${index + 1}`} inputMode="decimal" value={row.centroid ?? ""} disabled /></label>
-        <label><span>Index Per Weight Unit</span><input aria-label={`Index Per Weight Unit ${index + 1}`} inputMode="decimal" value={row.index ?? ""} onChange={(event) => change(index, "index", event.target.value)} /></label>
-        <button className="secondary" onClick={() => remove(index)}>REMOVE</button>
+        <label><span>Short Code</span><SaveInput aria-label={`Short Code ${index + 1}`} value={row.id} maxLength={3} onChange={(event) => change(index, "id", event.target.value.toUpperCase())} /></label>
+        <label><span>{nameLabel}</span><SaveInput aria-label={`${nameLabel} ${index + 1}`} value={section === "waterLocations" ? (row as WaterLocation).name : (row as GalleyLocation).description} maxLength={64} onChange={(event) => change(index, section === "waterLocations" ? "name" : "description", event.target.value)} /></label>
+        <label><span>{weightLabel}</span><SaveInput aria-label={`${weightLabel} ${index + 1}`} inputMode="numeric" value={row.maxWeight ?? ""} onChange={(event) => change(index, "maxWeight", numeric(event.target.value))} /></label>
+        <label className="d6-disabled-cell"><span>Lateral Centroid</span><SaveInput aria-label={`Lateral Centroid ${index + 1}`} disabled value="" /></label>
+        <label className="d6-calculated-cell"><span>Balance Arm Centroid (Calculated)</span><SaveInput aria-label={`Balance Arm Centroid Calculated ${index + 1}`} inputMode="decimal" value={row.centroid ?? ""} disabled /></label>
+        <label><span>Index Per Weight Unit</span><SaveInput aria-label={`Index Per Weight Unit ${index + 1}`} inputMode="decimal" value={row.index ?? ""} onChange={(event) => change(index, "index", event.target.value)} /></label>
+        <SaveButton className="secondary" onClick={() => remove(index)}>REMOVE</SaveButton>
       </> : <>
         <strong data-label="Short Code">{row.id}</strong>
         <span data-label={nameLabel}>{section === "waterLocations" ? (row as WaterLocation).name : (row as GalleyLocation).description}</span>

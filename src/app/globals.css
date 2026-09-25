@@ -569,3 +569,9 @@
 .save-spinner{width:14px;height:14px;position:absolute;left:10px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:save-spin .8s linear infinite}
 @keyframes save-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.save-spinner{animation:none}}
+
+/* Shared inline save receipts preserve each page's existing action placement. */
+.save-actions.save-actions-inline{display:inline-flex;vertical-align:middle;margin-top:0;max-width:100%;gap:12px}
+.save-actions-inline>.save-action,.save-actions-inline>.save-exit{min-width:100px}
+.save-actions-inline>.save-action--saving{padding-left:32px}
+.save-cancel{order:1}

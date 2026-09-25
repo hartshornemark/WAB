@@ -1,6 +1,7 @@
 "use client";
+import {useSaveFeedback,SaveScope,SaveSubmit,SaveCancel,SaveButton,SaveInput,SaveSelect,SaveTextarea} from "@/components/save-feedback";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { saveAircraftC2 } from "@/app/aircraft-c2-actions";
 import { SectionHeader } from "@/components/section-header";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
@@ -44,7 +45,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
   const [editingSection, setEditingSection] = useState<EditingSection>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [pending, start] = useTransition();
+  const [pending, start,saveFeedback] = useSaveFeedback();
 
   const visibleOutputFields = outputFields.filter((field) =>
     draft.documents.some((document) => document.code === field.documentCode && document.required),
@@ -83,10 +84,10 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
         setError(result.error);
         return;
       }
-      setSaved(result.snapshot);
+      setError("");setSaved(result.snapshot);saveFeedback.complete(()=>{
       setDraft(valueFrom(result.snapshot));
       setEditingSection(null);
-      setMessage(`${sectionName} saved.`);
+      setMessage(`${sectionName} saved.`);});
     });
   }
 
@@ -95,13 +96,13 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
     if (editingSection === section) {
       return (
         <div className="c2-section-actions">
-          <button disabled={pending} onClick={() => save(label)}>Save</button>
-          <button className="secondary" disabled={pending} onClick={cancelEditing}>Cancel</button>
+          <SaveSubmit disabled={pending} onClick={() => save(label)}>Save</SaveSubmit>
+          <SaveCancel className="secondary" disabled={pending} onClick={cancelEditing}>Cancel</SaveCancel>
         </div>
       );
     }
     if (editingSection !== null) return null;
-    return <button className="secondary" onClick={() => beginEditing(section)}>EDIT</button>;
+    return <SaveButton className="secondary" onClick={() => beginEditing(section)}>EDIT</SaveButton>;
   }
 
   function setOutput(index: number, key: keyof C2Output, value: boolean) {
@@ -153,7 +154,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
     });
   }
 
-  return (
+  return <SaveScope feedback={saveFeedback}>{(
     <section className="aircraft-c2">
       <SectionHeader
         id="aircraft-c2-heading"
@@ -170,7 +171,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
         <div className="c2-documents">
           {draft.documents.map((document, index) => (
             <label key={document.code}>
-              <input
+              <SaveInput
                 type="checkbox"
                 disabled={editingSection !== "documents"}
                 checked={document.required}
@@ -215,7 +216,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
                       <td>{row.code}</td>
                       {visibleOutputFields.map((field) => (
                         <td key={String(field.selected)}>
-                          <input
+                          <SaveInput
                             type="checkbox"
                             aria-label={`${row.code} ${field.documentCode}`}
                             disabled={editingSection !== "balance" || !row[field.valid]}
@@ -225,7 +226,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
                         </td>
                       ))}
                       <td>
-                        <input
+                        <SaveInput
                           className="c2-inline-remark"
                           aria-label={`${row.code} Remarks`}
                           disabled={editingSection !== "balance"}
@@ -235,7 +236,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
                         />
                         {macCodes.has(row.code) && (
                           <label className="c2-rc">
-                            <input
+                            <SaveInput
                               type="checkbox"
                               disabled={editingSection !== "balance"}
                               checked={note.useReferenceChord}
@@ -264,7 +265,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
           {draft.trimOptions.map((row, index) => (
             <div className="c2-trim-row" key={row.option}>
               <label>
-                <input
+                <SaveInput
                   type="checkbox"
                   disabled={editingSection !== "trim"}
                   checked={row.selected}
@@ -278,7 +279,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
               </label>
               <div className="details-field c2-priority-field">
                 <label>Priority</label>
-                <select
+                <SaveSelect
                   className="c2-priority-select"
                   disabled={editingSection !== "trim" || !row.selected}
                   value={row.priority ?? ""}
@@ -288,14 +289,14 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
-                </select>
+                </SaveSelect>
               </div>
             </div>
           ))}
         </div>
         <div className="details-field c2-standalone-remarks">
           <label htmlFor="passenger-trim-remarks">Alternative Loadsheet Terminology or Remarks</label>
-          <textarea
+          <SaveTextarea
             id="passenger-trim-remarks"
             disabled={editingSection !== "trim"}
             value={draft.passengerTrimRemarks}
@@ -313,7 +314,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
         <h3>Lower Loadsheet Information</h3>
         <div className="details-field">
           <label htmlFor="captains-information">Captain’s Information / Notes</label>
-          <textarea
+          <SaveTextarea
             id="captains-information"
             disabled={editingSection !== "balance"}
             value={draft.captainsInformation}
@@ -323,7 +324,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
         </div>
         <div className="details-field">
           <label htmlFor="pre-lmc-message">Load Message Before LMC</label>
-          <textarea
+          <SaveTextarea
             id="pre-lmc-message"
             disabled={editingSection !== "balance"}
             value={draft.preLmcLoadMessage}
@@ -336,5 +337,5 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
       {error && <p className="field-error" role="alert">{error}</p>}
       {message && <p className="form-success" role="status">{message}</p>}
     </section>
-  );
+  )}</SaveScope>;
 }
