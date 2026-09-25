@@ -1,6 +1,8 @@
+import {cabinRowNumbers,parseCabinRowSequence} from "./cabin-row-sequence";
 export type CabinArea = {
   id: string;
   deck: string;
+  rowSequence?: number[] | null;
   startRow: number | null;
   endRow: number | null;
   centroid: number | null;
@@ -72,12 +74,12 @@ const num = (value: unknown, label: string, positive = false) => {
 
 export function validateExcludedRowsAgainstCabinAreas(excludedRows:number[],areas:CabinArea[]){
   for(const rowNumber of excludedRows){
-    if(!areas.some(area=>area.startRow!==null&&area.endRow!==null&&rowNumber>=area.startRow&&rowNumber<=area.endRow)){
+    if(!areas.some(area=>cabinRowNumbers(area).includes(rowNumber))){
       throw new AircraftD5Invalid(`Excluded Row ${rowNumber} is outside every Cabin Area range.`);
     }
   }
   for(const area of areas){
-    if(area.startRow!==null&&area.endRow!==null&&Array.from({length:area.endRow-area.startRow+1},(_,i)=>area.startRow!+i).every(row=>excludedRows.includes(row))){
+    if(cabinRowNumbers(area).length>0&&cabinRowNumbers(area,excludedRows).length===0){
       throw new AircraftD5Invalid(`Cabin Area ${area.id} must retain at least one row.`);
     }
   }
@@ -110,8 +112,10 @@ export function validateD5Section(
   if (section === "cabinAreas") {
     const rows = input.map((value, index) => {
       const row = value as Partial<CabinArea>;
-      const startRow = num(row.startRow, `Start Row at row ${index + 1}`, true);
-      const endRow = num(row.endRow, `End Row at row ${index + 1}`, true);
+      let rowSequence:number[]|null;
+      try{rowSequence=parseCabinRowSequence(row.rowSequence)}catch(error){throw new AircraftD5Invalid(`Row ${index+1}: ${error instanceof Error?error.message:"Invalid row sequence."}`)}
+      const startRow = rowSequence?Math.min(...rowSequence):num(row.startRow, `Start Row at row ${index + 1}`, true);
+      const endRow = rowSequence?Math.max(...rowSequence):num(row.endRow, `End Row at row ${index + 1}`, true);
       const startArm = optionalNum(row.startArm, `Balance Arm From at row ${index + 1}`);
       const endArm = optionalNum(row.endArm, `Balance Arm To at row ${index + 1}`);
       const indexPerWeightUnit = optionalNum(
@@ -119,7 +123,7 @@ export function validateD5Section(
         `Index per Weight Unit at row ${index + 1}`,
       );
 
-      if (!Number.isInteger(startRow) || !Number.isInteger(endRow) || startRow > endRow) {
+      if (!Number.isInteger(startRow) || !Number.isInteger(endRow) || startRow > endRow || endRow > 99) {
         throw new AircraftD5Invalid(`Row ${index + 1}: enter a valid row range.`);
       }
       if (indexPerWeightUnit === null) {
@@ -147,6 +151,7 @@ export function validateD5Section(
       return {
         id: text(row.id, `Area ID at row ${index + 1}`, 2),
         deck: text(row.deck, `Deck at row ${index + 1}`, 5),
+        ...(rowSequence?{rowSequence}:{}),
         startRow,
         endRow,
         centroid,
@@ -164,13 +169,10 @@ export function validateD5Section(
       areaIds.add(row.id);
     }
 
-    const byStartRow = [...rows].sort((a, b) => a.startRow - b.startRow);
-    for (let index = 1; index < byStartRow.length; index += 1) {
-      if (byStartRow[index].startRow <= byStartRow[index - 1].endRow) {
-        throw new AircraftD5Invalid(
-          "Cabin Area row ranges must not overlap. Missing row numbers are permitted.",
-        );
-      }
+    const occupied=new Set<number>();
+    for(const area of rows)for(const row of cabinRowNumbers(area)){
+      if(occupied.has(row))throw new AircraftD5Invalid(`Cabin Area row ranges must not overlap. Row ${row} belongs to more than one Cabin Area.`);
+      occupied.add(row);
     }
 
     return rows;

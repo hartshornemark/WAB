@@ -15,3 +15,46 @@ test("D8 requires C4 before calculating Balance Arm Centroid",()=>assert.throws(
 
 test("each D8 cabin-area section reports its own completion",()=>{assert.equal(d8CabinAreaStatus([row(1,"0A")],2),"partial");assert.equal(d8CabinAreaStatus([row(1,"0A"),row(2,"0A")],2),"configured")});
 test("D8 is not required for a Freighter",()=>assert.equal(aircraftD8Status(snap([]),"FREIGHTER"),"not_required"));
+
+test("D8 inherits a cabin-area grouping without storing a row override",()=>{
+ const result=validateD8Rows([row(1,"0A")],[{...areas[0],seatGrouping:"2-2"}],formula);
+ assert.equal(result[0].seatGroupingOverride,null);
+});
+test("D8 rejects inherited grouping that disagrees with row seats",()=>{
+ assert.throws(()=>validateD8Rows([row(1,"0A")],[{...areas[0],seatGrouping:"3-3"}],formula),/Row 1:.*6 seats.*4/);
+});
+test("D8 validates row overrides instead of the area default",()=>{
+ const result=validateD8Rows([{...row(1,"0A"),seatGroupingOverride:" 1 – 3 "}],[{...areas[0],seatGrouping:"3-3"}],formula);
+ assert.equal(result[0].seatGroupingOverride,"1-3");
+});
+test("D8 rejects malformed and mismatching row overrides",()=>{
+ for(const grouping of ["0-0","2--2","2.5-1.5","2-2-2","2 2"])
+ assert.throws(()=>validateD8Rows([{...row(1,"0A"),seatGroupingOverride:grouping}],areas,formula),AircraftD8Invalid);
+});
+test("D8 clearing an override restores inherited validation",()=>{
+ assert.throws(()=>validateD8Rows([{...row(1,"0A"),seatGroupingOverride:""}],[{...areas[0],seatGrouping:"3-3"}],formula),/Row 1/);
+});
+test("D8 allows row-specific grouping with no area default",()=>{
+ assert.equal(validateD8Rows([{...row(1,"0A"),seatGroupingOverride:"2-2"}],areas,formula)[0].seatGroupingOverride,"2-2");
+});
+
+test("D8 blocked centres preserve physical 3-3 while validating four usable seats",()=>{
+ const result=validateD8Rows([{...row(1,"0A"),seatGroupingOverride:"3-3:B"}],areas,formula);
+ assert.equal(result[0].seatGroupingOverride,"3-3:B");
+ assert.equal(result[0].maximumSeats,4);
+ assert.throws(()=>validateD8Rows([{...row(1,"0A"),maximumSeats:6,seatGroupingOverride:"3-3:B"}],areas,formula),/Maximum Seats/);
+ for(const grouping of ["2-2:B","3-4:B","3-3:X"])
+ assert.throws(()=>validateD8Rows([{...row(1,"0A"),seatGroupingOverride:grouping}],areas,formula));
+});
+
+test("D8 follows explicit row order and retains saved data by row identity",()=>{
+ const explicit=[{id:"0A",rowFrom:1,rowTo:13,rowSequence:[13,1,2,3,4]}];
+ const saved=[13,1,2,3,4].map(n=>row(n,"0A"));
+ const built=buildD8Rows(explicit,saved);
+ assert.deepEqual(built.map(r=>r.rowNumber),[13,1,2,3,4]);assert.equal(built[0].index,saved[0].index);
+ assert.equal(aircraftD8Status({...snap(saved),cabinAreas:explicit}),"configured");
+ assert.throws(()=>validateD8Rows([row(5,"0A")],explicit,formula),AircraftD8Invalid);
+ assert.deepEqual(buildD8Rows(explicit,[],[2]).map(r=>r.rowNumber),[13,1,3,4]);
+});
+
+ test("D8 accepts an empty group while counting only physical seats",()=>{for(const grouping of ["0-2","2-0"]){assert.equal(validateD8Rows([{...row(1,"0A"),maximumSeats:2,seatGroupingOverride:grouping}],areas,formula)[0].seatGroupingOverride,grouping);}});

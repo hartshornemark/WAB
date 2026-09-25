@@ -165,3 +165,7 @@ export async function dashboardStatusServices(){
     ]);
   }};
 }
+
+import {createAircraftLayouts} from "@/application/aircraft-layouts";
+import {createAircraftLayoutAdapter} from "@/infrastructure/supabase/aircraft-layouts";
+export async function aircraftLayoutServices(){const client=await createRequestClient();return createAircraftLayouts(createAuthAdapter(client),createAircraftLayoutAdapter(client));}

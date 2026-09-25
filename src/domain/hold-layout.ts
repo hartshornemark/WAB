@@ -12,52 +12,16 @@ export type AircraftLayoutCalibration = {
   imageFrame: Readonly<{ x: number; y: number; width: number; height: number }>;
   cropLeft: number; cropRight: number; holdY: number; holdHeight: number;
   leftDoorY: number; rightDoorY: number; labelCharWidth: number;
+  armUnit?: "IN" | "M";
+  stationOriginX?: number;
+  diagramCaption?: string;
+  combinedHoldProfile?: { points: {arm:number;halfWidth:number}[]; joinArm:number };
   holdArmOffsets?: Readonly<Record<string, number>>;
   holdArmDefaults?: Readonly<Record<string, Readonly<{ from: number; to: number }>>>;
 };
 
-// Each outline has its own longitudinal and vertical calibration. Both vectors
-// are plan views isolated from their Airbus general-arrangement DWGs; neither
-// aircraft is produced by stretching the other outline.
-export const A319_LAYOUT = {
-  typeCode: "319", subtype: "100", length: 33.84, noseArm: 2.540,
-  // The Airbus plan occupies x=137.4..330.3 after the engine-bounded crop.
-  tailX: 330.3, span: 192.9, centreY: 363,
-  asset: "/aircraft-layouts/a319-100-fuselage?v=1800f1d81420",
-  imageFrame: { x: 102, y: 327.25, width: 236, height: 72 },
-  cropLeft: 102, cropRight: 338,
-  holdY: 352, holdHeight: 22, leftDoorY: 347, rightDoorY: 377,
-  labelCharWidth: 0.58,
-} satisfies AircraftLayoutCalibration;
-export const A320_LAYOUT = {
-  typeCode: "320", subtype: "200", length: 37.57, noseArm: 0,
-  // The Airbus plan occupies x=123.5..337.8 after the engine-bounded crop.
-  tailX: 337.8, span: 214.3, centreY: 359.5,
-  asset: "/aircraft-layouts/a320-200-fuselage?v=f5de949b13d9",
-  imageFrame: { x: 102, y: 327.25, width: 236, height: 72 },
-  cropLeft: 102, cropRight: 338,
-  holdY: 348.5, holdHeight: 22, leftDoorY: 344, rightDoorY: 374,
-  labelCharWidth: 0.58,
-  // Align the complete aft cargo group with the aft cargo-door edge in the
-  // isolated Airbus plan. Correct the drawing only; the carrier's saved D2
-  // balance-arm values remain authoritative.
-  holdArmOffsets: { "3": -2.735, "4": -2.735, "5": -2.735 },
-  // Physical hold boundaries established from the Airbus A320-200 general
-  // arrangement drawing. They let every carrier use the global aircraft-type
-  // layout when optional D2 From/To values have not been supplied.
-  holdArmDefaults: {
-    "1": { from: 7.255, to: 12.205 },
-    "3": { from: 21.412, to: 24.480 },
-    "4": { from: 24.480, to: 27.548 },
-    "5": { from: 27.548, to: 31.212 },
-  },
-} satisfies AircraftLayoutCalibration;
-export const AIRCRAFT_LAYOUTS = [A319_LAYOUT, A320_LAYOUT] as const;
-export function aircraftLayoutFor(typeCode: string, subtype: string): AircraftLayoutCalibration | undefined {
-  return AIRCRAFT_LAYOUTS.find(layout => layout.typeCode === typeCode && layout.subtype === subtype);
-}
-export function holdLayoutX(arm: number, aircraft: AircraftLayoutCalibration = A319_LAYOUT) {
-  return aircraft.tailX - (arm - aircraft.noseArm) * aircraft.span / aircraft.length;
+export function holdLayoutX(arm: number, aircraft: AircraftLayoutCalibration) {
+  return (aircraft.stationOriginX ?? aircraft.tailX) - (arm - (aircraft.stationOriginX === undefined ? aircraft.noseArm : 0)) * aircraft.span / aircraft.length;
 }
 export function applicableHolds(d2: AircraftD2Snapshot) {
   return d2.rows.filter(r => r.holdType === "BLK" ? d2.bulkApplicable === true : d2.uldApplicable === true);
@@ -70,10 +34,15 @@ function effectiveHoldArms(row: AircraftD2HoldRow, aircraft: AircraftLayoutCalib
   }
   return aircraft.holdArmDefaults?.[row.name] ?? null;
 }
-export function holdLayoutUnavailable(d2: AircraftD2Snapshot): string | null {
+export function holdLayoutPrerequisite(d2: AircraftD2Snapshot): string | null {
   if (!d2.canView) return "You do not have permission to view the hold layout.";
-  const aircraft = aircraftLayoutFor(d2.typeCode, d2.subtype);
-  if (!aircraft)
+  if (aircraftD2Status(d2) !== "configured") return "Complete all applicable D2 sections first.";
+  if (!applicableHolds(d2).length) return "No applicable holds are available.";
+  return null;
+}
+export function holdLayoutUnavailable(d2: AircraftD2Snapshot, aircraft: AircraftLayoutCalibration | undefined): string | null {
+  if (!d2.canView) return "You do not have permission to view the hold layout.";
+  if (!aircraft || aircraft.typeCode !== d2.typeCode || aircraft.subtype !== d2.subtype)
     return "A calibrated aircraft outline is not yet available for this aircraft.";
   if (aircraftD2Status(d2) !== "configured") return "Complete all applicable D2 sections first.";
   const rows = applicableHolds(d2);
@@ -95,6 +64,7 @@ export type LayoutSubdivision = {
 export type LayoutHold = AircraftD2HoldRow & { x: number; width: number; subdivisions: LayoutSubdivision[] };
 export type LayoutDoor = { holdId: string; deckCode: string; x: number; width: number; orientation: "L" | "R" | "C" };
 export type HoldLayout = {
+  calibration: AircraftLayoutCalibration;
   typeCode: string; subtype: string; doorsIncluded: boolean; usesGlobalHoldBoundaries: boolean;
   holds: LayoutHold[]; doors: LayoutDoor[]; decks: { code: string; name: string }[];
 };
@@ -104,10 +74,9 @@ function fallbackSubdivisions(row: AircraftD2HoldRow, x: number, width: number):
   return row.compartments.map((compartment, index) => ({ kind: "COMPARTMENT", id: compartment.id, compartmentId: compartment.id,
     uldType: null, maxWeight: null, maxVolume: null, x: x + width * index / row.compartments.length, width: width / row.compartments.length }));
 }
-export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, d3?: AircraftD3Snapshot): HoldLayout {
-  const reason = holdLayoutUnavailable(d2);
+export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, d3: AircraftD3Snapshot | undefined, aircraft: AircraftLayoutCalibration): HoldLayout {
+  const reason = holdLayoutUnavailable(d2, aircraft);
   if (reason) throw new Error(reason);
-  const aircraft = aircraftLayoutFor(d2.typeCode, d2.subtype)!;
   const applicable = applicableHolds(d2);
   const usesGlobalHoldBoundaries = applicable.some(row => row.balanceFrom === null && row.balanceTo === null && !!aircraft.holdArmDefaults?.[row.name]);
   const holds = applicable.map(row => {
@@ -160,6 +129,6 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
       throw new Error(`Door ${hold.name}: its D4 Start/End values fall outside the calibrated aircraft view. Check D4 before viewing the layout.`);
     doors.push({ holdId: hold.name, deckCode: hold.deckCode, x: holdLayoutX(to, aircraft), width: holdLayoutX(from, aircraft) - holdLayoutX(to, aircraft), orientation: door.orientation! });
   }
-  return { typeCode: d2.typeCode, subtype: d2.subtype, holds, doors, doorsIncluded, usesGlobalHoldBoundaries,
+  return { calibration: aircraft, typeCode: d2.typeCode, subtype: d2.subtype, holds, doors, doorsIncluded, usesGlobalHoldBoundaries,
     decks: [...new Set(holds.map(h => h.deckCode))].map(code => ({ code, name: d2.deckTypes.find(d => d.code === code)?.name ?? code })) };
 }

@@ -32,7 +32,8 @@ export function a2CarrierContactsStatus(snapshot:Pick<DetailsSnapshot,"values">)
   });
   return valid?"configured":"partial";
 }
-export function validateDetails(input: DetailValues): DetailValues {
+export type DetailsSaveSection = "all" | "contact";
+export function validateDetails(input: DetailValues, section: DetailsSaveSection = "all"): DetailValues {
   const values = { ...emptyDetails };
   const errors: Partial<Record<keyof DetailValues, string>> = {};
   for (const key of Object.keys(values) as (keyof DetailValues)[]) {
@@ -46,10 +47,12 @@ export function validateDetails(input: DetailValues): DetailValues {
   }
   if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Enter a valid email address.";
   if (values.teletype && values.teletype.length !== 7) errors.teletype = "Enter exactly 7 characters.";
+  if(section !== "contact") {
   if (!["KG", "LB"].includes(values.weightUnit)) errors.weightUnit = "Choose a weight unit.";
   if (!["m3", "ft3"].includes(values.volumeUnit)) errors.volumeUnit = "Choose a volume unit.";
   if (!["BASIC", "DRY_OPERATING"].includes(values.weightMethod)) errors.weightMethod = "Choose a weight method.";
   if (!["1", "2"].includes(values.indexDecimalPlaces)) errors.indexDecimalPlaces = "Choose one or two decimal places.";
+  }
   if (Object.keys(errors).length) throw new DetailsInvalid(errors);
   return values;
 }

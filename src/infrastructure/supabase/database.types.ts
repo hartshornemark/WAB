@@ -32,6 +32,9 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      aircraft_layout_library:{Args:Record<string,never>;Returns:Json};
+      get_aircraft_layout:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
+      activate_aircraft_layout:{Args:{p_id:string};Returns:undefined};
       get_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
       save_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
       save_carrier_uld_applicability:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_utilises:boolean};Returns:Json};
@@ -39,6 +42,7 @@ export type Database = {
       save_carrier_densities:{Args:{p_iata:string;p_revision:string;p_values:Json};Returns:Json};
       get_carrier_passenger_weights: { Args: { p_iata: string }; Returns: Json };
       save_carrier_passenger_weights: { Args: { p_iata: string; p_revision: string; p_section: string; p_values: Json }; Returns: Json };
+      save_carrier_crew_hold_baggage:{Args:{p_iata:string;p_revision:string;p_code:string|null;p_values:Json};Returns:Json};
       get_carrier_crew_weights: { Args: { p_iata: string }; Returns: Json };
       save_carrier_crew_weights: { Args: { p_iata: string; p_revision: string; p_values: Json }; Returns: Json };
       get_carrier_class_codes: { Args: { p_iata: string }; Returns: Json };
@@ -50,6 +54,7 @@ export type Database = {
       create_carrier:{Args:{p_iata:string;p_name:string;p_icao:string};Returns:Json};
       get_carrier_details: { Args: { p_iata: string }; Returns: Json };
       save_carrier_details: { Args: { p_iata: string; p_revision: string; p_values: Json }; Returns: Json };
+      save_carrier_contacts: { Args: { p_iata: string; p_revision: string; p_values: Json }; Returns: Json };
       can_manage_carrier_logo: { Args: { p_iata: string }; Returns: boolean };
       set_carrier_logo: { Args: { p_iata: string; p_path: string | null }; Returns: string | null };
       get_carrier_aircraft:{Args:{p_iata:string};Returns:Json};

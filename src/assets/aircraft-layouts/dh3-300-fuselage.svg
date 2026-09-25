@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 50" role="img" aria-labelledby="title desc">
+<title id="title">Dash 8-300 fuselage section</title>
+<desc id="desc">Schematic vector tracing of the fuselage section in the supplied Q300 Model 311 Airport Planning Manual, Figure 2-5, sheet 1. Nose right; aft section cut at left. Seats, cabin partitions and hold outlines intentionally omitted for dynamic overlays. Not a complete aircraft silhouette. Calibrated by the labelled station X109 and X577.28 anchors; aft endpoint is a section cut.</desc>
+<metadata>Source: D8_300.pdf page 1, Figure 2-5, 27 July 2001. Tracing coordinates based on 1800-pixel page render. Station X109 anchor at source x509; X577.28 anchor at source x1214. Draft source pixels per station inch: 705/468.28. Display transform x=1470-sourceX, y=sourceY-600. Datum-to-nose distance is not established by this draft. Aft cut is not the aircraft tail.</metadata>
+<g transform="scale(0.2)"><g transform="translate(1470 -600) scale(-1 1)" fill="none" stroke="#7b8188" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">
+<!-- Clean section outline traced from the plan, without configuration-specific interiors. -->
+<path d="M 1420 654 C 1355 646 1280 639 1214 640 L 509 646 C 446 647 355 682 307 710 Q 282 725 307 741 C 355 771 445 805 509 807 L 1214 800 C 1284 797 1362 789 1420 782"/>
+<!-- The original illustration terminates here; this dashed cap denotes a section cut. -->
+<path d="M 1420 654 Q 1470 718 1420 782" stroke-dasharray="5 5"/>
+</g>
+</g></svg>

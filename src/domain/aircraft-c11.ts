@@ -3,3 +3,15 @@ export type AircraftC11Snapshot={canView:boolean;canEdit:boolean;exists:boolean;
 export class AircraftC11Invalid extends Error{} export class AircraftC11Denied extends Error{} export class AircraftC11Conflict extends Error{}
 const finite=(v:unknown,n:string)=>{const x=typeof v==="number"?v:Number(v);if(v===""||v===null||typeof v==="boolean"||!Number.isFinite(x)||Math.abs(x)>1e9)throw new AircraftC11Invalid(`Enter a valid ${n}.`);return x};
 export function validateAircraftC11(input:unknown){const v=input as Record<string,unknown>,r={macFwdLimit:finite(v?.macFwdLimit,"Forward MAC Limit"),macAftLimit:finite(v?.macAftLimit,"Aft MAC Limit"),stabMaxValue:finite(v?.stabMaxValue,"Maximum Stabiliser Value"),stabMinValue:finite(v?.stabMinValue,"Minimum Stabiliser Value"),variationFwd:finite(v?.variationFwd,"Forward Variation Point"),variationAft:finite(v?.variationAft,"Aft Variation Point")};if(!(r.macFwdLimit<=r.variationFwd&&r.variationFwd<r.variationAft&&r.variationAft<=r.macAftLimit))throw new AircraftC11Invalid("The variation range must sit inside the MAC range and its Aft point must be greater than its Forward point.");return r}
+
+/** Zero crossing of the plotted trim schedule; use endpoints to avoid rounded-rate drift. */
+export function stabiliserZeroTrim(v:AircraftC11Values):{from:number;to:number}|null {
+ const delta=v.stabMinValue-v.stabMaxValue;
+ if(delta===0)return v.stabMaxValue===0?{from:v.macFwdLimit,to:v.macAftLimit}:null;
+ if(v.stabMaxValue===0)return{from:v.macFwdLimit,to:v.variationFwd};
+ if(v.stabMinValue===0)return{from:v.variationAft,to:v.macAftLimit};
+ const fraction=-v.stabMaxValue/delta;
+ if(!Number.isFinite(fraction)||fraction<0||fraction>1)return null;
+ const crossing=v.variationFwd+fraction*(v.variationAft-v.variationFwd);
+ return{from:crossing,to:crossing};
+}

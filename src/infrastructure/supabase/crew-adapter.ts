@@ -10,16 +10,31 @@ function snapshot(data: unknown): CrewSnapshot {
   for (const { key } of holdCategories) {
     if (typeof row.values[key] !== "boolean") throw new DataUnavailable("Crew Hold Baggage selection is awaiting the database update.");
   }
+  if(row.holdRows!==undefined){
+    if(!Array.isArray(row.holdRows)||!Array.isArray(row.variations))throw new DataUnavailable();
+    for(const v of row.variations)if(!v||typeof v.code!=="string"||typeof v.description!=="string")throw new DataUnavailable();
+    for(const h of row.holdRows){
+      if(!h||(h.code!==null&&typeof h.code!=="string")||!["STANDARD","SEPARATE"].includes(h.mode)||(h.code===null&&h.mode!=="SEPARATE"))throw new DataUnavailable();
+      for(const value of [h.flightDeck,h.cabin])if(value===null?h.mode==="SEPARATE":!Number.isSafeInteger(value)||value<0||value>2147483647)throw new DataUnavailable();
+    }
+  }
   const values = { includesHandBaggage: row.values.includesHandBaggage, allFlights: row.values.allFlights, longhaul: row.values.longhaul, shorthaul: row.values.shorthaul } as CrewValues;
   for (const key of crewWeightFields) {
     const value = row.values[key];
     if (value !== null && (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 2147483647)) throw new DataUnavailable();
     values[key] = value;
   }
-  return { canView: row.canView, canEdit: row.canEdit, exists: row.exists, revision: row.revision, unit: row.unit, values };
+  return { canView: row.canView, canEdit: row.canEdit, exists: row.exists, revision: row.revision, unit: row.unit, values,...(row.holdRows?{holdRows:row.holdRows,variations:row.variations??[]}:{}) };
 }
 export function createCrewAdapter(client: RequestClient): CrewRepository {
   return {
+    async saveHold(iata,revision,code,values){
+      const {data,error}=await client.schema("Basic_Carrier_Record").rpc("save_carrier_crew_hold_baggage",{p_iata:iata,p_revision:revision,p_code:code,p_values:values as import("./database.types").Json});
+      if(error?.code==="42501")throw new CrewDenied();
+      if(error?.code==="40001")throw new CrewConflict();
+      if(error&&["22023","23514","23503"].includes(error.code))throw new CrewInvalid("Check the variation and enter both baggage weights as whole numbers, zero or greater.");
+      if(error)throw new DataUnavailable();return snapshot(data);
+    },
     async get(iata) {
       const { data, error } = await client.schema("Basic_Carrier_Record").rpc("get_carrier_crew_weights", { p_iata: iata });
       if (error) throw new DataUnavailable("Unable to load crew weights.");

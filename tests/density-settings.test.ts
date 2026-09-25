@@ -16,3 +16,21 @@ test('density application rejects unauthorised and stale saves',async()=>{
  const app=createDensitySettings({currentUser:async()=>({id:'user'})} as AuthService,{findAuthorised:async()=>({iata:'ZZ'})} as unknown as CarrierRepository,{get:async()=>snapshot,save:async()=>{writes++;return snapshot;}});
  await assert.rejects(()=>app.save('ZZ','now',values),DensityDenied);snapshot={...snapshot,canEdit:true};await assert.rejects(()=>app.save('ZZ','old',values),DensityConflict);assert.equal(writes,0);await app.save('ZZ','now',values);assert.equal(writes,1);
 });
+
+import {suggestedDensityValues,hasSuggestedDensities} from '../src/domain/density-settings';
+import {b1DensityStatus} from '../src/domain/b1-status';
+const proposed:DensitySnapshot={canView:true,canEdit:true,exists:false,weightUnit:'KG',volumeUnit:'m3',revision:'r',values:{baggage:'',cargo:'',mail:''},defaults:{baggage:'177',cargo:'210',mail:'210'}};
+test('master suggestions prefill a draft but do not configure unsaved densities',()=>{
+ assert.deepEqual(suggestedDensityValues(proposed),proposed.defaults);
+ assert.equal(b1DensityStatus(proposed),'incomplete');assert.equal(hasSuggestedDensities(proposed),true);
+ assert.deepEqual(proposed.values,{baggage:'',cargo:'',mail:''});
+});
+test('saved carrier values override later defaults independently for each commodity',()=>{
+ const s={...proposed,values:{baggage:'180',cargo:'',mail:'220'}};
+ assert.deepEqual(suggestedDensityValues(s),{baggage:'180',cargo:'210',mail:'220'});
+ assert.equal(b1DensityStatus(s),'partial');
+ assert.equal(hasSuggestedDensities({...s,values:{baggage:'180',cargo:'230',mail:'220'}}),false);
+});
+test('suggestions are unavailable until weight and volume units are defined',()=>{
+ const s={...proposed,weightUnit:''};assert.equal(hasSuggestedDensities(s),false);assert.deepEqual(suggestedDensityValues(s),s.values);
+});

@@ -149,3 +149,14 @@ test("D5 requires optional Balance Arm boundaries as a pair", () =>
     /both Balance Arm From and To/,
   ));
 test("D5 requires only Flight Deck Locations for a Freighter",()=>assert.equal(aircraftD5Status({...snap,cabinAreas:[],cabinCrewLocations:[]},"FREIGHTER"),"configured"));
+
+test("D5 explicit sequence preserves order and derives compatible bounds",()=>{
+ const result=validate("cabinAreas",[{...area,rowSequence:"13,1,2,3,4"}])[0];
+ assert.deepEqual(result.rowSequence,[13,1,2,3,4]);assert.equal(result.startRow,1);assert.equal(result.endRow,13);
+});
+test("D5 sequence membership permits intervening rows in another area but rejects duplicates",()=>{
+ assert.equal(validate("cabinAreas",[{...area,rowSequence:[13,1,2,3,4]},{...area,id:"0B",startRow:5,endRow:12}]).length,2);
+ assert.throws(()=>validate("cabinAreas",[{...area,rowSequence:[13,1,2,3,4]},{...area,id:"0B",startRow:5,endRow:13}]));
+ for(const rowSequence of [[],[13,1,1],"13,,1","0,1","100,1"])
+ assert.throws(()=>validate("cabinAreas",[{...area,rowSequence}]));
+});

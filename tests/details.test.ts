@@ -32,7 +32,7 @@ test('details service validates and forwards the original revision', async () =>
   let received: unknown;
   const app = createCarrierDetails(auth, carriers, { get: async () => snapshot, save: async (...args) => { received = args; return snapshot; } });
   await app.save('ZZ', 'original', { ...valid, city: ' London ' });
-  assert.deepEqual(received, ['ZZ', 'original', valid]);
+  assert.deepEqual(received, ['ZZ', 'original', valid, 'all']);
   await assert.rejects(app.save('ZZ', 'original', { ...valid, city: '' }), DetailsInvalid);
 });
 test('details adapter maps conflict and authorization failures without provider leakage', async () => {
@@ -45,4 +45,19 @@ test('details adapter rejects malformed response and limits returned fields', as
   const client = (data: unknown) => ({ schema: () => ({ rpc: async () => ({ data, error: null }) }) }) as unknown as RequestClient;
   await assert.rejects(createDetailsAdapter(client({ ...snapshot, values: {} })).get('ZZ'), DataUnavailable);
   assert.deepEqual(await createDetailsAdapter(client({ ...snapshot, secret: 'not forwarded' })).get('ZZ'), snapshot);
+});
+
+test('A2 contacts can save before B1 units are chosen',()=>{
+ const contactOnly={...valid,weightUnit:'',volumeUnit:'',weightMethod:''};
+ assert.deepEqual(validateDetails(contactOnly,'contact'),contactOnly);
+ assert.throws(()=>validateDetails(contactOnly),DetailsInvalid);
+ assert.throws(()=>validateDetails({...contactOnly,city:''},'contact'),DetailsInvalid);
+});
+
+test('A2 save uses the contacts-only repository operation',async()=>{
+ let operation='';
+ const client={schema:()=>({rpc:async(name:string)=>{operation=name;return {data:snapshot,error:null};}})} as unknown as RequestClient;
+ const app=createCarrierDetails(auth,carriers,createDetailsAdapter(client));
+ await app.save('ZZ','revision',{...valid,weightUnit:'',volumeUnit:'',weightMethod:''},'contact');
+ assert.equal(operation,'save_carrier_contacts');
 });

@@ -4,6 +4,7 @@ import {useSaveFeedback,SaveScope,SaveSubmit,SaveCancel,SaveButton,SaveInput,Sav
 import { useState } from "react";
 import { saveAircraftC2 } from "@/app/aircraft-c2-actions";
 import { SectionHeader } from "@/components/section-header";
+import { aircraftC2Statuses } from "@/domain/aircraft-c2-status";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
 import type { AircraftOperatingRole } from "@/domain/aircraft-c1";
 import type {
@@ -46,6 +47,8 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pending, start,saveFeedback] = useSaveFeedback();
+
+  const statuses = aircraftC2Statuses(saved, operatingRole);
 
   const visibleOutputFields = outputFields.filter((field) =>
     draft.documents.some((document) => document.code === field.documentCode && document.required),
@@ -160,12 +163,12 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
         id="aircraft-c2-heading"
         title="2. BALANCE AND SPECIAL INFORMATION – OUTPUT ON LOADSHEET"
         reference="(AHM565 Sheets C2, C3)"
-      />
+      ><ConfigurationStatusBadge status={statuses.page} variant="large"/></SectionHeader>
 
       <div className="c2-section" id="automatic-documents">
         <div className="c2-section-heading">
           <h3>Loadsheet Documents</h3>
-          {sectionActions("documents", "Loadsheet Documents")}
+          <div className="c5-heading-actions">{sectionActions("documents", "Loadsheet Documents")}<ConfigurationStatusBadge status={statuses.documents}/></div>
         </div>
         <p>Master requirements are suggestions. Saved selections apply to the carrier.</p>
         <div className="c2-documents">
@@ -189,7 +192,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
       <div className="c2-section">
         <div className="c2-section-heading">
           <h3>Balance Output</h3>
-          {sectionActions("balance", "Balance Output")}
+          <div className="c5-heading-actions">{sectionActions("balance", "Balance Output")}<ConfigurationStatusBadge status={statuses.balance}/></div>
         </div>
         {visibleOutputFields.length === 0 ? (
           <p className="muted">Select at least one Loadsheet Document to display its Balance Output column.</p>
@@ -258,7 +261,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
       <div className="c2-section">
         <div className="c2-section-heading">
           <h3>Passenger Trim Output</h3>
-          {operatingRole==="FREIGHTER"?<ConfigurationStatusBadge status="not_required"/>:sectionActions("trim", "Passenger Trim Output")}
+          <div className="c5-heading-actions">{operatingRole!=="FREIGHTER"&&sectionActions("trim", "Passenger Trim Output")}<ConfigurationStatusBadge status={statuses.trim}/></div>
         </div>
         {operatingRole==="FREIGHTER"?<p className="muted">Passenger Trim Output is not required for a Freighter aircraft. Any previously saved data is retained.</p>:<><p>Select each Passenger Trim method used by this aircraft and give selected methods a unique priority.</p>
         <div className="c2-trim-grid">

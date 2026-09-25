@@ -15,7 +15,7 @@ export function selectHoldCategory<T extends HoldSelection>(current: T, key: key
 }
 export type CrewValues = Record<CrewWeightKey, number | null> & HoldSelection & { includesHandBaggage: boolean };
 export type CrewDraft = Record<CrewWeightKey, string> & HoldSelection & { includesHandBaggage: boolean };
-export type CrewSnapshot = { canView: boolean; canEdit: boolean; exists: boolean; revision: string; unit: "KG" | "LB" | null; values: CrewValues };
+export type CrewSnapshot = { canView: boolean; canEdit: boolean; exists: boolean; revision: string; unit: "KG" | "LB" | null; values: CrewValues; holdRows?:CrewHoldRow[]; variations?:{code:string;description:string}[] };
 export class CrewInvalid extends Error {}
 export class CrewDenied extends Error {}
 export class CrewConflict extends Error {}
@@ -44,4 +44,16 @@ export function validateCrewWeights(input: unknown): CrewValues {
     values[key] = value;
   }
   return values;
+}
+
+export type CrewHoldRow={code:string|null;mode:"STANDARD"|"SEPARATE";flightDeck:number|null;cabin:number|null};
+export function validateCrewHold(input:unknown,code:string|null):Omit<CrewHoldRow,"code">{
+ const v=input as Partial<CrewHoldRow>;
+ if(!v||!["STANDARD","SEPARATE"].includes(v.mode??"")||(code===null&&v.mode!=="SEPARATE"))throw new CrewInvalid("Choose Standard or Separate Weights.");
+ if(v.mode==="STANDARD")return{mode:"STANDARD",flightDeck:null,cabin:null};
+ const weight=(value:unknown)=>{if(!["string","number"].includes(typeof value)||!/^\d+$/.test(String(value))||Number(value)>2147483647)throw new CrewInvalid("Enter both baggage weights as whole numbers, zero or greater.");return Number(value)};
+ return{mode:"SEPARATE",flightDeck:weight(v.flightDeck),cabin:weight(v.cabin)};
+}
+export function crewBodyValues(input:unknown):CrewValues {
+ return validateCrewWeights({...input as CrewValues,allFlights:true,longhaul:false,shorthaul:false,flightDeckOther:0,cabinOther:0});
 }

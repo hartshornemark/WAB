@@ -25,13 +25,13 @@ test('crew validation rejects missing, fractional, negative, boolean and excessi
  for(const changes of [{flightDeckMale:0},{flightDeckMale:null},{cabinMale:''},{cabinMale:75.5},{flightDeckLong:-1},{flightDeckLong:'1e3'},{flightDeckOther:true},{flightDeckHand:2147483648},{includesHandBaggage:'false'},{cabinFemale:undefined}]) assert.throws(()=>validateCrewWeights({...values,...changes}),CrewInvalid);
 });
 test('crew application enforces session, carrier and administrator access',async()=>{
- const repo={get:async()=>({...snapshot,canEdit:false}),save:async():Promise<never>=>{assert.fail('write attempted');}};
+ const repo={saveHold:async()=>snapshot,get:async()=>({...snapshot,canEdit:false}),save:async():Promise<never>=>{assert.fail('write attempted');}};
  await assert.rejects(createCrewWeights({...auth,currentUser:async()=>null},carriers,repo).save('ZZ','old',values),AuthenticationRequired);
  await assert.rejects(createCrewWeights(auth,{...carriers,findAuthorised:async()=>null},repo).save('XY','old',values),CarrierUnavailable);
  await assert.rejects(createCrewWeights(auth,carriers,repo).save('ZZ','old',values),CrewDenied);
 });
 test('crew application requires a unit and preserves revision for atomic conflict detection',async()=>{
- let received:unknown;const repo={get:async()=>snapshot,save:async(...args:unknown[])=>{received=args;return snapshot;}};
+ let received:unknown;const repo={saveHold:async()=>snapshot,get:async()=>snapshot,save:async(...args:unknown[])=>{received=args;return snapshot;}};
  await createCrewWeights(auth,carriers,repo).save('ZZ','original',crewDraft(values));assert.deepEqual(received,['ZZ','original',values]);
  await assert.rejects(createCrewWeights(auth,carriers,{...repo,get:async()=>({...snapshot,unit:null})}).save('ZZ','old',values),CrewInvalid);
 });
@@ -57,4 +57,20 @@ test('hold categories are exclusive and preserve deselected weight values',()=>{
 test('selected hold categories require both weights and a valid exclusive selection',()=>{
  for(const change of [{allFlights:false,longhaul:false,shorthaul:false},{allFlights:true},{longhaul:'true'},{flightDeckLong:null},{cabinShort:''}]) assert.throws(()=>validateCrewWeights({...values,...change}),CrewInvalid);
  assert.equal(validateCrewWeights({...values,longhaul:false,shorthaul:false,allFlights:true,flightDeckOther:0,cabinOther:0}).flightDeckOther,0);
+});
+
+test('crew hold baggage validates Standard and separate zero weights',async()=>{
+ const {validateCrewHold}=await import('../src/domain/crew-weights');
+ assert.deepEqual(validateCrewHold({mode:'STANDARD'},'LHL'),{mode:'STANDARD',flightDeck:null,cabin:null});
+ assert.deepEqual(validateCrewHold({mode:'SEPARATE',flightDeck:'0',cabin:'15'},null),{mode:'SEPARATE',flightDeck:0,cabin:15});
+ for(const v of [{mode:'STANDARD'},{mode:'SEPARATE',flightDeck:'',cabin:5},{mode:'SEPARATE',flightDeck:-1,cabin:5},{mode:'SEPARATE',flightDeck:1.5,cabin:5},{mode:'SEPARATE',flightDeck:true,cabin:5}])assert.throws(()=>validateCrewHold(v,null),CrewInvalid);
+});
+test('hold save rejects removed variations and preserves other tables',async()=>{
+ let received:unknown;const s={...snapshot,variations:[{code:'LHL',description:'Longhaul'}],holdRows:[]};
+ const repo={get:async()=>s,save:async()=>s,saveHold:async(...args:unknown[])=>{received=args;return s}};
+ const service=createCrewWeights(auth,carriers,repo);
+ await service.saveHold('ZZ','old','LHL',{mode:'SEPARATE',flightDeck:'20',cabin:'15'});
+ assert.deepEqual(received,['ZZ','old','LHL',{mode:'SEPARATE',flightDeck:20,cabin:15}]);
+ await assert.rejects(service.saveHold('ZZ','old','SHL',{mode:'STANDARD'}),CrewInvalid);
+ await assert.rejects(createCrewWeights(auth,carriers,{...repo,get:async()=>({...s,canEdit:false})}).saveHold('ZZ','old','LHL',{mode:'STANDARD'}),CrewDenied);
 });

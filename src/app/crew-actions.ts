@@ -12,3 +12,13 @@ export async function saveCrewWeights(iata: string, revision: string, values: un
     return { ok: false, error: error instanceof CrewInvalid ? error.message : error instanceof CrewDenied ? "You no longer have permission to edit these weights." : error instanceof CrewConflict ? "The weights or carrier weight unit changed while you were editing. Copy your changes, then reload the page." : error instanceof AuthenticationRequired ? "Your session has ended. Please sign in again." : "Unable to save crew weights. Your entries are still here; please try again." };
   }
 }
+
+export async function saveCrewHoldBaggage(iata: string, revision: string, code:string|null, values: unknown): Promise<{ ok: true; snapshot: CrewSnapshot } | { ok: false; error: string }> {
+  try {
+    const snapshot = await (await crewServices()).saveHold(iata, revision, code, values);
+    revalidatePath(`/carrier/${encodeURIComponent(iata)}/crew-weights`);
+    return { ok: true, snapshot };
+  } catch (error) {
+    return { ok: false, error: error instanceof CrewInvalid ? error.message : error instanceof CrewDenied ? "You no longer have permission to edit these weights." : error instanceof CrewConflict ? "The weights or carrier weight unit changed while you were editing. Copy your changes, then reload the page." : error instanceof AuthenticationRequired ? "Your session has ended. Please sign in again." : "Unable to save crew weights. Your entries are still here; please try again." };
+  }
+}

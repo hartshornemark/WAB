@@ -23,6 +23,12 @@ export function b2HandBaggageStatus(snapshot:CrewSnapshot):ConfigurationStatus{
 }
 
 export function b2HoldBaggageStatus(snapshot:CrewSnapshot):ConfigurationStatus{
+  if(snapshot.holdRows){
+    const standard=snapshot.holdRows.find(r=>r.code===null);
+    const complete=(r:typeof standard)=>!!r&&nonnegativeWhole(r.flightDeck)&&nonnegativeWhole(r.cabin);
+    if(!standard)return snapshot.holdRows.length?"partial":"incomplete";
+    return complete(standard)&&(snapshot.variations??[]).every(v=>{const r=snapshot.holdRows!.find(r=>r.code===v.code);return r?.mode==="STANDARD"||complete(r)})?"configured":"partial";
+  }
   const {allFlights,longhaul,shorthaul}=snapshot.values;
   if(!allFlights&&!longhaul&&!shorthaul)return "incomplete";
   if(allFlights&&(longhaul||shorthaul))return "partial";

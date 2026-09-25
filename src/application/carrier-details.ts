@@ -1,5 +1,5 @@
 import { AuthenticationRequired, CarrierUnavailable } from "@/domain/models";
-import { DetailsDenied, validateDetails, type DetailValues } from "@/domain/carrier-details";
+import { DetailsDenied, validateDetails, type DetailsSaveSection, type DetailValues } from "@/domain/carrier-details";
 import type { AuthService } from "@/ports/auth-service";
 import type { CarrierRepository } from "@/ports/carrier-repository";
 import type { CarrierDetailsRepository } from "@/ports/carrier-details-repository";
@@ -10,10 +10,10 @@ export function createCarrierDetails(auth: AuthService, carriers: CarrierReposit
   }
   return {
     async get(iata: string) { await requireCarrier(iata); return details.get(iata); },
-    async save(iata: string, revision: string, input: DetailValues) {
+    async save(iata: string, revision: string, input: DetailValues, section: DetailsSaveSection = "all") {
       await requireCarrier(iata);
       if (!(await details.get(iata)).canEdit) throw new DetailsDenied();
-      return details.save(iata, revision, validateDetails(input));
+      return details.save(iata, revision, validateDetails(input,section),section);
     },
   };
 }

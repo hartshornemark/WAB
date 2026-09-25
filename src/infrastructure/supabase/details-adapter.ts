@@ -22,8 +22,8 @@ export function createDetailsAdapter(client: RequestClient): CarrierDetailsRepos
       if (error) throw new DataUnavailable("Unable to load carrier details.");
       return snapshot(data);
     },
-    async save(iata, revision, values) {
-      const { data, error } = await api().rpc("save_carrier_details", { p_iata: iata, p_revision: revision, p_values: values });
+    async save(iata, revision, values, section) {
+      const { data, error } = await api().rpc(section === "contact" ? "save_carrier_contacts" : "save_carrier_details", { p_iata: iata, p_revision: revision, p_values: values });
       if (error?.code === "42501") throw new DetailsDenied();
       if (error?.code === "40001") throw new DetailsConflict();
       if (error) throw new DataUnavailable("Unable to save carrier details.");

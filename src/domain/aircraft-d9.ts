@@ -1,13 +1,16 @@
+import {cabinRowNumbers} from "./cabin-row-sequence";
+import {physicalSeatGrouping} from "./aircraft-d8";
 import {
   balanceArmFromIndexPerWeightUnit,
   validIndexPerWeightUnitFormula,
   type IndexPerWeightUnitFormula,
 } from "@/domain/index-per-weight-unit";
 
-export type D9CabinArea = { id:string; rowFrom:number; rowTo:number; centroid:number; from:number; to:number; index:number|null };
+export type D9CabinArea = { id:string; rowFrom:number; rowTo:number; rowSequence?:number[]|null; centroid:number; from:number; to:number; index:number|null };
 export type D9Class = { code:string|null; name:string|null; slot:1|2|3|4 };
 export type D9AreaRow = {
   areaId:string;
+  blockedRows?:number[];
   classSeats:[number|null,number|null,number|null,number|null];
   totalSeats:number|null;
   centroid:number|null;
@@ -16,7 +19,9 @@ export type D9AreaRow = {
   index:number|null;
 };
 export type D9Configuration = { code:string; description:string; rows:D9AreaRow[] };
+export type D9PhysicalRow = {areaId:string;rowNumber:number;maximumSeats:number|null;grouping:string|null};
 export type AircraftD9Snapshot = {
+  seatRows?:D9PhysicalRow[];
   canView:boolean;
   canEdit:boolean;
   revision:string;
@@ -67,11 +72,11 @@ export function suggestD9Description(rows:{classSeats:readonly unknown[]}[], cla
     .join("");
 }
 
-export function validateD9Configuration(value:unknown, areas:D9CabinArea[], classes:D9Class[], formula?:IndexPerWeightUnitFormula|null) {
+export function validateD9Configuration(value:unknown, areas:D9CabinArea[], classes:D9Class[], formula?:IndexPerWeightUnitFormula|null, seatRows?:D9PhysicalRow[]) {
   const configuration = value as Partial<D9Configuration>;
   const code = String(configuration.code ?? "").trim().toUpperCase();
   const activeSlots = new Set(classes.filter(carrierClass => carrierClass.code && carrierClass.name).map(carrierClass => carrierClass.slot));
-  if (!/^[A-Z0-9]{1,3}$/.test(code)) throw new AircraftD9Invalid("Configuration Code must contain 1–3 letters or numbers.");
+  if (!/^[A-Z]$/.test(code)) throw new AircraftD9Invalid("Configuration Code must be one letter (A–Z).");
   if (!activeSlots.size) throw new AircraftD9Invalid("Configure at least one carrier class before D9.");
   if (!validIndexPerWeightUnitFormula(formula)) throw new AircraftD9Invalid("Configure C4 before calculating Balance Arm Centroid.");
   if (!Array.isArray(configuration.rows)) throw new AircraftD9Invalid("Check the Cabin Area rows.");
@@ -93,7 +98,11 @@ export function validateD9Configuration(value:unknown, areas:D9CabinArea[], clas
     if (from !== null && from > centroid) throw new AircraftD9Invalid(`Balance Arm From for ${area.id} cannot be greater than the calculated Centroid.`);
     if (to !== null && centroid > to) throw new AircraftD9Invalid(`Balance Arm To for ${area.id} cannot be less than the calculated Centroid.`);
     if (from !== null && to !== null && from > to) throw new AircraftD9Invalid(`Balance Arm From for ${area.id} cannot be greater than Balance Arm To.`);
-    return { areaId:area.id, classSeats, totalSeats, centroid, from, to, index };
+    const blockedRows=row.blockedRows??[];
+    if(!Array.isArray(blockedRows)||blockedRows.some(n=>!Number.isInteger(n)||!cabinRowNumbers(area).includes(n))||new Set(blockedRows).size!==blockedRows.length)throw new AircraftD9Invalid(`Check blocked rows for Cabin Area ${area.id}.`);
+    const result={ areaId:area.id, classSeats, totalSeats, centroid, from, to, index, blockedRows:[...blockedRows].sort((a,b)=>a-b) };
+    if(seatRows){const problem=d9SeatPlanProblem(result,seatRows);if(problem)throw new AircraftD9Invalid(problem);}
+    return result;
   });
 
   const suggestedDescription = suggestD9Description(rows, classes);
@@ -103,9 +112,8 @@ export function validateD9Configuration(value:unknown, areas:D9CabinArea[], clas
 }
 
 export function deriveD9ClassSummaries(configuration:D9Configuration, areas:D9CabinArea[], classes:D9Class[], formula:D9IndexFormula={referenceArm:0,constantC:1}, excludedRows:number[]=[]):D9ClassSummary[] {
-  const excluded = new Set(excludedRows);
-  const first = (area:D9CabinArea) => Array.from({length:area.rowTo-area.rowFrom+1},(_,index)=>area.rowFrom+index).find(row=>!excluded.has(row)) ?? area.rowFrom;
-  const last = (area:D9CabinArea) => Array.from({length:area.rowTo-area.rowFrom+1},(_,index)=>area.rowTo-index).find(row=>!excluded.has(row)) ?? area.rowTo;
+  const first=(area:D9CabinArea)=>cabinRowNumbers(area,excludedRows)[0]??area.rowFrom;
+  const last=(area:D9CabinArea)=>cabinRowNumbers(area,excludedRows).at(-1)??area.rowTo;
   return classes
     .filter((carrierClass):carrierClass is D9Class & {code:string;name:string} => !!carrierClass.code && !!carrierClass.name)
     .flatMap(carrierClass => {
@@ -120,8 +128,8 @@ export function deriveD9ClassSummaries(configuration:D9Configuration, areas:D9Ca
       return [{
         code:carrierClass.code,
         name:carrierClass.name,
-        firstRow:Math.min(...used.map(value=>first(value.area!))),
-        lastRow:Math.max(...used.map(value=>last(value.area!))),
+        firstRow:first([...used].sort((a,b)=>a.area!.centroid-b.area!.centroid)[0].area!),
+        lastRow:last([...used].sort((a,b)=>a.area!.centroid-b.area!.centroid).at(-1)!.area!),
         totalSeats,
         centroid,
         from,
@@ -129,4 +137,13 @@ export function deriveD9ClassSummaries(configuration:D9Configuration, areas:D9Ca
         index:(centroid-formula.referenceArm)/formula.constantC,
       }];
     });
+}
+
+export function d9SeatPlanProblem(row:Pick<D9AreaRow,"areaId"|"totalSeats"|"blockedRows">,physical:D9PhysicalRow[]):string|null {
+ const rows=physical.filter(r=>r.areaId===row.areaId),blocked=row.blockedRows??[];
+ for(const n of blocked){const r=rows.find(r=>r.rowNumber===n);if(!r||!/^3(-3){0,3}$/.test(r.grouping??""))return `Row ${n}: blocked centres require three-seat groups saved on D8.`;}
+ // D9 may be entered before D8; compare totals once its physical rows are available.
+ if(!rows.length||rows.some(r=>r.maximumSeats==null))return blocked.length?"Complete D8 before blocking seats.":null;
+ const total=rows.reduce((sum,r)=>sum+r.maximumSeats!-(blocked.includes(r.rowNumber)?physicalSeatGrouping(r.grouping!).split("-").length:0),0);
+ return total!==row.totalSeats?`Cabin Area ${row.areaId}: the seat map has ${total} usable seats, but the class allocations total ${row.totalSeats}. Update the class seats or blocked rows.`:null;
 }

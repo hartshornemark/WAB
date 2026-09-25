@@ -11,6 +11,7 @@ export class AircraftC8Conflict extends Error{}
 const finite=(value:unknown,label:string)=>{const n=typeof value==="number"?value:Number(value);if(value===""||value===null||value===undefined||!Number.isFinite(n)||Math.abs(n)>1_000_000_000)throw new AircraftC8Invalid(`Enter a valid ${label}.`);return n};
 const positive=(value:unknown,label:string)=>{const n=finite(value,label);if(n<=0)throw new AircraftC8Invalid(`${label} must be greater than zero.`);return n};
 const wholePositive=(value:unknown,label:string)=>{const n=positive(value,label);if(!Number.isSafeInteger(n))throw new AircraftC8Invalid(`${label} must be a whole number.`);return n};
+const wholeNonNegative=(value:unknown,label:string)=>{const n=finite(value,label);if(n<0||!Number.isSafeInteger(n))throw new AircraftC8Invalid(`${label} must be a whole number of zero or greater.`);return n};
 const optional=(value:unknown,label:string)=>value===""||value===null||value===undefined?null:finite(value,label);
 const optionalWholePositive=(value:unknown,label:string)=>value===""||value===null||value===undefined?null:wholePositive(value,label);
 export function validateAircraftC8Section(input:unknown,key:AircraftC8SectionKey){
@@ -23,8 +24,10 @@ export function validateAircraftC8Section(input:unknown,key:AircraftC8SectionKey
  }
  if(typeof value?.enabled!=="boolean")throw new AircraftC8Invalid("The C8 section is incomplete.");
  if(key==="standard"){
-  const rows=value.rows.map((entry,index)=>{const r=entry as Record<string,unknown>;return{specificGravity:positive(r.specificGravity,`Specific Gravity at row ${index+1}`),fuelVolume:optionalWholePositive(r.fuelVolume,`Fuel Volume at row ${index+1}`),fuelWeight:wholePositive(r.fuelWeight,`Fuel Weight at row ${index+1}`),hArm:optional(r.hArm,`H-Arm at row ${index+1}`),indexValue:finite(r.indexValue,`Index at row ${index+1}`)}}).sort((a,b)=>a.fuelWeight-b.fuelWeight);
+  const rows=value.rows.map((entry,index)=>{const r=entry as Record<string,unknown>;return{specificGravity:positive(r.specificGravity,`Specific Gravity at row ${index+1}`),fuelVolume:optionalWholePositive(r.fuelVolume,`Fuel Volume at row ${index+1}`),fuelWeight:wholeNonNegative(r.fuelWeight,`Fuel Weight at row ${index+1}`),hArm:optional(r.hArm,`H-Arm at row ${index+1}`),indexValue:finite(r.indexValue,`Index at row ${index+1}`)}}).sort((a,b)=>a.fuelWeight-b.fuelWeight);
   if(new Set(rows.map(r=>`${r.fuelWeight}|${r.specificGravity}`)).size!==rows.length)throw new AircraftC8Invalid("Each Fuel Weight and Specific Gravity combination may appear only once.");
+  for(const sg of new Set(rows.map(row=>row.specificGravity)))if(!rows.some(row=>row.specificGravity===sg&&row.fuelWeight===0))rows.push({specificGravity:sg,fuelWeight:0,fuelVolume:null,hArm:null,indexValue:0});
+  rows.sort((a,b)=>a.fuelWeight-b.fuelWeight);
   return{enabled:value.enabled,rows};
  }
  const rows=value.rows.map((entry,index)=>{const r=entry as Record<string,unknown>,tankName=String(r.tankName??"").trim(),tankShortCode=String(r.tankShortCode??"").trim().toUpperCase();if(!tankName||tankName.length>80)throw new AircraftC8Invalid(`Enter a Tank Name of no more than 80 characters at row ${index+1}.`);if(!/^[A-Z0-9]{3}$/.test(tankShortCode))throw new AircraftC8Invalid(`Enter a three-character Tank Short Code using letters or numbers at row ${index+1}.`);return{tankName,tankShortCode,specificGravity:positive(r.specificGravity,`Specific Gravity at row ${index+1}`),maximumVolume:wholePositive(r.maximumVolume,`Maximum Volume at row ${index+1}`),indexPerUnitWeight:finite(r.indexPerUnitWeight,`Index per Unit Weight at row ${index+1}`),balanceArm:optional(r.balanceArm,`Balance Arm at row ${index+1}`)}});

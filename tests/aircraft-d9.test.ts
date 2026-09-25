@@ -85,8 +85,8 @@ test("D9 calculates Total Seats and Balance Arm Centroid", () => {
   assert.deepEqual(result.rows.map((value) => value.centroid), [12.25, 18.25]);
 });
 
-test("D9 preserves configuration codes containing up to three letters or numbers", () => {
-  assert.equal(validateD9Configuration({ ...configuration, code: "y10" }, areas, classes, formula).code, "Y10");
+test("D9 requires one alphabetic configuration code", () => {
+  assert.equal(validateD9Configuration({ ...configuration, code: "y" }, areas, classes, formula).code, "Y");
   assert.throws(
     () => validateD9Configuration({ ...configuration, code: "Y100" }, areas, classes, formula),
     AircraftD9Invalid,
@@ -156,3 +156,8 @@ test("D9 requires one complete class summary", () => {
   assert.equal(d9ConfigurationStatuses({ ...configuration, rows: [row("0A", [0, 0, 0, 0], 1)] }, areas, classes, formula).classInfo, "incomplete");
 });
 test("D9 is not required for a Freighter",()=>assert.equal(aircraftD9Status({...snapshot,configurations:[]},formula,"FREIGHTER"),"not_required"));
+
+test("D9 class endpoints follow physical row sequence rather than numeric order",()=>{
+ const summaries=deriveD9ClassSummaries({...configuration,rows:[row("0A",[0,20,0,0],20)]},[{...areas[0],rowTo:13,rowSequence:[13,1,2,3,4]}],classes,formula);
+ assert.equal(summaries[0].firstRow,13);assert.equal(summaries[0].lastRow,4);assert.equal(summaries[0].totalSeats,20);
+});

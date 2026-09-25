@@ -1,6 +1,6 @@
 import type{AircraftC8Values,NonStandardFuelRow,StandardFuelRow,TaxiFuelRow}from"@/domain/aircraft-c8";import type{ConfigurationStatus,DisplayConfigurationStatus}from"@/domain/configuration-status";
 const finite=(n:number|null)=>n!==null&&Number.isFinite(n)&&Math.abs(n)<=1_000_000_000;
-const standardValid=(r:StandardFuelRow)=>finite(r.specificGravity)&&r.specificGravity>0&&(r.fuelVolume===null||(Number.isSafeInteger(r.fuelVolume)&&r.fuelVolume>0))&&finite(r.fuelWeight)&&r.fuelWeight>0&&(r.hArm===null||finite(r.hArm))&&finite(r.indexValue);
+const standardValid=(r:StandardFuelRow)=>finite(r.specificGravity)&&r.specificGravity>0&&(r.fuelVolume===null||(Number.isSafeInteger(r.fuelVolume)&&r.fuelVolume>0))&&finite(r.fuelWeight)&&r.fuelWeight>=0&&(r.hArm===null||finite(r.hArm))&&finite(r.indexValue);
 const nonStandardValid=(r:NonStandardFuelRow)=>r.tankName.trim().length>0&&/^[A-Z0-9]{3}$/.test(r.tankShortCode)&&finite(r.specificGravity)&&r.specificGravity>0&&finite(r.maximumVolume)&&r.maximumVolume>0&&finite(r.indexPerUnitWeight)&&(r.balanceArm===null||finite(r.balanceArm));
 const taxiFuelValid=(r:TaxiFuelRow)=>Number.isSafeInteger(r.taxiFuel)&&r.taxiFuel>0&&(r.isDefault?r.airportIata===null:/^[A-Z]{3}$/.test(r.airportIata??""));
 const section=(enabled:boolean,count:number,required:number,valid:boolean):DisplayConfigurationStatus=>!enabled?"skipped":count===0?"incomplete":count>=required&&valid?"configured":"partial";

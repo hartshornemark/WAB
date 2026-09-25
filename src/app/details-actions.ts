@@ -2,11 +2,11 @@
 import { revalidatePath } from "next/cache";
 import { detailsServices } from "@/composition/services";
 import { AuthenticationRequired } from "@/domain/models";
-import { DetailsConflict, DetailsDenied, DetailsInvalid, type DetailValues, type DetailsSnapshot } from "@/domain/carrier-details";
+import { DetailsConflict, DetailsDenied, DetailsInvalid, type DetailsSaveSection, type DetailValues, type DetailsSnapshot } from "@/domain/carrier-details";
 export type SaveDetailsResult = { ok: true; snapshot: DetailsSnapshot } | { ok: false; error: string; fields?: Partial<Record<keyof DetailValues, string>> };
-export async function saveDetails(iata: string, revision: string, values: DetailValues): Promise<SaveDetailsResult> {
+export async function saveDetails(iata: string, revision: string, values: DetailValues, section: DetailsSaveSection = "all"): Promise<SaveDetailsResult> {
   try {
-    const snapshot = await (await detailsServices()).save(iata, revision, values);
+    const snapshot = await (await detailsServices()).save(iata, revision, values, section);
     revalidatePath(`/carrier/${encodeURIComponent(iata)}`);
     return { ok: true, snapshot };
   } catch (error) {

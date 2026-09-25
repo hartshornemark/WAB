@@ -1,1 +1,1 @@
-import type{AircraftD8Snapshot,SeatRow}from"@/domain/aircraft-d8";export interface AircraftD8Repository{get(i:string,t:string,s:string):Promise<AircraftD8Snapshot>;save(i:string,t:string,s:string,r:string,rows:SeatRow[]):Promise<AircraftD8Snapshot>}
+import type{AircraftD8Snapshot,SeatRow}from"@/domain/aircraft-d8";export interface AircraftD8Repository{get(i:string,t:string,s:string):Promise<AircraftD8Snapshot>;save(i:string,t:string,s:string,r:string,rows:SeatRow[],groupings:Record<string,string|null>):Promise<AircraftD8Snapshot>}

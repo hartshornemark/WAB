@@ -17,7 +17,7 @@ const choices = [
 ] as const;
 export function CarrierDetails({ iata, initial, children, commodityEditor, initialStep = "contact",pageStatus="incomplete" }: { iata: string; initial: DetailsSnapshot; children?: ReactNode; commodityEditor?: ReactNode; initialStep?: "contact" | "general";pageStatus?:ConfigurationStatus }) {
   const router=useRouter();
-  const [step, setStep] = useState<"contact" | "general">(initialStep);
+  const step = initialStep;
   const title = step === "contact" ? "A2. CARRIERS’ CONTACTS" : "B1. UNITS & CODES";
   const reference = step === "contact" ? "(AHM565 Sheet A2)" : "(AHM565 Sheet B1)";
   const [saved, setSaved] = useState(initial);
@@ -37,9 +37,9 @@ export function CarrierDetails({ iata, initial, children, commodityEditor, initi
       event.preventDefault(); setError(""); setFields({});
       startTransition(async () => {
         try {
-          const result = await saveDetails(iata, saved.revision, draft);
-          if (result.ok) {setError("");setSaved(result.snapshot);saveFeedback.complete(()=>{  setEditing(false); window.dispatchEvent(new CustomEvent(INDEX_DISPLAY_PREFERENCE_EVENT,{detail:{iata,indexDecimalPlaces:result.snapshot.values.indexDecimalPlaces==="2"?2:1}})); router.refresh(); setMessage("Carrier details and carrier standard units and codes saved."); });}
-          else { setError(result.error); setFields(result.fields ?? {}); if (result.fields) setStep(contactFields.some(field => result.fields?.[field.key]) ? "contact" : "general"); }
+          const result = await saveDetails(iata, saved.revision, draft, step === "contact" ? "contact" : "all");
+          if (result.ok) {setError("");setSaved(result.snapshot);saveFeedback.complete(()=>{  setEditing(false); window.dispatchEvent(new CustomEvent(INDEX_DISPLAY_PREFERENCE_EVENT,{detail:{iata,indexDecimalPlaces:result.snapshot.values.indexDecimalPlaces==="2"?2:1}})); router.refresh(); setMessage(step === "contact" ? "Carrier contact details saved." : "Carrier standard units and codes saved."); });}
+          else { setError(result.error); setFields(result.fields ?? {}); }
         } catch { setError("Unable to save. Your entries are still here; please try again."); }
       });
     }}>

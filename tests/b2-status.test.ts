@@ -41,3 +41,12 @@ test("an absent B2 record leaves crew and hand baggage incomplete",()=>{
  assert.equal(result.holdBaggage,"incomplete");
  assert.equal(result.page,"incomplete");
 });
+
+test("B2 Standard plus variations requires each variation decision",()=>{
+ const standard={code:null,mode:"SEPARATE" as const,flightDeck:0,cabin:0};
+ const s={...snapshot,holdRows:[standard],variations:[{code:"LHL",description:"Longhaul"}]};
+ assert.equal(b2Statuses(s).holdBaggage,"partial");
+ assert.equal(b2Statuses({...s,holdRows:[standard,{code:"LHL",mode:"STANDARD",flightDeck:null,cabin:null}]}).page,"configured");
+ assert.equal(b2Statuses({...s,holdRows:[standard,{code:"LHL",mode:"SEPARATE",flightDeck:20,cabin:15}]}).page,"configured");
+ assert.equal(b2Statuses({...s,holdRows:[]}).holdBaggage,"incomplete");
+});
