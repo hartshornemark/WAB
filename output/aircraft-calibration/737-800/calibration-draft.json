@@ -1,0 +1,18 @@
+{
+  "aircraftType": "738",
+  "series": "800",
+  "source": "737-800.dxf",
+  "noseX": 244,
+  "centreY": 25,
+  "span": 240,
+  "cadNoseX": -67.9985,
+  "cadTailX": 1485.5229,
+  "cadDrawingUnits": "inches, confirmed by the 129 FT 6 IN length annotation",
+  "cadLengthInches": 1554.0,
+  "lengthMetres": 39.471599999999995,
+  "noseArmMetres": 3.302,
+  "noseStationInches": 130,
+  "datumStatus": "Uses the same 130-inch forward-of-nose calibration framework as the 737 MAX 9 template.",
+  "pathCount": 246,
+  "sha256": "23b9d40018606ca7793cc606a2cc938d7e122034511fd8c957d2c820e75ada5b"
+}

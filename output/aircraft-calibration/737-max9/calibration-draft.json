@@ -1,0 +1,18 @@
+{
+  "aircraftType": "7M9",
+  "series": "900",
+  "source": "Boeing 737-9_3VIEW.dwg",
+  "noseX": 244,
+  "centreY": 25,
+  "span": 240,
+  "cadNoseX": 2510.702734751717,
+  "cadTailX": 4170.621834751717,
+  "cadDrawingUnits": "inches, verified against dimension annotations (header units disagree)",
+  "cadLengthInches": 1659.9191,
+  "lengthMetres": 42.16194514,
+  "datumStatus": "User-provided 130 inches forward of nose; MAX 9-specific Weight and Balance Manual confirmation pending",
+  "sha256": "3dedb61d535ac8510178f07cc8a67d2d6d96e8ca84cb2e18852ff08887da4e07",
+  "noseArmMetres": 3.302,
+  "noseStationInches": 130,
+  "datumSource": "User report, 26 September 2026. NTSB DCA19MA143 corroborates 130 inches for 737-800, not independently verified for MAX 9."
+}

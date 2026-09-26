@@ -58,3 +58,18 @@ test("D8 follows explicit row order and retains saved data by row identity",()=>
 });
 
  test("D8 accepts an empty group while counting only physical seats",()=>{for(const grouping of ["0-2","2-0"]){assert.equal(validateD8Rows([{...row(1,"0A"),maximumSeats:2,seatGroupingOverride:grouping}],areas,formula)[0].seatGroupingOverride,grouping);}});
+
+test('D8 validates gaps and reports actual aircraft rows, not list positions',()=>{
+ const cabins=[{id:'0A',rowFrom:1,rowTo:3},{id:'0B',rowFrom:6,rowTo:15}];
+ const rows=[row(1,'0A'),row(2,'0A'),row(3,'0A'),row(6,'0B'),row(7,'0B')];
+ assert.equal(validateD8Rows(rows,cabins,formula).length,5);
+ assert.throws(()=>validateD8Rows(rows.map(r=>r.rowNumber===6?{...r,index:null}:r),cabins,formula),/Index per Weight Unit at row 6 in Cabin Area 0B/);
+ assert.throws(()=>validateD8Rows(rows.map(r=>r.rowNumber===7?{...r,index:null}:r),cabins,formula),/Index per Weight Unit at row 7 in Cabin Area 0B/);
+});
+
+import {suggestedD8Seats} from '../src/domain/aircraft-d8';
+test('D8 suggests seat counts for default and override groups without accepting partial typing',()=>{
+ assert.equal(suggestedD8Seats('3-3'),6);assert.equal(suggestedD8Seats('2-2'),4);
+ assert.equal(suggestedD8Seats('0-2'),2);assert.equal(suggestedD8Seats('2-4-2'),8);
+ assert.equal(suggestedD8Seats('3-'),null);assert.equal(suggestedD8Seats(''),null);
+});

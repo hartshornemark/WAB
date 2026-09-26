@@ -1,6 +1,7 @@
 "use server";
 import { aircraftLayoutServices } from "@/composition/services";
 import { aircraftC4Services, aircraftD2Services, aircraftD3Services, aircraftD4Services } from "@/composition/services";
+import { carrierDrawingOrigin } from "@/domain/carrier-drawing-origin";
 import { buildHoldLayout, holdLayoutUnavailable } from "@/domain/hold-layout";
 
 export async function loadHoldLayout(iata: string, typeCode: string, subtype: string) {
@@ -15,9 +16,15 @@ export async function loadHoldLayout(iata: string, typeCode: string, subtype: st
       aircraftC4Services().then(service => service.get(iata, typeCode, subtype)),
     ]);
     if(calibration.armUnit && calibration.armUnit!==c4.lengthUnit)return {ok:false as const,error:"Aircraft drawing and C4 length units do not match."};
-    const reason = holdLayoutUnavailable(d2,calibration);
+    // MAX 9 trial calibration follows the carrier's nose arm, as the seat map does.
+    // Older templates retain their independently calibrated cargo origins.
+    let effectiveCalibration = typeCode === "7M9" && subtype === "900"
+      ? {...calibration,noseArm:c4.values.datum,diagramCaption:`Provisional MAX 9 calibration: nose at balance arm ${c4.values.datum} inches. Boeing airport-planning outline.`}
+      : calibration;
+    effectiveCalibration = carrierDrawingOrigin(iata, effectiveCalibration);
+    const reason = holdLayoutUnavailable(d2,effectiveCalibration);
     if (reason) return { ok: false as const, error: reason };
-    try { return { ok: true as const, layout: buildHoldLayout(d2, d4, d3, calibration) }; }
+    try { return { ok: true as const, layout: buildHoldLayout(d2, d4, d3, effectiveCalibration) }; }
     catch (error) { return { ok: false as const, error: error instanceof Error ? error.message : "Unable to draw this hold layout." }; }
   } catch {
     return { ok: false as const, error: "Unable to load the saved hold layout. Check your access and try again." };

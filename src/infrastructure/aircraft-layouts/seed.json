@@ -146,5 +146,79 @@
         "joinArm": 662
       }
     }
+  },
+  {
+    "typeCode": "7M9",
+    "subtype": "900",
+    "version": 1,
+    "file": "7m9-900-fuselage.svg",
+    "sha256": "3dedb61d535ac8510178f07cc8a67d2d6d96e8ca84cb2e18852ff08887da4e07",
+    "byteSize": 360254,
+    "objectPath": "7M9/900/3dedb61d535ac8510178f07cc8a67d2d6d96e8ca84cb2e18852ff08887da4e07.svg",
+    "noseArm": 3.302,
+    "datumDescription": "Provisional: datum zero 130 inches (3.302 m) forward of nose. User-approved for overlay review, 26 September 2026.",
+    "datumSource": "User-provided Boeing Section 41 station diagram, Figure 201/06-21-00-990-801, page 202 dated 15 October 2015, nose STA 130. MAX 9 weight-and-balance applicability not independently verified.",
+    "sourceDrawing": "Boeing 737-9_3VIEW.dwg, copyright 2020. Recovered original top-view curves; airport-planning accuracy +/-6 inches.",
+    "calibration": {
+      "typeCode": "7M9",
+      "subtype": "900",
+      "length": 1659.9191,
+      "noseArm": 130,
+      "armUnit": "IN",
+      "tailX": 244,
+      "span": 240,
+      "centreY": 25,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 15,
+      "holdHeight": 20,
+      "leftDoorY": 12,
+      "rightDoorY": 38,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Provisional MAX 9 calibration: nose at balance arm 130 inches. Boeing airport-planning outline."
+    }
+  },
+  {
+    "typeCode": "738",
+    "subtype": "800",
+    "version": 4,
+    "file": "738-800-fuselage.svg",
+    "sha256": "4dba08f753174ac431c0dcf594651c7b5180c496019d077a8fae0e0a87df4754",
+    "byteSize": 114050,
+    "objectPath": "738/800/4dba08f753174ac431c0dcf594651c7b5180c496019d077a8fae0e0a87df4754.svg",
+    "noseArm": 3.302,
+    "datumDescription": "Provisional: datum zero 130 inches (3.302 m) forward of nose, matching the approved 737 MAX 9 calibration framework.",
+    "datumSource": "User-directed reuse of the approved 737 MAX 9 130-inch calibration for the Boeing 737-800 overlay, 26 September 2026. Weight-and-balance applicability is provisional pending carrier source confirmation.",
+    "sourceDrawing": "User-supplied 737-800.dxf. Top-view vector geometry and the published 129 ft 6 in overall length were used to construct the fuselage overlay.",
+    "calibration": {
+      "typeCode": "738",
+      "subtype": "800",
+      "length": 1554,
+      "noseArm": 130,
+      "armUnit": "IN",
+      "tailX": 244,
+      "span": 240,
+      "centreY": 25,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 18,
+      "holdHeight": 14,
+      "leftDoorY": 18,
+      "rightDoorY": 32,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Provisional 737-800 calibration: physical datum 130 inches forward of the nose; KA plotting uses the matching -130-inch drawing-origin correction."
+    }
   }
 ]

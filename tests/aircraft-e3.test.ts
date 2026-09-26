@@ -11,3 +11,9 @@ test("potable water rejects a tank that is not defined in D6",()=>assert.throws(
 test("service adjustments require a signed non-zero whole weight",()=>assert.throws(()=>validateE3Service([{code:"C",description:"Catering",weight:0,balanceArm:18,index:.2}])));
 test("a complete service adjustment configures its section",()=>{const rows=validateE3Service([{code:"C",description:"Catering",weight:-50,balanceArm:18.037,index:-.2,remarks:"Remove catering"}]);assert.equal(e3ServiceStatus({...base,serviceActive:true,serviceRows:rows}),"configured")});
 test("a service adjustment remains complete when its optional balance arm is blank",()=>{const rows=validateE3Service([{code:"F",description:"Flight Spares Kit",weight:150,balanceArm:null,index:0,remarks:null}]);assert.equal(rows[0].balanceArm,null);assert.equal(e3ServiceStatus({...base,serviceActive:true,serviceRows:rows}),"configured")});
+
+test("service entry accepts signed text weights and decimal indexes",()=>{
+ const [r]=validateE3Service([{code:"REM",description:"Remove item",weight:"-50",balanceArm:"18.037",index:"-0.25"}]);
+ assert.equal(r.weight,-50);assert.equal(r.index,-.25);assert.equal(r.balanceArm,18.037);
+ for(const index of ["-",".","",null])assert.throws(()=>validateE3Service([{code:"REM",description:"Remove item",weight:"-50",index}]));
+});

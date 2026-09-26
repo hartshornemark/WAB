@@ -5,8 +5,9 @@ import {createHash} from "node:crypto";
 import {parseLayoutVersion} from "../src/domain/aircraft-layout-template";
 import {A319_LAYOUT,A320_LAYOUT} from "./fixtures/aircraft-layouts";
 import {holdLayoutX} from "../src/domain/hold-layout";
+import {carrierDrawingOrigin} from "../src/domain/carrier-drawing-origin";
 import seeds from "../src/infrastructure/aircraft-layouts/seed.json";
-const version=(i=0)=>({id:"fixture",aircraft_type:seeds[i].typeCode,aircraft_subtype:seeds[i].subtype,version:1,bucket:"aircraft-layouts",object_path:seeds[i].objectPath,sha256:seeds[i].sha256,byte_size:seeds[i].byteSize,nose_arm_m:seeds[i].noseArm,datum_description:seeds[i].datumDescription,datum_source:seeds[i].datumSource,source_drawing:seeds[i].sourceDrawing,calibration:seeds[i].calibration});
+const version=(i=0)=>({id:"fixture",aircraft_type:seeds[i].typeCode,aircraft_subtype:seeds[i].subtype,version:seeds[i].version,bucket:"aircraft-layouts",object_path:seeds[i].objectPath,sha256:seeds[i].sha256,byte_size:seeds[i].byteSize,nose_arm_m:seeds[i].noseArm,datum_description:seeds[i].datumDescription,datum_source:seeds[i].datumSource,source_drawing:seeds[i].sourceDrawing,calibration:seeds[i].calibration});
 test("stored template contract preserves both approved calibrations and exact SVG bytes",()=>{
  for(const [i,approved] of [A319_LAYOUT,A320_LAYOUT].entries()){
   const parsed=parseLayoutVersion(version(i));
@@ -35,4 +36,29 @@ test("additional aircraft can use the same contract without a code registry",()=
  const v=version();const object_path=`321/200/${v.sha256}.svg`;
  const parsed=parseLayoutVersion({...v,aircraft_type:"321",aircraft_subtype:"200",object_path,calibration:{...v.calibration,typeCode:"321",subtype:"200"}});
  assert.equal(parsed.calibration.typeCode,"321");
+});
+test("MAX 9 provisional inch calibration anchors nose and aft positions without metre mixing",()=>{
+ const i=seeds.findIndex(s=>s.typeCode==="7M9");assert.ok(i>=0);
+ const v=parseLayoutVersion(version(i));const c={...v.calibration,asset:"signed"};
+ assert.equal(v.nose_arm_m,3.302);assert.equal(c.armUnit,"IN");
+ assert.equal(holdLayoutX(130,c),244);
+ assert.ok(Math.abs(holdLayoutX(130+c.length,c)-4)<1e-9);
+ assert.ok(holdLayoutX(500,c)<holdLayoutX(400,c));
+ const bytes=readFileSync(`src/assets/aircraft-layouts/${seeds[i].file}`);
+ assert.equal(bytes.length,v.byte_size);assert.equal(createHash("sha256").update(bytes).digest("hex"),v.sha256);
+});
+test("737-800 uses the approved MAX 9 datum framework and KA drawing-origin correction",()=>{
+ const i=seeds.findIndex(s=>s.typeCode==="738"&&s.subtype==="800");assert.ok(i>=0);
+ const v=parseLayoutVersion(version(i));const c={...v.calibration,asset:"signed"};
+ assert.equal(v.nose_arm_m,3.302);assert.equal(c.armUnit,"IN");
+ assert.equal(c.length,1554);assert.equal(holdLayoutX(130,c),244);
+ assert.ok(Math.abs(holdLayoutX(1684,c)-4)<1e-9);
+ assert.equal(c.holdY+c.holdHeight/2,c.centreY);
+ assert.equal(c.holdHeight,14);
+ const ka=carrierDrawingOrigin("KA",c);
+ assert.ok(Math.abs(holdLayoutX(0,ka)-(244-130*240/1554))<1e-9);
+ assert.ok(Math.abs(holdLayoutX(130,ka)-(244-260*240/1554))<1e-9);
+ assert.equal(carrierDrawingOrigin("AB",c),c);
+ const bytes=readFileSync(`src/assets/aircraft-layouts/${seeds[i].file}`);
+ assert.equal(bytes.length,v.byte_size);assert.equal(createHash("sha256").update(bytes).digest("hex"),v.sha256);
 });

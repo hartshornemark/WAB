@@ -6,3 +6,9 @@ test("E2 accepts complete crew rows without baggage",()=>assert.equal(e2CrewStat
 test("E2 requires a crew and pantry row",()=>{assert.equal(e2PantryStatus(base),"incomplete");assert.equal(aircraftE2Status({...base,crewRows:[crew],pantryRows:[pantry]}),"configured")});
 test("E2 accepts only saved D2 holds when baggage is present",()=>{assert.doesNotThrow(()=>validateE2Crew([{...crew,flightDeckBaggageLocation:"1"}],base.flightDeckLocations,base.cabinCrewLocations,base.holds));assert.throws(()=>validateE2Crew([{...crew,flightDeckBaggageLocation:"9"}],base.flightDeckLocations,base.cabinCrewLocations,base.holds))});
 test("E2 preserves decimal Pantry Index values",()=>{const[row]=validateE2Pantry([{...pantry,index:"3.2"}]);assert.equal(row.index,3.2)});
+
+test("E2 pantry totals exceed crew seat limit and reject missing weights",()=>{
+ assert.equal(validateE2Pantry([{...pantry,totalWeight:1403}])[0].totalWeight,1403);
+ assert.throws(()=>validateE2Pantry([{...pantry,totalWeight:null}]));
+ assert.throws(()=>validateE2Crew([{...crew,flightDeckSeats:1000}],base.flightDeckLocations,base.cabinCrewLocations,base.holds));
+});
