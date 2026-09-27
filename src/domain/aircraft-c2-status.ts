@@ -29,6 +29,7 @@ export function aircraftC2Statuses(snapshot:AircraftC2Snapshot,role:AircraftOper
   if(activeDocuments.size===0)return{page:"skipped",documents:"skipped",balance:"skipped",trim:"skipped"};
   const balance:ConfigurationStatus=snapshot.outputs.some(output=>documentFields.some(field=>activeDocuments.has(field.code)&&Boolean(output[field.valid])&&Boolean(output[field.selected])))?"configured":"incomplete";
   if(role==="FREIGHTER")return{page:balance,documents:"configured",balance,trim:"not_required"};
+  if(!snapshot.trimSaved)return{page:balance==="configured"?"partial":"incomplete",documents:"configured",balance,trim:"incomplete"};
   const selectedTrim=snapshot.trimOptions.filter(option=>option.selected);
   const priorities=selectedTrim.map(option=>option.priority);
   const trim:ConfigurationStatus=selectedTrim.length>0&&priorities.every(priority=>Number.isInteger(priority)&&priority!>=1&&priority!<=3)&&new Set(priorities).size===priorities.length?"configured":"incomplete";

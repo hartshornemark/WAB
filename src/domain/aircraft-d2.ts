@@ -70,11 +70,18 @@ export function validateAircraftD2Section(section: AircraftD2Section, input: unk
   const holdType: AircraftD2HoldRow["holdType"] = section === "BULK" ? "BLK" : "ULD";
   const rows = value.rows.map((raw, index) => {
     const row = raw as Partial<AircraftD2HoldRow>, name = String(row.name ?? "").trim().toUpperCase(), deckCode = String(row.deckCode ?? "").trim().toUpperCase();
-    if (!/^[A-Z0-9]$/.test(name)) throw new AircraftD2Invalid(`Row ${index + 1}: enter a one-character Hold Name.`);
+    if (holdType === "ULD" ? !/^[A-Z]{3}$/.test(name) : !/^[A-Z0-9]$/.test(name)) {
+      throw new AircraftD2Invalid(holdType === "ULD"
+        ? `Row ${index + 1}: enter a three-letter ULD Hold Name.`
+        : `Row ${index + 1}: enter a one-character Hold Name.`);
+    }
     if (names.has(name)) throw new AircraftD2Invalid(`Hold Name ${name} is duplicated.`);
     names.add(name);
     if (!decks.has(deckCode)) throw new AircraftD2Invalid(`Row ${index + 1}: select a valid Deck.`);
-    const maxWeight = finite(row.maxWeight, "Maximum Weight", true), maxVolume = finite(row.maxVolume, "Maximum Volume", true);
+    const maxWeight = finite(row.maxWeight, "Maximum Weight", true);
+    const maxVolume = holdType === "ULD"
+      ? optionalPositive(row.maxVolume, "Maximum Volume")
+      : finite(row.maxVolume, "Maximum Volume", true);
     if (!Array.isArray(row.compartments)) throw new AircraftD2Invalid(`Hold ${name}: check its compartments.`);
     const compartmentIds = new Set<string>();
     const compartments = row.compartments.map((rawCompartment, compartmentIndex) => {
@@ -95,7 +102,7 @@ export function validateAircraftD2Section(section: AircraftD2Section, input: unk
       return { id, areas };
     });
     const [balanceCentroid, balanceFrom, balanceTo] = balanceArm(row.balanceCentroid, row.balanceFrom, row.balanceTo);
-    return { name, holdType, deckCode, maxWeight, maxVolume, lateralCentroid: row.lateralCentroid ?? null, lateralFrom: row.lateralFrom ?? null, lateralTo: row.lateralTo ?? null, balanceCentroid, balanceFrom, balanceTo, indexPerWeightUnit: finite(row.indexPerWeightUnit, "Index per Weight Unit"), compartments: holdType === "BLK" ? calculateMissingAreaVolumes(compartments, maxVolume) : compartments };
+    return { name, holdType, deckCode, maxWeight, maxVolume, lateralCentroid: row.lateralCentroid ?? null, lateralFrom: row.lateralFrom ?? null, lateralTo: row.lateralTo ?? null, balanceCentroid, balanceFrom, balanceTo, indexPerWeightUnit: finite(row.indexPerWeightUnit, "Index per Weight Unit"), compartments: holdType === "BLK" ? calculateMissingAreaVolumes(compartments, maxVolume as number) : compartments };
   });
   return { applicable: true, balanceLimitsRequired, rows };
 }

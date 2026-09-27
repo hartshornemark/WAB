@@ -220,5 +220,396 @@
       "labelCharWidth": 0.58,
       "diagramCaption": "Provisional 737-800 calibration: physical datum 130 inches forward of the nose; KA plotting uses the matching -130-inch drawing-origin correction."
     }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 1,
+    "file": "a359-900-fuselage.svg",
+    "sha256": "5a7d5364c1cd7ef7fbfacaa6a168fcb4b53acac04a32021ba60f2ab252746414",
+    "byteSize": 1129428,
+    "objectPath": "359/900/5a7d5364c1cd7ef7fbfacaa6a168fcb4b53acac04a32021ba60f2ab252746414.svg",
+    "noseArm": 0,
+    "datumDescription": "Carrier C4 datum zero is at the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier ZZ C4 configuration reviewed 27 September 2026. The master drawing geometry does not independently define the weight-and-balance datum.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 0,
+      "armUnit": "M",
+      "tailX": 244,
+      "span": 240,
+      "centreY": 25,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 17,
+      "holdHeight": 16,
+      "leftDoorY": 16,
+      "rightDoorY": 34,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. Longitudinal plotting follows the saved carrier C4 datum."
+    }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 2,
+    "file": "a359-900-fuselage-v2.svg",
+    "sha256": "25b6373b445b76857d54490a9dfbbe8a1f5a9c0afbe95cb8f89fb3a5ce0728e6",
+    "byteSize": 1129505,
+    "objectPath": "359/900/25b6373b445b76857d54490a9dfbbe8a1f5a9c0afbe95cb8f89fb3a5ce0728e6.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-supplied A350-900 datum confirmation and ZZ C4 configuration, 27 September 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. The nose is at Balance Arm 1.84 m; overlays follow the saved carrier station system."
+    }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 3,
+    "file": "a359-900-fuselage-v3.svg",
+    "sha256": "e9f41f582684cd2e7640203e325d6b349f61ce829c7104390edea2b1dcae3d29",
+    "byteSize": 1129531,
+    "objectPath": "359/900/e9f41f582684cd2e7640203e325d6b349f61ce829c7104390edea2b1dcae3d29.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-supplied 1.84 m nose datum; Airbus A350-900 Aircraft Characteristics cargo-compartment geometry and 2.90 m forward cargo-door anchor, reviewed 27 September 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. The FWD hold uses the Airbus A350-900 cargo-door anchor; AFT and bulk use the saved carrier Balance Arms.",
+      "holdArmOffsets": {
+        "FWD": 6.75
+      }
+    }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 4,
+    "file": "a359-900-fuselage-v4.svg",
+    "sha256": "e479e387d87c3c901bfac79e3fb005e19275ced5bb3584d99a6b9c4a224d9781",
+    "byteSize": 1129550,
+    "objectPath": "359/900/e479e387d87c3c901bfac79e3fb005e19275ced5bb3584d99a6b9c4a224d9781.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-supplied 1.84 m nose datum; Airbus A350-900 cargo geometry with the FWD hold start retained forward of the 2.90 m cargo-door opening, reviewed 27 September 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. The FWD hold begins forward of its cargo-door opening; AFT and bulk use the saved carrier Balance Arms.",
+      "holdArmOffsets": {
+        "FWD": 3.4
+      }
+    }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 5,
+    "file": "a359-900-fuselage-v5.svg",
+    "sha256": "e19de06214103b3c2173905ae2952e01c051541cce043a889af4370762671d99",
+    "byteSize": 1129539,
+    "objectPath": "359/900/e19de06214103b3c2173905ae2952e01c051541cce043a889af4370762671d99.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-supplied 1.84 m nose datum; Airbus A350-900 cargo geometry with the aft edge of Compartment 3 aligned to the forward edge of the aft cargo door, reviewed 27 September 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. The FWD hold begins forward of its door; the aft edge of Compartment 3 aligns with the aft cargo-door start.",
+      "holdArmOffsets": {
+        "FWD": 3.4
+      },
+      "holdSubdivisionBreaks": {
+        "AFT": [
+          51.71
+        ]
+      }
+    }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 6,
+    "file": "a359-900-fuselage-v6.svg",
+    "sha256": "eafdbd501fb08a6e3cce6459285f4a1eed034939ab598b6ca964f340ea39a51a",
+    "byteSize": 1129601,
+    "objectPath": "359/900/eafdbd501fb08a6e3cce6459285f4a1eed034939ab598b6ca964f340ea39a51a.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-supplied 1.84 m nose datum and saved D4 cargo-door positions; Compartment 3 uses the current AFT door start, reviewed 27 September 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. The FWD hold begins forward of its door; the aft edge of Compartment 3 follows the saved D4 AFT-door start.",
+      "holdArmOffsets": {
+        "FWD": 3.4
+      },
+      "holdSubdivisionBreaks": {
+        "AFT": [
+          51.71
+        ]
+      },
+      "holdSubdivisionDoorStarts": {
+        "AFT": [
+          "AFT"
+        ]
+      }
+    }
+  },
+  {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 7,
+    "file": "a359-900-fuselage-v7.svg",
+    "sha256": "e8c777607358d94758826b32170b414122a650e217671f10aacd459fe3850ed3",
+    "byteSize": 1129562,
+    "objectPath": "359/900/e8c777607358d94758826b32170b414122a650e217671f10aacd459fe3850ed3.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-supplied 1.84 m nose datum, saved D4 cargo-door positions and a tapered bulk-hold profile fitted within the supplied Airbus plan view, reviewed 27 September 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. Hold 5 follows the taper of the aft fuselage; the FWD hold begins forward of its door and the aft edge of Compartment 3 follows the saved D4 AFT-door start.",
+      "holdArmOffsets": {
+        "FWD": 3.4
+      },
+      "holdSubdivisionBreaks": {
+        "AFT": [
+          51.71
+        ]
+      },
+      "holdSubdivisionDoorStarts": {
+        "AFT": [
+          "AFT"
+        ]
+      },
+      "holdProfiles": {
+        "5": {
+          "points": [
+            {
+              "arm": 54.09,
+              "halfWidth": 6.0
+            },
+            {
+              "arm": 55.0,
+              "halfWidth": 5.45
+            },
+            {
+              "arm": 56.59,
+              "halfWidth": 4.25
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "typeCode": "738",
+    "subtype": "800",
+    "version": 5,
+    "file": "738-800-fuselage-v5.svg",
+    "sha256": "a982979d7638c8c99028f0b1936caf6308408ed767deb29047eb8610c797c016",
+    "byteSize": 114173,
+    "objectPath": "738/800/a982979d7638c8c99028f0b1936caf6308408ed767deb29047eb8610c797c016.svg",
+    "noseArm": 3.302,
+    "datumDescription": "Datum plane is perpendicular to the fuselage centreline and positioned 130.0 inches (3.302 m) forward of the airplane nose.",
+    "datumSource": "Boeing 737 Airplane Maintenance Manual, AMM Task 06-21-00, Dimensions and Areas / Standard Practices.",
+    "sourceDrawing": "User-supplied 737-800.dxf. Top-view vector geometry and the published 129 ft 6 in overall length were used to construct the fuselage overlay.",
+    "calibration": {
+      "typeCode": "738",
+      "subtype": "800",
+      "length": 1554,
+      "noseArm": 130,
+      "armUnit": "IN",
+      "tailX": 244,
+      "span": 240,
+      "centreY": 25,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 18,
+      "holdHeight": 14,
+      "leftDoorY": 18,
+      "rightDoorY": 32,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Boeing 737-800 outline. Datum plane is 130.0 inches forward of the airplane nose in accordance with Boeing 737 AMM Task 06-21-00; the KA drawing-origin correction preserves station alignment."
+    }
+  },
+  {
+    "typeCode": "7M9",
+    "subtype": "900",
+    "version": 2,
+    "file": "7m9-900-fuselage-v2.svg",
+    "sha256": "dfcf9a6695f65d1104917482a29b0af26efa3df33c6f369a755a51a3b8540b40",
+    "byteSize": 360377,
+    "objectPath": "7M9/900/dfcf9a6695f65d1104917482a29b0af26efa3df33c6f369a755a51a3b8540b40.svg",
+    "noseArm": 3.302,
+    "datumDescription": "Datum plane is perpendicular to the fuselage centreline and positioned 130.0 inches (3.302 m) forward of the airplane nose.",
+    "datumSource": "Boeing 737 Airplane Maintenance Manual, AMM Task 06-21-00, Dimensions and Areas / Standard Practices.",
+    "sourceDrawing": "Boeing 737-9_3VIEW.dwg, copyright 2020. Recovered original top-view curves; airport-planning accuracy +/-6 inches.",
+    "calibration": {
+      "typeCode": "7M9",
+      "subtype": "900",
+      "length": 1659.9191,
+      "noseArm": 130,
+      "armUnit": "IN",
+      "tailX": 244,
+      "span": 240,
+      "centreY": 25,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 15,
+      "holdHeight": 20,
+      "leftDoorY": 12,
+      "rightDoorY": 38,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Boeing 737 MAX 9 airport-planning outline. Datum plane is 130.0 inches forward of the airplane nose in accordance with Boeing 737 AMM Task 06-21-00."
+    }
   }
 ]

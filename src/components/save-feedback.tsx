@@ -13,7 +13,11 @@ export function useSaveFeedback() {
   const [transitionPending,startTransition] = useTransition();
   const pending = snapshot.busy || transitionPending;
   const start = useCallback((action:()=>void|Promise<void>) => startTransition(() => controller.run(action)),[controller]);
-  return [pending,start,{...controller,snapshot,pending}] as const;
+  const complete=useCallback((action:()=>void)=>controller.complete(()=>{
+    for(let index=localStorage.length-1;index>=0;index--){const key=localStorage.key(index);if(key?.startsWith("dashboard-summary"))localStorage.removeItem(key)}
+    action();
+  }),[controller]);
+  return [pending,start,{...controller,complete,snapshot,pending}] as const;
 }
 
 export function SaveScope({feedback,children}:{feedback:Feedback;children:ReactNode}) {

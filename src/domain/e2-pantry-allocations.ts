@@ -2,6 +2,10 @@ import {AircraftE2Invalid,type E2PantryRow} from './aircraft-e2';
 import type {GalleyLocation} from './aircraft-d6';
 export type PantryAllocation={locationId:string;weight:number|null};
 export type PantryDraft=E2PantryRow & {allocations:PantryAllocation[]};
+export function availableGalleyLocations(galleys:GalleyLocation[],allocations:PantryAllocation[],currentIndex:number){
+  const selected=new Set(allocations.filter((_,index)=>index!==currentIndex).map(allocation=>allocation.locationId).filter(Boolean));
+  return galleys.filter(galley=>!selected.has(galley.id));
+}
 export function pantryDraft(row:E2PantryRow):PantryDraft {
   const parts=row.galleyLocations.trim().split(/\s+/).filter(Boolean);
   const allocations=parts.map(part=>{const m=/^([A-Z0-9]{1,3})(?:\/(\d+)(?:KG|LB)?)?$/i.exec(part);return m?{locationId:m[1].toUpperCase(),weight:m[2]?Number(m[2]):parts.length===1?row.totalWeight:null}:{locationId:'',weight:null};});

@@ -13,7 +13,7 @@ export function IndexDisplayPreferenceProvider({children}:{children:ReactNode}){
   const iata=useMemo(()=>{const match=pathname.match(/^\/carrier\/([^/]+)/);return match?decodeURIComponent(match[1]):null},[pathname]);
   const[places,setPlaces]=useState<IndexDecimalPlaces>(1);
   useEffect(()=>{
-    setPlaces(1);
+    queueMicrotask(()=>setPlaces(1));
     if(!iata)return;
     const controller=new AbortController();
     fetch(`/api/carrier/${encodeURIComponent(iata)}/display-preferences`,{cache:"no-store",signal:controller.signal})

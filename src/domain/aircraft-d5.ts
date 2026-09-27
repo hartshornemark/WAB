@@ -86,10 +86,30 @@ export function validateExcludedRowsAgainstCabinAreas(excludedRows:number[],area
 }
 
 export function validateD5Section(
+  section: "excludedRows",
+  input: unknown,
+  formula?: IndexPerWeightUnitFormula | null,
+): number[];
+export function validateD5Section(
+  section: "cabinAreas",
+  input: unknown,
+  formula?: IndexPerWeightUnitFormula | null,
+): CabinArea[];
+export function validateD5Section(
+  section: "flightDeckLocations" | "cabinCrewLocations",
+  input: unknown,
+  formula?: IndexPerWeightUnitFormula | null,
+): CrewLocation[];
+export function validateD5Section(
   section: D5Section,
   input: unknown,
   formula?: IndexPerWeightUnitFormula | null,
-) {
+): number[] | CabinArea[] | CrewLocation[];
+export function validateD5Section(
+  section: D5Section,
+  input: unknown,
+  formula?: IndexPerWeightUnitFormula | null,
+): number[] | CabinArea[] | CrewLocation[] {
   if (section === "excludedRows") {
     if (!Array.isArray(input)) throw new AircraftD5Invalid("Check the excluded row numbers.");
     const rows = input.map((value, index) => {

@@ -20,6 +20,7 @@ export type D9AreaRow = {
 };
 export type D9Configuration = { code:string; description:string; rows:D9AreaRow[] };
 export type D9PhysicalRow = {areaId:string;rowNumber:number;maximumSeats:number|null;grouping:string|null};
+export type D9SeatDraftValue = number|string|null;
 export type AircraftD9Snapshot = {
   seatRows?:D9PhysicalRow[];
   canView:boolean;
@@ -70,6 +71,36 @@ export function suggestD9Description(rows:{classSeats:readonly unknown[]}[], cla
       return seats > 0 ? `${carrierClass.code}${seats}` : "";
     })
     .join("");
+}
+
+/**
+ * Keep a cabin-area allocation complete while the user works from one class
+ * to the next. The next defined class receives the remaining usable seats;
+ * later classes are reset to zero until the user works further along the row.
+ */
+export function spillD9ClassSeats(
+  current:readonly D9SeatDraftValue[],
+  editedIndex:number,
+  value:D9SeatDraftValue,
+  activeSlots:readonly D9Class["slot"][],
+  availableSeats:number|null,
+):[D9SeatDraftValue,D9SeatDraftValue,D9SeatDraftValue,D9SeatDraftValue] {
+  const result=Array.from({length:4},(_,index)=>current[index]??null) as [D9SeatDraftValue,D9SeatDraftValue,D9SeatDraftValue,D9SeatDraftValue];
+  result[editedIndex]=value;
+  const indexes=[...activeSlots].sort((a,b)=>a-b).map(slot=>slot-1),position=indexes.indexOf(editedIndex);
+  if(position<0||availableSeats===null||!Number.isInteger(availableSeats)||availableSeats<0)return result;
+  if(value===""||value===null){for(const index of indexes.slice(position+1))result[index]=null;return result;}
+  const entered=Number(value);
+  if(!Number.isInteger(entered)||entered<0)return result;
+  const next=indexes[position+1];
+  if(next===undefined)return result;
+  const allocated=indexes.slice(0,position+1).reduce((sum,index)=>{
+    const candidate=Number(result[index]);
+    return sum+(result[index]!==""&&result[index]!==null&&Number.isInteger(candidate)&&candidate>=0?candidate:0);
+  },0);
+  result[next]=Math.max(0,availableSeats-allocated);
+  for(const index of indexes.slice(position+2))result[index]=0;
+  return result;
 }
 
 export function validateD9Configuration(value:unknown, areas:D9CabinArea[], classes:D9Class[], formula?:IndexPerWeightUnitFormula|null, seatRows?:D9PhysicalRow[]) {
@@ -144,6 +175,12 @@ export function d9SeatPlanProblem(row:Pick<D9AreaRow,"areaId"|"totalSeats"|"bloc
  for(const n of blocked){const r=rows.find(r=>r.rowNumber===n);if(!r||!/^3(-3){0,3}$/.test(r.grouping??""))return `Row ${n}: blocked centres require three-seat groups saved on D8.`;}
  // D9 may be entered before D8; compare totals once its physical rows are available.
  if(!rows.length||rows.some(r=>r.maximumSeats==null))return blocked.length?"Complete D8 before blocking seats.":null;
- const total=rows.reduce((sum,r)=>sum+r.maximumSeats!-(blocked.includes(r.rowNumber)?physicalSeatGrouping(r.grouping!).split("-").length:0),0);
+ const total=d9UsableSeatTotal(row.areaId,blocked,physical)!;
  return total!==row.totalSeats?`Cabin Area ${row.areaId}: the seat map has ${total} usable seats, but the class allocations total ${row.totalSeats}. Update the class seats or blocked rows.`:null;
+}
+
+export function d9UsableSeatTotal(areaId:string,blockedRows:readonly number[],physical:D9PhysicalRow[]):number|null {
+ const rows=physical.filter(row=>row.areaId===areaId);
+ if(!rows.length||rows.some(row=>row.maximumSeats===null))return null;
+ return rows.reduce((sum,row)=>sum+row.maximumSeats!-(blockedRows.includes(row.rowNumber)&&row.grouping?physicalSeatGrouping(row.grouping).split("-").length:0),0);
 }

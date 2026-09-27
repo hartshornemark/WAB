@@ -27,6 +27,11 @@ test("seat grouping override controls the drawn row",()=>{
  const result=buildSeatMap({...d8,rows:d8.rows.map((r,i)=>i? r:{...r,seatGroupingOverride:"1-3"})},c4,d5);
  assert.deepEqual(result.decks[0].rows[0].groups,[1,3]);
 });
+test("seat map renders a 1-2-1 row as three groups and two aisles",()=>{
+ const result=buildSeatMap({...d8,cabinAreas:[{...d8.cabinAreas[0],seatGrouping:"1-2-1"}]},c4,d5);
+ assert.deepEqual(result.decks[0].rows[0].groups,[1,2,1]);
+ assert.equal(result.decks[0].rows[0].seats,4);
+});
 test("seat map requires explicit grouping, without assuming symmetry",()=>{
  assert.match(seatMapUnavailable({...d8,cabinAreas:[{...d8.cabinAreas[0],seatGrouping:null}]})!,/grouping/);
  assert.match(seatMapUnavailable({...d8,cabinAreas:[{...d8.cabinAreas[0],seatGrouping:"3-3"}]})!,/match/);

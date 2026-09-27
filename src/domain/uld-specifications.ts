@@ -1,7 +1,7 @@
 export type UldInventoryRange={id:string|null;carrierCode:string;serialStart:string;serialEnd:string};
 export type UldRow={isCustom:boolean;code:string;type:string;isDefault:boolean;tare:string;maximum:string;volume:string;remarks:string;inventory:UldInventoryRange[]};
 export type MasterUld={code:string;type:string;tare:string;maximum:string;volume:string;mainDeckOnly:boolean};
-export type UldSnapshot={canView:boolean;canEdit:boolean;revision:string;weightUnit:string;volumeUnit:string;utilisesUlds:boolean;aircraftType:string;aircraftSubtype:string;rows:UldRow[];master:MasterUld[]};
+export type UldSnapshot={canView:boolean;canEdit:boolean;revision:string;weightUnit:string;volumeUnit:string;utilisesUlds:boolean;recordsInventory:boolean;aircraftType:string;aircraftSubtype:string;rows:UldRow[];master:MasterUld[]};
 export class UldInvalid extends Error {}
 export class UldDenied extends Error {}
 export class UldConflict extends Error {}
@@ -14,6 +14,15 @@ export function adoptUld(master:MasterUld,current:UldSnapshot,rows:UldRow[]):Uld
  const convert=(s:string,factor:number,places:number)=>s?String(Number((Number(s)*factor).toFixed(places))):"";
  const wf=current.weightUnit==="LB"?1/0.45359237:1,vf=current.volumeUnit==="ft3"?1/0.028316846592:1;
  return {isCustom:false,code:master.code,type:master.type,isDefault:!rows.some(r=>r.type===master.type),tare:convert(master.tare,wf,0),maximum:convert(master.maximum,wf,0),volume:convert(master.volume,vf,2),remarks:"",inventory:[]};
+}
+export function setMasterUldSelected(master:MasterUld,current:UldSnapshot,rows:UldRow[],selected:boolean):UldRow[]{
+ const existing=rows.find(row=>row.code===master.code);
+ if(selected)return existing?rows:[...rows,adoptUld(master,current,rows)];
+ if(!existing||existing.isCustom)return rows;
+ const remaining=rows.filter(row=>row.code!==master.code);
+ if(!existing.isDefault)return remaining;
+ const replacement=remaining.find(row=>row.type===existing.type);
+ return replacement?remaining.map(row=>row.code===replacement.code?{...row,isDefault:true}:row):remaining;
 }
 export function validateUlds(input:unknown,current:UldSnapshot):UldRow[]{
  if(!Array.isArray(input)||input.length>200)throw new UldInvalid("Keep no more than 200 ULD specifications.");

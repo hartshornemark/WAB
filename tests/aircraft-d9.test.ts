@@ -5,6 +5,7 @@ import {
   buildD9Rows,
   deriveD9ClassSummaries,
   suggestD9Description,
+  spillD9ClassSeats,
   validateD9Configuration,
   type AircraftD9Snapshot,
   type D9AreaRow,
@@ -105,6 +106,25 @@ test("D9 suggests its description from class codes and configuration-wide seat t
     { classSeats: [36, 0, 0, 0] },
     { classSeats: [48, 0, 0, 0] },
   ], oneClass), "Y84");
+});
+
+test("D9 spills the cabin-area seat balance into the next defined class",()=>{
+ assert.deepEqual(spillD9ClassSeats([null,null,null,null],1,"16",[2,4],16),[null,"16",null,0]);
+ assert.deepEqual(spillD9ClassSeats([null,null,null,null],1,"6",[2,4],16),[null,"6",null,10]);
+});
+
+test("D9 spillover follows defined class order and preserves earlier allocations",()=>{
+ assert.deepEqual(spillD9ClassSeats([4,null,null,null],1,"8",[1,2,4],16),[4,"8",null,4]);
+ assert.deepEqual(spillD9ClassSeats([4,8,null,4],1,"",[1,2,4],16),[4,"",null,null]);
+});
+
+test("D9 spillover continues through all four defined classes",()=>{
+ const afterFirst=spillD9ClassSeats([null,null,null,null],0,"4",[1,2,3,4],20);
+ assert.deepEqual(afterFirst,["4",16,0,0]);
+ const afterBusiness=spillD9ClassSeats(afterFirst,1,"6",[1,2,3,4],20);
+ assert.deepEqual(afterBusiness,["4","6",10,0]);
+ const afterPremium=spillD9ClassSeats(afterBusiness,2,"3",[1,2,3,4],20);
+ assert.deepEqual(afterPremium,["4","6","3",7]);
 });
 
 test("D9 permits optional Balance Arm From and To without reducing completion", () => {

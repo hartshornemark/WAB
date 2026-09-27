@@ -1,0 +1,189 @@
+import type { AircraftD3AtomicBay, AircraftD3Position, AircraftD3UldOption } from "@/domain/aircraft-d3";
+
+export type AircraftD3CsvResult = {
+  atomicBays: AircraftD3AtomicBay[];
+  rows: AircraftD3Position[];
+  errors: string[];
+};
+
+const headers = ["Group ID / Config", "Position Name", "Max Weight", "Centroid", "FWD", "AFT", "Index per wt unit"];
+
+export const aircraftD3CsvTemplate = `${headers.join(",")}
+AKE,11L,1587,14.026,13.259,14.793,-0.004476
+AKE,11R,1587,14.026,13.259,14.793,-0.004476
+PLA,11,3174,14.026,13.259,14.793,-0.004476
+PMC,11P,5102,14.479,13.259,15.698,-0.004385`;
+
+function csvRows(text: string) {
+  const rows: string[][] = [];
+  let row: string[] = [], cell = "", quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const character = text[i];
+    if (quoted) {
+      if (character === '"' && text[i + 1] === '"') { cell += '"'; i += 1; }
+      else if (character === '"') quoted = false;
+      else cell += character;
+    } else if (character === '"') quoted = true;
+    else if (character === ",") { row.push(cell); cell = ""; }
+    else if (character === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+    else if (character !== "\r") cell += character;
+  }
+  row.push(cell);
+  if (row.some(value => value.trim())) rows.push(row);
+  return rows;
+}
+
+const clean = (value: string | undefined) => String(value ?? "").trim();
+const normal = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+const identity = (value: string) => clean(value).toUpperCase().replace(/[^A-Z0-9-]/g, "");
+const side = (positionId: string) => positionId.endsWith("L") ? "L" : positionId.endsWith("R") ? "R" : "B";
+
+function numeric(value: string | undefined, label: string, line: number, errors: string[]) {
+  const parsed = Number(clean(value));
+  if (!clean(value) || !Number.isFinite(parsed)) {
+    errors.push(`Line ${line}: ${label} must be a number.`);
+    return null;
+  }
+  return parsed;
+}
+
+function sameNumber(left: number | null, right: number | null) {
+  return left === right || (left !== null && right !== null && Math.abs(left - right) < 1e-9);
+}
+
+export function parseAircraftD3Csv(
+  text: string,
+  compartments: string[] = [],
+  uldOptions: AircraftD3UldOption[] = [],
+): AircraftD3CsvResult {
+  const records = csvRows(text.replace(/^\uFEFF/, ""));
+  const errors: string[] = [];
+  if (!records.length) return { atomicBays: [], rows: [], errors: ["The CSV file is empty."] };
+
+  const actualHeaders = records[0].map(normal);
+  const missing = headers.filter(header => !actualHeaders.includes(normal(header)));
+  if (missing.length) return { atomicBays: [], rows: [], errors: [`Missing AHM565 columns: ${missing.join(", ")}.`] };
+
+  const column = (row: string[], name: string) => row[actualHeaders.indexOf(normal(name))];
+  const byIdentity = new Map(uldOptions.map(option => [option.code, option]));
+
+  type Source = {
+    line: number;
+    positionId: string;
+    compartmentId: string;
+    uldCode: string;
+    uldType: string;
+    baseCode: string | null;
+    maxWeight: number | null;
+    centroid: number | null;
+    from: number | null;
+    to: number | null;
+    index: number | null;
+  };
+  const sourceByPositionAndType = new Map<string, Source>();
+
+  records.slice(1).forEach((row, rowIndex) => {
+    const line = rowIndex + 2;
+    const uldIdentity = identity(column(row, "Group ID / Config"));
+    const names = clean(column(row, "Position Name")).toUpperCase().split(/[,;/]+/).map(value => value.trim()).filter(Boolean);
+    const maxWeight = numeric(column(row, "Max Weight"), "Max Weight", line, errors);
+    const centroid = numeric(column(row, "Centroid"), "Centroid", line, errors);
+    const from = numeric(column(row, "FWD"), "FWD", line, errors);
+    const to = numeric(column(row, "AFT"), "AFT", line, errors);
+    const index = numeric(column(row, "Index per wt unit"), "Index per wt unit", line, errors);
+
+    if (!uldIdentity || !names.length) {
+      errors.push(`Line ${line}: ULD identity and Position Name are required.`);
+      return;
+    }
+
+    const option = byIdentity.get(uldIdentity);
+    if (!option) {
+      errors.push(`Line ${line}: ${uldIdentity} is not recognised in the Master ULD list.`);
+      return;
+    }
+    if (!option.adopted) {
+      errors.push(`Line ${line}: ${uldIdentity} must first be selected on B5 for this aircraft.`);
+    }
+    if (from !== null && centroid !== null && to !== null && !(from <= centroid && centroid <= to)) {
+      errors.push(`Line ${line}: FWD, Centroid and AFT are not in order.`);
+    }
+
+    names.forEach(positionId => {
+      if (!/^[A-Z0-9]{1,6}$/.test(positionId)) {
+        errors.push(`Line ${line}: Position ${positionId} is invalid.`);
+        return;
+      }
+      const compartmentId = positionId.match(/^\d/)?.[0] ?? "";
+      if (!compartments.includes(compartmentId)) return;
+
+      const candidate: Source = { line, positionId, compartmentId, uldCode: option.code, uldType: option.type, baseCode: option.baseCode, maxWeight, centroid, from, to, index };
+      const key = `${positionId}\0${option.code}`;
+      const existing = sourceByPositionAndType.get(key);
+      if (!existing) {
+        sourceByPositionAndType.set(key, candidate);
+        return;
+      }
+      const agrees = sameNumber(existing.maxWeight, maxWeight) && sameNumber(existing.centroid, centroid)
+        && sameNumber(existing.from, from) && sameNumber(existing.to, to) && sameNumber(existing.index, index);
+      if (!agrees) errors.push(`Lines ${existing.line} and ${line}: ${positionId} / ${option.code} is duplicated with different limits.`);
+    });
+  });
+
+  const sources = [...sourceByPositionAndType.values()];
+  const bayMap = new Map<string, AircraftD3AtomicBay>();
+  for (const source of sources) {
+    if (!/[LR]$/.test(source.positionId) || source.centroid === null) continue;
+    const current = bayMap.get(source.positionId);
+    if (current && !(sameNumber(current.balanceFrom, source.from) && sameNumber(current.balanceCentroid, source.centroid) && sameNumber(current.balanceTo, source.to))) {
+      errors.push(`Position ${source.positionId} has inconsistent FWD/AFT limits.`);
+    } else if (!current) {
+      bayMap.set(source.positionId, {
+        id: source.positionId,
+        compartmentId: source.compartmentId,
+        lateralCentroid: null,
+        lateralFrom: null,
+        lateralTo: null,
+        balanceCentroid: source.centroid,
+        balanceFrom: source.from,
+        balanceTo: source.to,
+        colour: null,
+      });
+    }
+  }
+
+  const atomicBays = [...bayMap.values()].sort((left, right) =>
+    (left.balanceCentroid ?? 0) - (right.balanceCentroid ?? 0) || left.id.localeCompare(right.id));
+  const rows: AircraftD3Position[] = sources.map(source => {
+    const positionSide = side(source.positionId);
+    const occupiedBayIds = atomicBays.filter(bay =>
+      bay.balanceFrom !== null && bay.balanceTo !== null && source.from !== null && source.to !== null
+      && bay.balanceFrom < source.to && bay.balanceTo > source.from
+      && (positionSide === "B" || side(bay.id) === positionSide)).map(bay => bay.id);
+    if (!occupiedBayIds.length) errors.push(`Line ${source.line}: ${source.positionId} does not overlap an Atomic Bay.`);
+    return {
+      rowType: "POSITION",
+      positionId: source.positionId,
+      compartmentId: source.compartmentId,
+      uldCode: source.uldCode,
+      uldType: source.uldType,
+      uldBaseCode: source.baseCode,
+      groupId: null,
+      occupiedBayIds,
+      maxWeight: source.maxWeight,
+      volume: null,
+      lateralCentroid: null,
+      lateralFrom: null,
+      lateralTo: null,
+      balanceCentroid: source.centroid,
+      balanceFrom: source.from,
+      balanceTo: source.to,
+      indexPerWeightUnit: source.index,
+      colour: null,
+    };
+  });
+
+  if (!sources.length) errors.push(`No positions in this CSV belong to Compartments ${compartments.join(", ") || "configured for this hold"}.`);
+  if (!atomicBays.length) errors.push("No atomic L/R positions were found for this hold.");
+  return { atomicBays, rows, errors: [...new Set(errors)] };
+}

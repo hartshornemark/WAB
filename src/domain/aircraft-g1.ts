@@ -1,7 +1,14 @@
 export type G1BayOption={holdId:string;bayId:string};
+export type G1UldIdentity={code:string;type:string};
 export type G1CompatibilityRow={bayId:string;uldType:string;compatible:boolean|null};
-export type AircraftG1Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;applicable:boolean|null;bays:G1BayOption[];uldTypes:string[];rows:G1CompatibilityRow[];suggestions:G1CompatibilityRow[]};
+export type AircraftG1Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;applicable:boolean|null;bays:G1BayOption[];uldTypes:string[];uldIdentities:G1UldIdentity[];rows:G1CompatibilityRow[];suggestions:G1CompatibilityRow[]};
 export class AircraftG1Invalid extends Error{} export class AircraftG1Denied extends Error{} export class AircraftG1Conflict extends Error{}
+
+export function resolvedG1Rows(snapshot:AircraftG1Snapshot):G1CompatibilityRow[]{
+  const saved=new Map(snapshot.rows.map(row=>[`${row.bayId}|${row.uldType}`,row.compatible]));
+  const derived=new Map(snapshot.suggestions.map(row=>[`${row.bayId}|${row.uldType}`,row.compatible]));
+  return snapshot.bays.flatMap(bay=>snapshot.uldTypes.map(uldType=>{const key=`${bay.bayId}|${uldType}`;return{bayId:bay.bayId,uldType,compatible:saved.has(key)?saved.get(key)!:derived.get(key)??null}}));
+}
 
 export function validateG1Rows(value:unknown,snapshot:AircraftG1Snapshot):G1CompatibilityRow[]{
   if(!snapshot.applicable)throw new AircraftG1Invalid("G1 is only required when D2 ULD Holds are active.");

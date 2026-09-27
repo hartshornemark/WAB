@@ -17,10 +17,27 @@ export function AircraftD11({iata,initial}:{iata:string;initial:AircraftD11Snaps
       <ConfigurationStatusBadge status={aircraftD11Status(saved)} variant="large"/>
     </SectionHeader>
     <p className="c5-intro">Each section is independently applicable. Only selected sections contribute to completion.</p>
+    {!saved.applicabilityReviewed&&!saved.floorActive&&<D11ReviewPrompt iata={iata} saved={saved} setSaved={setSaved}/>}
     <UnsupportedSection title="1. COMBINED LOAD LIMITS" description="Provisioned for future support." columns={["Hold / Compartment","Combined Load Group","Maximum Combined Load"]}/>
     <FloorSection iata={iata} saved={saved} setSaved={setSaved}/>
     <UnsupportedSection title="3. ASYMMETRICAL LOAD LIMITS" description="Provisioned for future support." columns={["Hold / Compartment","Asymmetrical Condition","Maximum Permitted Load"]}/>
   </section>;
+}
+
+function D11ReviewPrompt({iata,saved,setSaved}:{iata:string;saved:AircraftD11Snapshot;setSaved:(value:AircraftD11Snapshot)=>void}) {
+  const [error,setError]=useState("");
+  const [pending,start,saveFeedback]=useSaveFeedback();
+  const confirm=()=>start(async()=>{
+    const result=await setAircraftD11FloorActive(iata,saved.typeCode,saved.subtype,saved.revision,false);
+    if(!result.ok){setError(result.error);return}
+    setError("");
+    saveFeedback.complete(()=>setSaved(result.snapshot));
+  });
+  return <SaveScope feedback={saveFeedback}>{<section className="d11-review-prompt">
+    <div><strong>No D11 section is selected.</strong><p>Save this review if D11 is not required for this aircraft, or select Floor Loading Limits below.</p></div>
+    <SaveSubmit disabled={!saved.canEdit||pending} onClick={confirm}/>
+    {error&&<p className="field-error" role="alert">{error}</p>}
+  </section>}</SaveScope>;
 }
 
 function FloorSection({iata,saved,setSaved}:{iata:string;saved:AircraftD11Snapshot;setSaved:(value:AircraftD11Snapshot)=>void}) {

@@ -15,10 +15,10 @@ return{areaId:area.id,rowNumber,maximumSeats,seatGroupingOverride,maximumWeight,
 /** Groups run left to right facing the nose; each hyphen represents an aisle. */
 export function normaliseSeatGrouping(value: unknown, label = "Seat grouping"): string | null {
   if(value == null || value === "") return null;
-  if(typeof value !== "string") throw new AircraftD8Invalid(`${label}: enter a grouping such as 3-3 or 2-4-2.`);
+  if(typeof value !== "string") throw new AircraftD8Invalid(`${label}: enter a grouping such as 1-2-1, 3-3 or 2-4-2.`);
   const grouping=value.trim().replace(/[–—]/g,"-").replace(/\s*-\s*/g,"-");
   if(!grouping) return null;
-  if(!/^(?:[0-9](-[0-9]){0,3}|3(-3){0,3}:B)$/.test(grouping) || !/[1-9]/.test(grouping)) throw new AircraftD8Invalid(`${label}: use one to four groups of 0–9 seats (at least one seat overall), separated by a hyphen (for example 3-3 or 0-2).`);
+  if(!/^(?:[0-9](-[0-9]){0,3}|3(-3){0,3}:B)$/.test(grouping) || !/[1-9]/.test(grouping)) throw new AircraftD8Invalid(`${label}: use one to four groups of 0–9 seats (at least one seat overall), separated by a hyphen (for example 1-2-1, 3-3 or 0-2).`);
   return grouping;
 }
 export const physicalSeatGrouping=(grouping:string)=>grouping.replace(/:B$/, "");

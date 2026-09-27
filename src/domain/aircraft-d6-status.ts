@@ -18,7 +18,8 @@ export function d6SectionStatus<T>(
   rows: T[],
   complete: (row: T) => boolean,
 ): DisplayConfigurationStatus {
-  if (applicable !== true) return "not_active";
+  if (applicable === null) return "incomplete";
+  if (applicable === false) return "not_active";
   if (!rows.length) return "incomplete";
   const completed = rows.filter(complete).length;
   return completed === rows.length ? "configured" : completed ? "partial" : "incomplete";

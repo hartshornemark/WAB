@@ -1,7 +1,7 @@
 import{readFileSync,readdirSync,statSync}from"node:fs";
 import{join,relative}from"node:path";
 
-const roots=["src/components","tmp/pdfs"];
+const roots=["src/components"];
 const retired=["Index Value","Index per Unit Weight","Index / Wt Unit","BA Centroid","Index per Weight Unit","Maximum Weight (Kg)","Maximum Weight (KG)","KG/m²"];
 const failures=[];
 

@@ -20,6 +20,11 @@ test("D8 inherits a cabin-area grouping without storing a row override",()=>{
  const result=validateD8Rows([row(1,"0A")],[{...areas[0],seatGrouping:"2-2"}],formula);
  assert.equal(result[0].seatGroupingOverride,null);
 });
+test("D8 supports a 1-2-1 cabin-area grouping as four physical seats",()=>{
+ const result=validateD8Rows([row(1,"0A")],[{...areas[0],seatGrouping:"1-2-1"}],formula);
+ assert.equal(result[0].maximumSeats,4);
+ assert.equal(result[0].seatGroupingOverride,null);
+});
 test("D8 rejects inherited grouping that disagrees with row seats",()=>{
  assert.throws(()=>validateD8Rows([row(1,"0A")],[{...areas[0],seatGrouping:"3-3"}],formula),/Row 1:.*6 seats.*4/);
 });
@@ -69,7 +74,7 @@ test('D8 validates gaps and reports actual aircraft rows, not list positions',()
 
 import {suggestedD8Seats} from '../src/domain/aircraft-d8';
 test('D8 suggests seat counts for default and override groups without accepting partial typing',()=>{
- assert.equal(suggestedD8Seats('3-3'),6);assert.equal(suggestedD8Seats('2-2'),4);
+ assert.equal(suggestedD8Seats('3-3'),6);assert.equal(suggestedD8Seats('2-2'),4);assert.equal(suggestedD8Seats('1-2-1'),4);
  assert.equal(suggestedD8Seats('0-2'),2);assert.equal(suggestedD8Seats('2-4-2'),8);
  assert.equal(suggestedD8Seats('3-'),null);assert.equal(suggestedD8Seats(''),null);
 });

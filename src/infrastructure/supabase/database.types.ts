@@ -37,6 +37,7 @@ export type Database = {
       activate_aircraft_layout:{Args:{p_id:string};Returns:undefined};
       get_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
       save_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
+      save_carrier_uld_inventory_applicability:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_records:boolean};Returns:Json};
       save_carrier_uld_applicability:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_utilises:boolean};Returns:Json};
       get_carrier_densities:{Args:{p_iata:string};Returns:Json};
       save_carrier_densities:{Args:{p_iata:string;p_revision:string;p_values:Json};Returns:Json};
@@ -81,6 +82,7 @@ export type Database = {
       save_aircraft_d2:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_section:string;p_values:Json};Returns:Json};
       get_aircraft_d3:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d3_configuration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_original_code:string|null;p_values:Json};Returns:Json};
+      import_aircraft_d3_configurations:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_values:Json};Returns:Json};
       delete_aircraft_d3_configuration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_hold_id:string;p_code:string};Returns:Json};
       get_aircraft_d4:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d4:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_doors:Json};Returns:Json};

@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {adoptUld,customUld,validateUlds,uldEditRow,type UldSnapshot} from '../src/domain/uld-specifications';
+import {adoptUld,customUld,setMasterUldSelected,validateUlds,uldEditRow,type UldSnapshot} from '../src/domain/uld-specifications';
 const master=[{code:'AKE',type:'LD3',tare:'100',maximum:'1588',volume:'4.3',mainDeckOnly:false},{code:'AVE',type:'LD3',tare:'100',maximum:'1588',volume:'4.3',mainDeckOnly:false}];
-const current:UldSnapshot={canView:true,canEdit:true,revision:'v1',weightUnit:'KG',volumeUnit:'m3',utilisesUlds:true,aircraftType:'319',aircraftSubtype:'100',rows:[],master};
+const current:UldSnapshot={canView:true,canEdit:true,revision:'v1',weightUnit:'KG',volumeUnit:'m3',utilisesUlds:true,recordsInventory:false,aircraftType:'319',aircraftSubtype:'100',rows:[],master};
 test('ULD adoption uses master suggestions; first code of type becomes default',()=>{const a=adoptUld(master[0],current,[]);assert.equal(a.isDefault,true);assert.equal(a.tare,'100');const b=adoptUld(master[1],current,[a]);assert.equal(b.isDefault,false);assert.equal(validateUlds([a,b],current).length,2);});
+
+test('master checklist adds several identities without a one-at-a-time workflow',()=>{let rows=setMasterUldSelected(master[0],current,[],true);rows=setMasterUldSelected(master[1],current,rows,true);assert.deepEqual(rows.map(row=>row.code),['AKE','AVE']);assert.equal(rows[0].isDefault,true);assert.equal(rows[1].isDefault,false);});
+test('removing the default master identity promotes another identity of the same type',()=>{const first=adoptUld(master[0],current,[]),second=adoptUld(master[1],current,[first]);const rows=setMasterUldSelected(master[0],current,[first,second],false);assert.equal(rows.length,1);assert.equal(rows[0].code,'AVE');assert.equal(rows[0].isDefault,true);});
 test('ULD conversion uses carrier selected units',()=>{const row=adoptUld(master[0],{...current,weightUnit:'LB',volumeUnit:'ft3'},[]);assert.equal(row.tare,'220');assert.equal(row.maximum,'3501');assert.equal(row.volume,'151.85');});
 test('ULD validates one default per type, unique code, and master membership',()=>{const a=adoptUld(master[0],current,[]);assert.throws(()=>validateUlds([{...a,isDefault:false}],current),/exactly one/);assert.throws(()=>validateUlds([a,a],current),/only once/);assert.throws(()=>validateUlds([{...a,code:'BAD'}],current),/master/);const b={...adoptUld(master[1],current,[a]),isDefault:true};assert.throws(()=>validateUlds([a,b],current),/exactly one/);});
 test('ULD validates weights, volume, precision and remarks',()=>{const row=adoptUld(master[0],current,[]);for(const invalid of [{tare:'-1'},{maximum:'0'},{volume:'0'},{volume:'NaN'},{volume:'1.1234567'},{maximum:'99'},{remarks:'x'.repeat(2001)}])assert.throws(()=>validateUlds([{...row,...invalid}],current));assert.equal(validateUlds([{...row,tare:'90'}],current)[0].tare,'90');});

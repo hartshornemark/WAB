@@ -7,6 +7,7 @@ import {
   type AircraftD5Snapshot,
   type CabinArea,
   type CrewLocation,
+  type D5Section,
 } from "../src/domain/aircraft-d5";
 import {
   aircraftD5Status,
@@ -47,8 +48,14 @@ const snap: AircraftD5Snapshot = {
   flightDeckLocations: [location],
   cabinCrewLocations: [location],
 };
-const validate = (section: Parameters<typeof validateD5Section>[0], rows: unknown) =>
-  validateD5Section(section, rows, formula) as any[];
+function validate(section: "excludedRows", rows: unknown): number[];
+function validate(section: "cabinAreas", rows: unknown): CabinArea[];
+function validate(section: "flightDeckLocations" | "cabinCrewLocations", rows: unknown): CrewLocation[];
+function validate(section: D5Section, rows: unknown): number[] | CabinArea[] | CrewLocation[] {
+  if (section === "excludedRows") return validateD5Section(section, rows, formula);
+  if (section === "cabinAreas") return validateD5Section(section, rows, formula);
+  return validateD5Section(section, rows, formula);
+}
 
 test("D5 configures when every section has one complete row", () =>
   assert.equal(aircraftD5Status(snap), "configured"));

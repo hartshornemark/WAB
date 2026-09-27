@@ -9,6 +9,7 @@ export function d11FloorStatus(snapshot:AircraftD11Snapshot):DisplayConfiguratio
 }
 
 export function aircraftD11Status(snapshot:AircraftD11Snapshot):DisplayConfigurationStatus {
+  if (!snapshot.applicabilityReviewed) return "incomplete";
   const floor = d11FloorStatus(snapshot);
   return floor === "not_active" ? "configured" : floor;
 }

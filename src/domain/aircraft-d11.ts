@@ -5,6 +5,7 @@ export type AircraftD11Snapshot = {
   revision:string;
   typeCode:string;
   subtype:string;
+  applicabilityReviewed:boolean;
   combinedActive:boolean;
   floorActive:boolean;
   asymmetricalActive:boolean;

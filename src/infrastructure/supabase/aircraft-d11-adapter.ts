@@ -14,7 +14,7 @@ const fail = (error:{code?:string}|null) => {
 };
 const snapshot = (data:unknown) => {
   const value = data as AircraftD11Snapshot;
-  if (!value || typeof value.canEdit !== "boolean" || typeof value.combinedActive !== "boolean" || typeof value.floorActive !== "boolean" || typeof value.asymmetricalActive !== "boolean" || !Array.isArray(value.floorLimits)) throw new DataUnavailable();
+  if (!value || typeof value.canEdit !== "boolean" || typeof value.applicabilityReviewed !== "boolean" || typeof value.combinedActive !== "boolean" || typeof value.floorActive !== "boolean" || typeof value.asymmetricalActive !== "boolean" || !Array.isArray(value.floorLimits)) throw new DataUnavailable();
   return value;
 };
 export function createAircraftD11Adapter(client:RequestClient):AircraftD11Repository {

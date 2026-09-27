@@ -72,6 +72,8 @@ export async function uldServices(){const client=await createRequestClient();ret
 import {createAircraftC1} from "@/application/aircraft-c1";
 import {createAircraftC1Adapter} from "@/infrastructure/supabase/aircraft-c1-adapter";
 export async function aircraftC1Services(){const client=await createRequestClient();return createAircraftC1(createAuthAdapter(client),createCarrierAdapter(client),createAircraftC1Adapter(client));}
+import{createCarrierHome}from"@/application/carrier-home";
+export async function carrierHomeServices(){const client=await createRequestClient();return createCarrierHome(createAuthAdapter(client),createCarrierAdapter(client),createLogoAdapter(client),createAircraftC1Adapter(client));}
 
 import {createAircraftC2} from "@/application/aircraft-c2";
 import {createAircraftC2Adapter} from "@/infrastructure/supabase/aircraft-c2-adapter";

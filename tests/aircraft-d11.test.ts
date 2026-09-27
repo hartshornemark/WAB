@@ -9,6 +9,7 @@ const base:AircraftD11Snapshot={
   revision:"r",
   typeCode:"319",
   subtype:"100",
+  applicabilityReviewed:true,
   combinedActive:false,
   floorActive:false,
   asymmetricalActive:false,
@@ -21,6 +22,10 @@ const base:AircraftD11Snapshot={
 test("D11 is configured when no supported section is selected",()=>{
   assert.equal(d11FloorStatus(base),"not_active");
   assert.equal(aircraftD11Status(base),"configured");
+});
+
+test("D11 remains incomplete until applicability is reviewed",()=>{
+  assert.equal(aircraftD11Status({...base,applicabilityReviewed:false}),"incomplete");
 });
 
 test("selected Floor Loading Limits requires every D2 hold",()=>{

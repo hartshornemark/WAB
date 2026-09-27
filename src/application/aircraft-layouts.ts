@@ -7,5 +7,6 @@ export function createAircraftLayouts(auth:AuthService,repo:AircraftLayoutReposi
   async load(iata:string,typeCode:string,subtype:string){await requireUser();return repo.load(iata,typeCode,subtype);},
   async list(){await requireUser();return repo.list();},
   async publishVerified(){await requireUser();return repo.publishVerified();},
+  async publishVersion(typeCode:string,subtype:string,version:number){await requireUser();return repo.publishVersion(typeCode,subtype,version);},
  };
 }

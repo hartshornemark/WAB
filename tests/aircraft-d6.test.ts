@@ -56,9 +56,9 @@ test("D6 section is incomplete without rows", () =>
 
 test("D6 marks an unchecked section Not Active", () =>
   assert.equal(d6SectionStatus(false, [], waterLocationComplete), "not_active"));
-test("D6 treats an unselected section as Not Active", () => {
-  assert.equal(d6SectionStatus(null, [], waterLocationComplete), "not_active");
-  assert.equal(aircraftD6Status({ ...snap, waterApplicable: null }), "configured");
+test("D6 keeps an unreviewed section incomplete", () => {
+  assert.equal(d6SectionStatus(null, [], waterLocationComplete), "incomplete");
+  assert.equal(aircraftD6Status({ ...snap, waterApplicable: null }), "partial");
 });
 test("D6 configures when both reviewed sections are inactive", () =>
   assert.equal(aircraftD6Status({

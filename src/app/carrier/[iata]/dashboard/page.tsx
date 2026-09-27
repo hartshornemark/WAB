@@ -1,18 +1,28 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { aircraftC1Services, services } from "@/composition/services";
+import { carrierHomeServices } from "@/composition/services";
 import { AuthenticationRequired, CarrierUnavailable } from "@/domain/models";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { CarrierLogo } from "@/components/carrier-logo";
+import { DashboardAircraftStatus } from "@/components/dashboard-aircraft-status";
+
+const aircraftProfilesByType:Record<string,string>={
+  "319":"/aircraft-profiles/a319-100.png?v=3",
+  "320":"/aircraft-profiles/a320-200.png?v=3",
+  "359":"/aircraft-profiles/a359-900.png?v=1",
+  "DH3":"/aircraft-profiles/dh3-300.png?v=3",
+  "738":"/aircraft-profiles/738-800.png?v=2",
+  "7M9":"/aircraft-profiles/7m9-900.png?v=2",
+};
 
 export default async function CarrierDashboardPage({params}:{params:Promise<{iata:string}>}) {
   const {iata}=await params;
-  const result=await (await services()).selectCarrier(iata).catch(error=>{
+  const result=await (await carrierHomeServices()).get(iata).catch(error=>{
     if(error instanceof AuthenticationRequired) redirect("/login");
     if(error instanceof CarrierUnavailable) notFound();
     throw error;
   });
-  const aircraft=await (await aircraftC1Services()).list(iata);
+  const aircraft=result.aircraft;
   const carrierBase=`/carrier/${encodeURIComponent(iata)}`;
   if(aircraft.rows.length===0){
     const query=new URLSearchParams({mode:"carrier",iata:result.carrier.iata,carrier:result.carrier.name,...(result.carrier.logoUrl?{logo:result.carrier.logoUrl}:{})});
@@ -21,13 +31,15 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
   return <WorkspaceShell user={result.user}>
     <Link href="/carriers" className="back">← Change carrier</Link>
     <p className="eyebrow">CARRIER WORKSPACE / {result.carrier.iata}</p>
-    <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl}/><div><h1>Configuration dashboard</h1><p className="muted">{result.carrier.name}</p></div></div>
+    <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl}/><div><h1>Carrier Home</h1><p className="muted">{result.carrier.name}</p></div></div>
     <>
       <p className="dashboard-intro">Select an aircraft to open its complete configuration dashboard.</p>
       <div className="dashboard-aircraft-grid">{aircraft.rows.map(row=>{
         const href=`${carrierBase}/aircraft/${encodeURIComponent(row.typeCode)}/${encodeURIComponent(row.subtype)}/dashboard`;
-        return <Link className="dashboard-aircraft-card" href={href} key={`${row.typeCode}-${row.subtype}`}>
-          <div><span className="dashboard-aircraft-code">{row.typeCode}-{row.subtype}</span><h2>{row.identityName||row.aircraftName}</h2><p>{row.manufacturerName}</p></div><span className="dashboard-open">OPEN DASHBOARD →</span>
+        const profile=aircraftProfilesByType[row.typeCode.toUpperCase()];
+        return <Link className="dashboard-aircraft-card" href={href} prefetch={false} key={`${row.typeCode}-${row.subtype}`}>
+          <span className="dashboard-aircraft-top"><span className="dashboard-aircraft-code">{row.typeCode}-{row.subtype}</span><span className="dashboard-aircraft-open"><DashboardAircraftStatus iata={iata} typeCode={row.typeCode} subtype={row.subtype}/><span className="dashboard-open">OPEN DASHBOARD →</span></span></span>
+          <span className={`dashboard-aircraft-body${profile?" has-profile":""}`}><span className="dashboard-aircraft-copy"><h2>{row.identityName||row.aircraftName}</h2><span className="dashboard-aircraft-maker">{row.manufacturerName}</span></span>{profile&&<img className="dashboard-aircraft-profile" src={profile} alt={`${row.identityName||row.aircraftName} side profile`}/>}</span>
         </Link>;
       })}</div>
       <Link className="button-link dashboard-manage-aircraft" href={`${carrierBase}/aircraft`}>ADD OR CHANGE AIRCRAFT</Link>

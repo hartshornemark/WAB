@@ -1,0 +1,50 @@
+begin;
+
+insert into "Basic_Carrier_Record"."MASTER_ULD_List"
+("ULD_ID","ULD_Type","ULD_TARE","ULD_Max_Gross_Weight","ULD_Base_Code","ULD_Base_Width","ULD_Base_Length","ULD_Contour_Code","Main_Deck_Only","ULD_Volume")
+values
+('AKE','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('AKH','LD3-45',67,1588,'K',61.5,60.4,'E',false,3.5),
+('AVE','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('MDP','LDX',200,11300,'M',196,96,'M',true,29.6),
+('P1P','LD7',110,4626,'1',125,88,null,false,11.5),
+('P6P','LD7',130,6800,'6',125,96,null,false,11.5),
+('PAG','LD7',110,4626,'1',125,88,null,false,11.5),
+('PKC','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('PLA','LD8',95,3175,'L',125,60.4,null,false,8.6),
+('PMC','LD7',130,5669,'6',125,96,null,false,11.5),
+('AKC','LD1',100,1588,'K',61.5,60.4,'C',false,5),
+('DPE','LD2',92,1225,'P',47,60.4,'E',false,3.5),
+('AVA','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('AVB','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('AKN','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('DKN','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('DVN','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('DKE','LD3',100,1588,'K',61.5,60.4,'E',false,4.3),
+('AVC','LD1',100,1588,'K',61.5,60.4,'C',false,5),
+('AVD','LD1',100,1588,'K',61.5,60.4,'C',false,5),
+('AVK','LD1',100,1588,'K',61.5,60.4,'C',false,5),
+('AVJ','LD1',100,1588,'K',61.5,60.4,'C',false,5),
+('AVY','LD1',100,1588,'K',61.5,60.4,'C',false,5),
+('DPA','LD2',92,1225,'P',47,60.4,'E',false,3.5),
+('DPN','LD2',92,1225,'P',47,60.4,'E',false,3.5),
+('APE','LD2',92,1225,'P',47,60.4,'E',false,3.5),
+('ALP','LD11',120,2449,'L',125,60.4,'P',false,7.4),
+('ALF','LD6',230,3175,'L',125,60.4,'F',false,9.1),
+('DQF','LD8',127,2450,'Q',125,60.2,'F',false,7.6),
+('AAP','LD9',216,4624,'1',125,88,'P',false,10.8),
+('AAF','LD26',250,6033,'1',125,88,'P',false,11.5),
+('AAU','LD29',265,6033,'1',125,88,'P',false,14.4),
+('AMU','LD39',290,5100,'6',125,96,'P',false,15.9)
+on conflict ("ULD_ID") do update set
+ "ULD_Type"=excluded."ULD_Type",
+ "ULD_TARE"=excluded."ULD_TARE",
+ "ULD_Max_Gross_Weight"=excluded."ULD_Max_Gross_Weight",
+ "ULD_Base_Code"=excluded."ULD_Base_Code",
+ "ULD_Base_Width"=excluded."ULD_Base_Width",
+ "ULD_Base_Length"=excluded."ULD_Base_Length",
+ "ULD_Contour_Code"=excluded."ULD_Contour_Code",
+ "Main_Deck_Only"=excluded."Main_Deck_Only",
+ "ULD_Volume"=excluded."ULD_Volume";
+
+commit;

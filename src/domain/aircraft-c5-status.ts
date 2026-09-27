@@ -9,7 +9,7 @@ const pointValid=(point:EnvelopePoint,maximum:number)=>positiveWhole(point.weigh
 export function c5StatusSelection(values:AircraftC5Values):ConfigurationStatus{return values.curtailed===null?"incomplete":"configured"}
 
 export function c5EnvelopeStatus(values:AircraftC5Values,key:"tow"|"law"|"zfw"):ConfigurationStatus{
-  const minimum=values.effectiveDow,maximum=values.maximumWeights[key],boundary=values.envelopes[key];
+  const minimum=key==="zfw"?values.effectiveDow:0,maximum=values.maximumWeights[key],boundary=values.envelopes[key];
   const hasProgress=positiveWhole(maximum)||boundary.fwd.length>0||boundary.aft.length>0;
   if(!hasProgress)return"incomplete";
   if(!positiveWhole(maximum)||(positiveWhole(minimum)&&minimum>maximum)||!boundaryComplete(boundary,minimum,maximum))return"partial";

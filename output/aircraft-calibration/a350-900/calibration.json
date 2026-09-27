@@ -1,0 +1,37 @@
+{
+  "typeCode": "359",
+  "subtype": "900",
+  "version": 1,
+  "file": "a359-900-fuselage.svg",
+  "sha256": "5a7d5364c1cd7ef7fbfacaa6a168fcb4b53acac04a32021ba60f2ab252746414",
+  "byteSize": 1129428,
+  "objectPath": "359/900/5a7d5364c1cd7ef7fbfacaa6a168fcb4b53acac04a32021ba60f2ab252746414.svg",
+  "noseArm": 0,
+  "datumDescription": "Carrier C4 datum zero is at the aircraft nose; balance arms increase aft.",
+  "datumSource": "Carrier ZZ C4 configuration reviewed 27 September 2026. The master drawing geometry does not independently define the weight-and-balance datum.",
+  "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+  "calibration": {
+    "typeCode": "359",
+    "subtype": "900",
+    "length": 66.8,
+    "noseArm": 0,
+    "armUnit": "M",
+    "tailX": 244,
+    "span": 240,
+    "centreY": 25,
+    "imageFrame": {
+      "x": 0,
+      "y": 0,
+      "width": 248,
+      "height": 50
+    },
+    "cropLeft": 0,
+    "cropRight": 248,
+    "holdY": 17,
+    "holdHeight": 16,
+    "leftDoorY": 16,
+    "rightDoorY": 34,
+    "labelCharWidth": 0.58,
+    "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. Longitudinal plotting follows the saved carrier C4 datum."
+  }
+}
