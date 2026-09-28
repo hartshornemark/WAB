@@ -1,6 +1,6 @@
 import test from"node:test";
 import assert from"node:assert/strict";
-import{AircraftD3Invalid,blockedAircraftD3PositionIds,validateAircraftD3Configuration,type AircraftD3Configuration,type AircraftD3Position,type AircraftD3Snapshot,type AircraftD3UldOption}from"../src/domain/aircraft-d3";
+import{sortAircraftD3Snapshot,AircraftD3Invalid,blockedAircraftD3PositionIds,validateAircraftD3Configuration,type AircraftD3Configuration,type AircraftD3Position,type AircraftD3Snapshot,type AircraftD3UldOption}from"../src/domain/aircraft-d3";
 import{aircraftD3ConfigurationStatus,aircraftD3Status}from"../src/domain/aircraft-d3-status";
 
 const uldTypes=["LD3-45"];
@@ -22,3 +22,14 @@ test("the same display position may use different ULD codes and lock geometry",(
 test("a combined pallet position blocks every arrangement sharing an atomic bay",()=>{const ids=["11L","11R","12L","12R"],bays=ids.map(id=>({...atomicBay,id})),arrangement=(positionId:string,occupiedBayIds:string[]):AircraftD3Position=>({...row,positionId,occupiedBayIds});const model={...config,expectedPositionCount:4,atomicBays:bays,rows:[arrangement("11L",["11L"]),arrangement("11R",["11R"]),arrangement("11",["11L","11R"]),arrangement("12L",["12L"]),arrangement("12R",["12R"]),arrangement("12",["12L","12R"]),arrangement("11P",ids)]};assert.deepEqual(blockedAircraftD3PositionIds(model,"11P"),["11","11L","11R","12","12L","12R"])});
 test("accepts blank optional values and a signed decimal Index Per Weight Unit",()=>{const validated=validate({...config,rows:[{...row,volume:null,indexPerWeightUnit:-0.00972,lateralFrom:null,lateralCentroid:null,lateralTo:null,balanceFrom:null,balanceTo:null}]});assert.equal(validated.rows[0].volume,null);assert.equal(validated.rows[0].indexPerWeightUnit,-0.00972)});
 test("derives the Balance Arm Centroid from C4 and Index Per Weight Unit",()=>{const validated=validate({...config,rows:[{...row,balanceCentroid:99,balanceFrom:null,balanceTo:null,indexPerWeightUnit:-0.00972}]},{referenceArm:18.85,constantC:838.7});assert.equal(validated.rows[0].balanceCentroid,10.697836)});
+
+test("import validation preserves CSV centroids instead of replacing them from C4",()=>{const validated=validateAircraftD3Configuration(config,[{id:"1"}],{referenceArm:20,constantC:1000},uldOptions,true);assert.equal(validated.rows[0].balanceCentroid,12.5)});
+
+test("hold lists and configurations use derived sorting arms without filling missing centroids",()=>{
+ const input=snap({uldHolds:[{id:"AFT",balanceCentroid:null,sortBalanceArm:30},{id:"UNKNOWN",balanceCentroid:null},{id:"FWD",balanceCentroid:null,sortBalanceArm:13}],configurations:[{...config,holdId:"AFT"},{...config,holdId:"UNKNOWN"},{...config,holdId:"FWD"}]});
+ const sorted=sortAircraftD3Snapshot(input);
+ assert.deepEqual(sorted.uldHolds.map(h=>h.id),["FWD","AFT","UNKNOWN"]);
+ assert.deepEqual(sorted.configurations.map(h=>h.holdId),["FWD","AFT","UNKNOWN"]);
+ assert.equal(sorted.uldHolds[0].balanceCentroid,null);
+ assert.equal(input.uldHolds[0].id,"AFT");
+});

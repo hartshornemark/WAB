@@ -4,15 +4,20 @@ import { carrierHomeServices } from "@/composition/services";
 import { AuthenticationRequired, CarrierUnavailable } from "@/domain/models";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { CarrierLogo } from "@/components/carrier-logo";
-import { DashboardAircraftStatus } from "@/components/dashboard-aircraft-status";
+import { DashboardAircraftStatus,DashboardAircraftStatusProvider } from "@/components/dashboard-aircraft-status";
 
 const aircraftProfilesByType:Record<string,string>={
   "319":"/aircraft-profiles/a319-100.png?v=3",
   "320":"/aircraft-profiles/a320-200.png?v=3",
+  "33F":"/aircraft-profiles/a330-200f.png?v=1",
   "359":"/aircraft-profiles/a359-900.png?v=1",
   "DH3":"/aircraft-profiles/dh3-300.png?v=3",
   "738":"/aircraft-profiles/738-800.png?v=2",
   "7M9":"/aircraft-profiles/7m9-900.png?v=2",
+};
+
+const aircraftProfilesByTypeAndSubtype:Record<string,string>={
+  "321:P2F":"/aircraft-profiles/a321-p2f.png?v=1",
 };
 
 export default async function CarrierDashboardPage({params}:{params:Promise<{iata:string}>}) {
@@ -34,14 +39,16 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
     <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl}/><div><h1>Carrier Home</h1><p className="muted">{result.carrier.name}</p></div></div>
     <>
       <p className="dashboard-intro">Select an aircraft to open its complete configuration dashboard.</p>
-      <div className="dashboard-aircraft-grid">{aircraft.rows.map(row=>{
+      <DashboardAircraftStatusProvider iata={iata} aircraft={aircraft.rows}><div className="dashboard-aircraft-grid">{aircraft.rows.map(row=>{
         const href=`${carrierBase}/aircraft/${encodeURIComponent(row.typeCode)}/${encodeURIComponent(row.subtype)}/dashboard`;
-        const profile=aircraftProfilesByType[row.typeCode.toUpperCase()];
+        const typeCode=row.typeCode.trim().toUpperCase();
+        const subtype=row.subtype.trim().toUpperCase();
+        const profile=aircraftProfilesByTypeAndSubtype[`${typeCode}:${subtype}`]??aircraftProfilesByType[typeCode];
         return <Link className="dashboard-aircraft-card" href={href} prefetch={false} key={`${row.typeCode}-${row.subtype}`}>
-          <span className="dashboard-aircraft-top"><span className="dashboard-aircraft-code">{row.typeCode}-{row.subtype}</span><span className="dashboard-aircraft-open"><DashboardAircraftStatus iata={iata} typeCode={row.typeCode} subtype={row.subtype}/><span className="dashboard-open">OPEN DASHBOARD →</span></span></span>
+          <span className="dashboard-aircraft-top"><span className="dashboard-aircraft-code">{row.typeCode}-{row.subtype}</span><span className="dashboard-aircraft-open"><DashboardAircraftStatus typeCode={row.typeCode} subtype={row.subtype}/><span className="dashboard-open">OPEN DASHBOARD →</span></span></span>
           <span className={`dashboard-aircraft-body${profile?" has-profile":""}`}><span className="dashboard-aircraft-copy"><h2>{row.identityName||row.aircraftName}</h2><span className="dashboard-aircraft-maker">{row.manufacturerName}</span></span>{profile&&<img className="dashboard-aircraft-profile" src={profile} alt={`${row.identityName||row.aircraftName} side profile`}/>}</span>
         </Link>;
-      })}</div>
+      })}</div></DashboardAircraftStatusProvider>
       <Link className="button-link dashboard-manage-aircraft" href={`${carrierBase}/aircraft`}>ADD OR CHANGE AIRCRAFT</Link>
     </>
   </WorkspaceShell>;

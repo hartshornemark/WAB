@@ -1,4 +1,5 @@
 import "server-only";
+import {createDashboardReader} from "@/application/dashboard-read";
 import { createCarrierConfiguration } from "@/application/carrier-configuration";
 import { createRequestClient } from "@/infrastructure/supabase/server";
 import { createAuthAdapter } from "@/infrastructure/supabase/auth-adapter";
@@ -148,23 +149,43 @@ export async function dashboardStatusServices(){
     createAircraftD2Adapter(client),createAircraftD3Adapter(client),createAircraftD4Adapter(client),createAircraftD5Adapter(client),createAircraftD6Adapter(client),createAircraftD8Adapter(client),createAircraftD9Adapter(client),createAircraftD11Adapter(client),
     createAircraftE11Adapter(client),createAircraftE12Adapter(client),createAircraftE2Adapter(client),createAircraftE3Adapter(client),createAircraftE4Adapter(client),createAircraftE5Adapter(client),createAircraftF1Adapter(client),createAircraftG1Adapter(client),createAircraftH1Adapter(client),
   ] as const;
-  return{async getCarrier(iata:string){
+  const safe=createDashboardReader(4);
+  const commonReads=(iata:string)=>Promise.all([
+    safe(()=>repositories[0].get(iata)),safe(()=>repositories[1].get(iata)),safe(()=>repositories[2].get(iata)),safe(()=>repositories[3].get(iata)),safe(()=>repositories[4].get(iata)),safe(()=>repositories[5].get(iata)),safe(()=>repositories[6].get(iata)),
+  ]);
+  const aircraftReads=(iata:string,typeCode:string,subtype:string)=>Promise.all([
+    safe(()=>repositories[8].get(iata,typeCode,subtype)),safe(()=>repositories[9].get(iata,typeCode,subtype)),safe(()=>repositories[10].get(iata,typeCode,subtype)),safe(()=>repositories[11].get(iata,typeCode,subtype)),safe(()=>repositories[12].get(iata,typeCode,subtype)),safe(()=>repositories[13].get(iata,typeCode,subtype)),safe(()=>repositories[14].get(iata,typeCode,subtype)),
+    safe(()=>repositories[15].get(iata,typeCode,subtype)),safe(()=>repositories[16].get(iata,typeCode,subtype)),safe(()=>repositories[17].get(iata,typeCode,subtype)),safe(()=>repositories[18].get(iata,typeCode,subtype)),safe(()=>repositories[19].get(iata,typeCode,subtype)),safe(()=>repositories[20].get(iata,typeCode,subtype)),safe(()=>repositories[21].get(iata,typeCode,subtype)),safe(()=>repositories[22].get(iata,typeCode,subtype)),
+    safe(()=>repositories[23].get(iata,typeCode,subtype)),safe(()=>repositories[24].get(iata,typeCode,subtype)),safe(()=>repositories[25].get(iata,typeCode,subtype)),safe(()=>repositories[26].get(iata,typeCode,subtype)),safe(()=>repositories[27].get(iata,typeCode,subtype)),safe(()=>repositories[28].get(iata,typeCode,subtype)),safe(()=>repositories[29].get(iata,typeCode,subtype)),safe(()=>repositories[30].get(iata,typeCode,subtype)),safe(()=>repositories[31].get(iata,typeCode,subtype)),
+  ]);
+  const requireAccess=async(iata:string)=>{
     if(!await auth.currentUser())throw new AuthenticationRequired();
     if(!await carriers.findAuthorised(iata))throw new CarrierUnavailable();
-    const safe=<T>(request:Promise<T>)=>request.catch(()=>null);
+  };
+  return{async getCarrier(iata:string){
+    await requireAccess(iata);
     return Promise.all([
-      safe(repositories[0].get(iata)),safe(repositories[1].get(iata)),safe(repositories[2].get(iata)),safe(repositories[3].get(iata)),safe(repositories[4].get(iata)),safe(repositories[5].get(iata)),safe(repositories[6].get(iata)),safe(repositories[8].list(iata)),
+      safe(()=>repositories[0].get(iata)),safe(()=>repositories[1].get(iata)),safe(()=>repositories[2].get(iata)),safe(()=>repositories[3].get(iata)),safe(()=>repositories[4].get(iata)),safe(()=>repositories[5].get(iata)),safe(()=>repositories[6].get(iata)),safe(()=>repositories[8].list(iata)),
     ]);
   },async get(iata:string,typeCode:string,subtype:string){
-    if(!await auth.currentUser())throw new AuthenticationRequired();
-    if(!await carriers.findAuthorised(iata))throw new CarrierUnavailable();
-    const safe=<T>(request:Promise<T>)=>request.catch(()=>null);
-    return Promise.all([
-      safe(repositories[0].get(iata)),safe(repositories[1].get(iata)),safe(repositories[2].get(iata)),safe(repositories[3].get(iata)),safe(repositories[4].get(iata)),safe(repositories[5].get(iata)),safe(repositories[6].get(iata)),safe(repositories[7].get(iata,typeCode,subtype)),
-      safe(repositories[8].get(iata,typeCode,subtype)),safe(repositories[9].get(iata,typeCode,subtype)),safe(repositories[10].get(iata,typeCode,subtype)),safe(repositories[11].get(iata,typeCode,subtype)),safe(repositories[12].get(iata,typeCode,subtype)),safe(repositories[13].get(iata,typeCode,subtype)),safe(repositories[14].get(iata,typeCode,subtype)),
-      safe(repositories[15].get(iata,typeCode,subtype)),safe(repositories[16].get(iata,typeCode,subtype)),safe(repositories[17].get(iata,typeCode,subtype)),safe(repositories[18].get(iata,typeCode,subtype)),safe(repositories[19].get(iata,typeCode,subtype)),safe(repositories[20].get(iata,typeCode,subtype)),safe(repositories[21].get(iata,typeCode,subtype)),safe(repositories[22].get(iata,typeCode,subtype)),
-      safe(repositories[23].get(iata,typeCode,subtype)),safe(repositories[24].get(iata,typeCode,subtype)),safe(repositories[25].get(iata,typeCode,subtype)),safe(repositories[26].get(iata,typeCode,subtype)),safe(repositories[27].get(iata,typeCode,subtype)),safe(repositories[28].get(iata,typeCode,subtype)),safe(repositories[29].get(iata,typeCode,subtype)),safe(repositories[30].get(iata,typeCode,subtype)),safe(repositories[31].get(iata,typeCode,subtype)),
-    ]);
+    await requireAccess(iata);
+    const[common,uld,aircraft]=await Promise.all([commonReads(iata),safe(()=>repositories[7].get(iata,typeCode,subtype)),aircraftReads(iata,typeCode,subtype)]);
+    return[...common,uld,...aircraft] as const;
+  },async getMany(iata:string,variants:Array<{typeCode:string;subtype:string}>){
+    await requireAccess(iata);
+    const common=await commonReads(iata);
+    return Promise.all(variants.map(async variant=>{
+      try {
+        const [uld,aircraft]=await Promise.all([
+          safe(()=>repositories[7].get(iata,variant.typeCode,variant.subtype)),
+          aircraftReads(iata,variant.typeCode,variant.subtype),
+        ]);
+        return [...common,uld,...aircraft] as const;
+      } catch(error) {
+        console.error("Aircraft status read unavailable",{iata,typeCode:variant.typeCode,subtype:variant.subtype,errorType:error instanceof Error?error.constructor.name:"Unknown"});
+        return null;
+      }
+    }));
   }};
 }
 

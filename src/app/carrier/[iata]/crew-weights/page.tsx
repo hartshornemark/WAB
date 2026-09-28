@@ -16,7 +16,7 @@ export default async function CrewWeightsPage({ params }: { params: Promise<{ ia
   return <WorkspaceShell user={result.user}>
     <Link href="/carriers" className="back">← Change carrier</Link>
     <p className="eyebrow">CARRIER WORKSPACE / {result.carrier.iata}</p>
-    <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl} /><h1>{result.carrier.name}</h1></div>
+    <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl} /><h1>{result.carrier.name}</h1><Link className="secondary crew-carrier-home" href={`/carrier/${encodeURIComponent(iata)}/dashboard`}>CARRIER HOME</Link></div>
     <CrewWeights key={iata} iata={iata} initial={snapshot} />
     <nav className="section-navigation" aria-label="Carrier setup sections"><Link className="section-link secondary" href={`/carrier/${encodeURIComponent(iata)}?sheet=B1`}>← B1. UNITS & CODES</Link><Link className="section-link" href={`/carrier/${encodeURIComponent(iata)}/passenger-weights`}>NEXT: B3. PASSENGERS →</Link></nav>
   </WorkspaceShell>;

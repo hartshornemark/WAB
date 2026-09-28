@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { holdLayoutPrerequisite, type HoldLayout, holdLayoutX } from "@/domain/hold-layout";
-import type { AircraftD2Snapshot } from "@/domain/aircraft-d2";
+import { aircraftD2HoldId, type AircraftD2Snapshot } from "@/domain/aircraft-d2";
 
 export function HoldLayoutViewer({ iata, d2, editing }: { iata: string; d2: AircraftD2Snapshot; editing: boolean }) {
   const [layout, setLayout] = useState<HoldLayout | null>(null);
@@ -31,10 +31,14 @@ export function HoldLayoutViewer({ iata, d2, editing }: { iata: string; d2: Airc
 function LayoutDialog({ iata, layout, onClose }: { iata: string; layout: HoldLayout; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null), titleId = useId();
   const [selectedUldType,setSelectedUldType]=useState<string|null>(layout.uldTypes[0]??null);
+  const [deckUldTypes,setDeckUldTypes]=useState<Record<string,string>>(()=>Object.fromEntries(layout.decks.map(deck=>[deck.code,layout.holds.filter(hold=>hold.deckCode===deck.code).flatMap(hold=>hold.uldPositions.map(position=>position.uldType))[0]??""])));
   const [selectedArrangements,setSelectedArrangements]=useState<Record<string,string>>(()=>Object.fromEntries(
     (layout.uldArrangementSelectors??[]).flatMap(selector=>selector.options[0]?[[`${selector.holdId}\0${selector.uldType}`,selector.options[0].id]]:[]),
   ));
-  const arrangementSelectors=(layout.uldArrangementSelectors??[]).filter(selector=>selector.uldType===selectedUldType);
+  const arrangementSelectors=(layout.uldArrangementSelectors??[]).filter(selector=>{
+    const hold=layout.holds.find(hold=>aircraftD2HoldId(hold)===selector.holdId);
+    return selector.uldType===(layout.decks.length>1&&hold?deckUldTypes[hold.deckCode]:selectedUldType);
+  });
   const selectedArrangementLabels=arrangementSelectors.flatMap(selector=>{
     const key=`${selector.holdId}\0${selector.uldType}`;
     const option=selector.options.find(item=>item.id===selectedArrangements[key]);
@@ -43,12 +47,19 @@ function LayoutDialog({ iata, layout, onClose }: { iata: string; layout: HoldLay
   useEffect(() => { const dialog = ref.current!; dialog.showModal(); return () => dialog.close(); }, []);
   return <dialog className="hold-layout-dialog" ref={ref} aria-labelledby={titleId} onCancel={onClose}>
     <header><div><h2 id={titleId}>HOLD LAYOUT</h2><p>{iata} / {layout.typeCode}-{layout.subtype}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></header>
-    {layout.uldTypes.length>0&&<nav className="hold-layout-uld-selectors" aria-label="ULD bay type"><span>ULD BAY TYPE</span>{layout.uldTypes.map(type=><button type="button" className={selectedUldType===type?"selected":""} aria-pressed={selectedUldType===type} key={type} onClick={()=>setSelectedUldType(type)}>{type}</button>)}</nav>}
+    {layout.decks.length===1&&layout.uldTypes.length>0&&<nav className="hold-layout-uld-selectors" aria-label="ULD bay type"><span>ULD BAY TYPE</span>{layout.uldTypes.map(type=><button type="button" className={selectedUldType===type?"selected":""} aria-pressed={selectedUldType===type} key={type} onClick={()=>setSelectedUldType(type)}>{type}</button>)}</nav>}
     {arrangementSelectors.map(selector=>{const key=`${selector.holdId}\0${selector.uldType}`;return <nav className="hold-layout-uld-selectors hold-layout-arrangement-selectors" aria-label={selector.label} key={key}>
       <span>{selector.label}</span>{selector.options.map(option=><button type="button" className={selectedArrangements[key]===option.id?"selected":""} aria-pressed={selectedArrangements[key]===option.id} key={option.id} onClick={()=>setSelectedArrangements(current=>({...current,[key]:option.id}))}>{option.label}</button>)}
     </nav>})}
-    {layout.decks.map(deck => <section key={deck.code} className="hold-layout-deck"><h3>{deck.name}</h3><HoldDiagram layout={layout} deckCode={deck.code} selectedUldType={selectedUldType} selectedArrangements={selectedArrangements}/></section>)}
-    <p className="hold-layout-caption">Tail Left · Nose Right. {selectedUldType&&`Showing ${selectedUldType} loading positions only. `}{selectedArrangementLabels.length>0&&`Selected arrangement: ${selectedArrangementLabels.join("; ")}. `}{layout.usesGlobalHoldBoundaries ? "Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent." : "Hold lengths use saved carrier Balance Arms."} {layout.calibration.diagramCaption ?? "Aircraft doors are shown in the official plan. Hold widths are schematic."}</p>
+    {layout.decks.map(deck => {
+      const types=[...new Set(layout.holds.filter(hold=>hold.deckCode===deck.code).flatMap(hold=>hold.uldPositions.map(position=>position.uldType)))].sort();
+      const selected=layout.decks.length>1?deckUldTypes[deck.code]||null:selectedUldType;
+      return <section key={deck.code} className="hold-layout-deck"><h3>{deck.name}</h3>
+        {layout.decks.length>1&&types.length>0&&<nav className="hold-layout-uld-selectors" aria-label={`${deck.name} ULD bay type`}><span>ULD BAY TYPE</span>{types.map(type=><button type="button" className={selected===type?"selected":""} aria-pressed={selected===type} key={type} onClick={()=>setDeckUldTypes(current=>({...current,[deck.code]:type}))}>{type}</button>)}</nav>}
+        <HoldDiagram layout={layout} deckCode={deck.code} selectedUldType={selected} selectedArrangements={selectedArrangements}/></section>;
+    })}
+    {layout.boundaryNotes?.map(note => <p className="hold-layout-caption" key={note}>{note}</p>)}
+    <p className="hold-layout-caption">Tail Left · Nose Right. {layout.decks.length===1&&selectedUldType&&`Showing ${selectedUldType} loading positions only. `}{selectedArrangementLabels.length>0&&`Selected arrangement: ${selectedArrangementLabels.join("; ")}. `}{layout.usesGlobalHoldBoundaries ? "Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent." : "Positions use saved carrier Balance Arms."} {layout.calibration.diagramCaption ?? "Aircraft doors are shown in the official plan. Hold widths are schematic."}</p>
   </dialog>;
 }
 function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements }: { layout: HoldLayout; deckCode: string; selectedUldType:string|null; selectedArrangements:Record<string,string> }) {
@@ -80,7 +91,7 @@ function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements }
           {labels.length>1&&<text x={hold.x+1.15} y={aircraft.centreY-halfAt(to)+3.7} textAnchor="start" fontSize="2.5" fontWeight="700" fill="#334155">{aft}</text>}
         </g>;
       }
-      const selector=(layout.uldArrangementSelectors??[]).find(item=>item.holdId===hold.name&&item.uldType===selectedUldType);
+      const selector=(layout.uldArrangementSelectors??[]).find(item=>item.holdId===aircraftD2HoldId(hold)&&item.uldType===selectedUldType);
       const selectedOption=selector?.options.find(option=>option.id===selectedArrangements[`${selector.holdId}\0${selector.uldType}`]);
       const selectedPositions=selectedUldType?hold.uldPositions.filter(position=>position.uldType===selectedUldType
         &&(!selectedOption||selectedOption.includedPositionIds.includes(position.id))&&!selectedOption?.excludedPositionIds.includes(position.id)).map(position=>{

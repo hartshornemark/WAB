@@ -204,3 +204,29 @@ test("configured D3 bays retain the aircraft compartment boundary and follow its
   assert.deepEqual(layout.holds[0].subdivisions.map(segment=>segment.id),["4","3"]);
   assert.equal(layout.holds[0].subdivisions[1].x,holdLayoutX(24.5,aircraft));
 });
+
+test("missing D2 limits use D3 occupied ranges independently per deck and identify undrawn bulk holds",()=>{
+  const uld=(deckCode:string):AircraftD2HoldRow=>({...hold,id:`${deckCode}:FWD`,name:"FWD",holdType:"ULD",deckCode,balanceCentroid:null,balanceFrom:null,balanceTo:null,compartments:[{id:"1",areas:[]}]});
+  const snap=d2({uldApplicable:true,rows:[uld("MAIN"),uld("LOWER"),{...hold,balanceFrom:null,balanceTo:null}],deckTypes:[{code:"MAIN",name:"Main Deck"},{code:"LOWER",name:"Lower Deck"}]});
+  const config=(holdId:string,from:number):AircraftD3Snapshot["configurations"][number]=>({holdId,code:"A",description:"Default",expectedPositionCount:1,atomicBays:[{id:"11",compartmentId:"1",colour:null,balanceCentroid:from+1,balanceFrom:from,balanceTo:from+2,lateralCentroid:null,lateralFrom:null,lateralTo:null}],rows:[{rowType:"POSITION",positionId:"11",occupiedBayIds:["11"],compartmentId:"1",uldCode:"AKH",uldType:"LD3-45",uldBaseCode:"K",groupId:null,maxWeight:1000,volume:null,lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:from+1,balanceFrom:from,balanceTo:from+2,indexPerWeightUnit:.01,colour:null}]});
+  const positions:AircraftD3Snapshot={canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",uldHolds:[],uldOptions:[],uldTypes:[],configurations:[config("MAIN:FWD",10),config("LOWER:FWD",15)]};
+  const layout=buildHoldLayout(snap,d4({doors:[]}),positions);
+  assert.deepEqual(layout.holds.map(h=>[h.deckCode,h.balanceFrom,h.balanceTo]),[["MAIN",10,12],["LOWER",15,17]]);
+  assert.equal(layout.decks.length,2);
+  assert.equal(layout.boundaryNotes?.filter(n=>n.includes("occupied D3")).length,2);
+  assert.ok(layout.boundaryNotes?.some(n=>n.includes("Hold 5: not drawn")));
+  assert.equal(snap.rows[0].balanceFrom,null);
+  // D2 supplied limits remain authoritative, and data from another aircraft is never used.
+  const explicit=d2({...snap,bulkApplicable:false,rows:[{...uld("MAIN"),balanceFrom:9,balanceTo:13}]});
+  assert.equal(buildHoldLayout(explicit,d4({doors:[]}),positions).holds[0].balanceFrom,9);
+  assert.throws(()=>buildHoldLayout(snap,d4(),{...positions,subtype:"P2F"}),/No hold ranges/);
+  assert.throws(()=>buildHoldLayout(snap,d4(),{...positions,canView:false}),/No hold ranges/);
+});
+
+test("unknown main-deck doors never become zero-width doors when D4 is configured",()=>{
+ const main={...hold,id:"MAIN:FWD",name:"FWD",holdType:"ULD" as const,deckCode:"MAIN"};
+ const snap=d2({uldApplicable:true,rows:[hold,main]});
+ const doors=d4({doors:[...d4().doors,{holdId:"MAIN:FWD",holdType:"ULD",deckName:"Main Deck",forwardArm:null,aftArm:null,height:null,orientation:null}]});
+ const layout=buildHoldLayout(snap,doors);
+ assert.equal(layout.doors.length,1);assert.equal(layout.doors[0].holdId,"5");
+});

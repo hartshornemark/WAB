@@ -133,3 +133,13 @@ test("A350-900 v7 tapers bulk Hold 5 toward the tail without changing its statio
  const bytes=readFileSync(`src/assets/aircraft-layouts/${seeds[i].file}`);
  assert.equal(bytes.length,v.byte_size);assert.equal(createHash("sha256").update(bytes).digest("hex"),v.sha256);
 });
+test("A321 P2F source outline preserves its CAD scale and shared deck centreline",()=>{
+ const i=seeds.findIndex(s=>s.typeCode==="321"&&s.subtype==="P2F");assert.ok(i>=0);
+ const v=parseLayoutVersion(version(i)),c={...v.calibration,asset:"signed"};
+ assert.equal(c.length,44.62930078125);
+ assert.equal(holdLayoutX(c.noseArm,c),244);
+ assert.equal(holdLayoutX(c.noseArm+c.length,c),4);
+ assert.equal(c.holdY+c.holdHeight/2,c.centreY);
+ const bytes=readFileSync(`src/assets/aircraft-layouts/${seeds[i].file}`);
+ assert.equal(bytes.length,v.byte_size);assert.equal(createHash("sha256").update(bytes).digest("hex"),v.sha256);
+});

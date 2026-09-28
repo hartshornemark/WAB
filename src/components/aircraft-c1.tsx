@@ -24,7 +24,6 @@ export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapsho
   const[manufacturerQuery,setManufacturerQuery]=useState(initial.manufacturerName);
   const[manufacturers,setManufacturers]=useState<{id:string;name:string}[]>([]);
   const[error,setError]=useState("");
-  const[message,setMessage]=useState("");
   const[pending,start,saveFeedback]=useSaveFeedback();
   const[,startSearch]=useTransition();
   const completion=aircraftC1Statuses(saved);
@@ -49,13 +48,12 @@ export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapsho
       setDraft({aircraftName:r.snapshot.aircraftName,variantCodes:r.snapshot.variantCodes,operatingRole:r.snapshot.operatingRole,values:r.snapshot.values,manufacturerId:r.snapshot.manufacturerId});
       setManufacturerQuery(r.snapshot.manufacturerName);
       setManufacturers([]);
-      setEditing(false);
-      setMessage("C1 saved.");});
+      setEditing(false);});
     });
   }
 
   return <SaveScope feedback={saveFeedback}>{<section className="aircraft-c1">
-    <SectionHeader id="aircraft-c1-heading" title="1. AIRCRAFT TYPE OR FLEET" reference="(AHM565 Sheet C1)"><div className="c5-heading-actions">{saved.canEdit&&!editing&&<SaveButton className="secondary" onClick={()=>{setEditing(true);setMessage("")}}>EDIT</SaveButton>}<ConfigurationStatusBadge status={completion.page} variant="large"/></div></SectionHeader>
+    <SectionHeader id="aircraft-c1-heading" title="1. AIRCRAFT TYPE OR FLEET" reference="(AHM565 Sheet C1)"><div className="c5-heading-actions">{saved.canEdit&&!editing&&<SaveButton className="secondary" onClick={()=>setEditing(true)}>EDIT</SaveButton>}<ConfigurationStatusBadge status={completion.page} variant="large"/></div></SectionHeader>
     <div className="c1-identity-card">
       <div className="details-heading"><h3>Aircraft Identity</h3><ConfigurationStatusBadge status={completion.identity}/></div>
       <dl>
@@ -79,7 +77,6 @@ export function AircraftC1({iata,initial}:{iata:string;initial:AircraftC1Snapsho
     </div>
     {(editing||saved.values.remarks)&&<div className="details-field c1-remarks"><div className="details-heading"><label htmlFor="c1-remarks">Remarks</label><ConfigurationStatusBadge status={completion.remarks}/></div>{editing?<SaveTextarea id="c1-remarks" value={draft.values.remarks} onChange={e=>choose("remarks",e.target.value)} maxLength={2000}/>:<p>{saved.values.remarks}</p>}</div>}
     {error&&<p className="field-error" role="alert">{error}</p>}
-    {message&&<p className="form-success" role="status">{message}</p>}
     {editing&&<div className="logo-actions"><SaveSubmit disabled={pending} onClick={save}>SAVE</SaveSubmit>{saved.exists&&<SaveCancel className="secondary" disabled={pending} onClick={()=>{reset();setEditing(false)}}>Cancel</SaveCancel>}</div>}
   </section>}</SaveScope>;
 }

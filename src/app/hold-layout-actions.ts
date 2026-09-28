@@ -21,8 +21,12 @@ export async function loadHoldLayout(iata: string, typeCode: string, subtype: st
     let effectiveCalibration = typeCode === "7M9" && subtype === "900"
       ? {...calibration,noseArm:c4.values.datum,diagramCaption:`Provisional MAX 9 calibration: nose at balance arm ${c4.values.datum} inches. Boeing airport-planning outline.`}
       : calibration;
+    if (typeCode === "321" && subtype === "P2F") effectiveCalibration = {
+      ...calibration, noseArm: c4.values.datum,
+      diagramCaption: `Airbus A321 general outline, shared by both decks. Nose at the saved C4 Balance Arm ${c4.values.datum} m. Hold widths are schematic; conversion-specific cargo doors are not defined by this source.`,
+    };
     effectiveCalibration = carrierDrawingOrigin(iata, effectiveCalibration);
-    const reason = holdLayoutUnavailable(d2,effectiveCalibration);
+    const reason = holdLayoutUnavailable(d2,effectiveCalibration,d3);
     if (reason) return { ok: false as const, error: reason };
     try { return { ok: true as const, layout: buildHoldLayout(d2, d4, d3, effectiveCalibration) }; }
     catch (error) { return { ok: false as const, error: error instanceof Error ? error.message : "Unable to draw this hold layout." }; }

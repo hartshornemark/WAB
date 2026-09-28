@@ -1,5 +1,5 @@
 "use client";
-import {useSaveFeedback,SaveScope,SaveInput,SaveButton,SaveCancel,SaveSubmit} from "@/components/save-feedback";
+import{holdDisplayName}from"@/domain/aircraft-d2";import {useSaveFeedback,SaveScope,SaveInput,SaveButton,SaveCancel,SaveSubmit} from "@/components/save-feedback";
 import { useState } from "react";
 import { saveAircraftD11, setAircraftD11FloorActive } from "@/app/aircraft-d11-actions";
 import { ConfigurationStatusBadge } from "@/components/configuration-status-badge";
@@ -98,5 +98,5 @@ function UnsupportedSection({title,description,columns}:{title:string;descriptio
 }
 
 function FloorRows({rows,editing,change}:{rows:D11FloorLimit[];editing:boolean;change:(index:number,value:number|null)=>void}) {
-  return <div className="d11-table"><div className="d11-row d11-head"><span>Hold / Compartment</span><span>Hold Type</span><span>Deck</span><span>Floor Loading Limit (Kg/m²)</span></div>{rows.map((row,index)=><div className="d11-row" key={row.holdId}><strong>{row.holdId}</strong><span>{row.holdType}</span><span>{row.deckName}</span>{editing?<SaveInput aria-label={`Floor Loading Limit in Kg per square metre for hold ${row.holdId}`} inputMode="decimal" value={row.floorLoadingLimit??""} onChange={event=>change(index,numeric(event.target.value))}/>:<span>{shown(row.floorLoadingLimit)}</span>}</div>)}</div>;
+  return <div className="d11-table"><div className="d11-row d11-head"><span>Hold / Compartment</span><span>Hold Type</span><span>Deck</span><span>Floor Loading Limit (Kg/m²)</span></div>{rows.map((row,index)=><div className="d11-row" key={row.holdId}><strong>{holdDisplayName(row.holdId)}</strong><span>{row.holdType}</span><span>{row.deckName}</span>{editing?<SaveInput aria-label={`Floor Loading Limit in Kg per square metre for hold ${row.holdId}`} inputMode="decimal" value={row.floorLoadingLimit??""} onChange={event=>change(index,numeric(event.target.value))}/>:<span>{shown(row.floorLoadingLimit)}</span>}</div>)}</div>;
 }

@@ -1,6 +1,6 @@
 import {balanceArmCentroidInput,type IndexPerWeightUnitFormula} from "@/domain/index-per-weight-unit";
 
-export type AircraftD3Hold={id:string;compartments?:string[]};
+export type AircraftD3Hold={id:string;sortBalanceArm?:number|null;balanceCentroid?:number|null;name?:string;deckName?:string;compartments?:string[]};
 export type AircraftD3RowType="POSITION"|"GROUP_LIMIT";
 export type AircraftD3UldOption={code:string;type:string;baseCode:string|null;baseWidth:number|null;baseLength:number|null;adopted:boolean};
 export type AircraftD3AtomicBay={id:string;compartmentId:string;lateralCentroid:number|null;lateralFrom:number|null;lateralTo:number|null;balanceCentroid:number|null;balanceFrom:number|null;balanceTo:number|null;colour:string|null};
@@ -23,7 +23,7 @@ const number=(v:unknown,label:string,required=true,positive=false)=>{if(blank(v)
 const range=(from:unknown,centroid:unknown,to:unknown,label:string,centroidRequired=false)=>{const allBlank=blank(from)&&blank(centroid)&&blank(to);if(allBlank&&!centroidRequired)return[null,null,null]as const;const c=number(centroid,`${label} Centroid`);if(blank(from)&&blank(to))return[null,c,null]as const;if(blank(from)||blank(to))throw new AircraftD3Invalid(`${label} From and To must both be completed or both left blank.`);const f=number(from,`${label} From`),t=number(to,`${label} To`);if(!((f as number)<=c!&&c!<=(t as number)))throw new AircraftD3Invalid(`${label} must be ordered From, Centroid, To.`);return[f,c,t]as const};
 const id=(v:unknown)=>String(v??"").trim().toUpperCase(),validId=(v:string)=>/^[A-Z0-9]{1,6}$/.test(v);
 
-export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Hold[],formula?:IndexPerWeightUnitFormula|null,availableUldOptions:AircraftD3UldOption[]=[]):AircraftD3ConfigurationValues{
+export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Hold[],formula?:IndexPerWeightUnitFormula|null,availableUldOptions:AircraftD3UldOption[]=[],preserveCentroid=false):AircraftD3ConfigurationValues{
  const v=input as Partial<AircraftD3Configuration>,holdId=id(v?.holdId),code=id(v?.code),description=String(v?.description??"").trim()||null,selectedHold=holds.find(h=>h.id===holdId);
  if(!selectedHold)throw new AircraftD3Invalid("Select a valid ULD Hold.");
  if(!/^[A-Z0-9][A-Z0-9_-]{0,19}$/.test(code))throw new AircraftD3Invalid("Configuration Code must use 1–20 letters, numbers, hyphens or underscores.");
@@ -56,10 +56,36 @@ export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Ho
   if(rowType==="POSITION"&&!occupiedBayIds.length)throw new AircraftD3Invalid(`Arrangement ${positionId}: select at least one Atomic Bay that it occupies.`);
   const unknown=occupiedBayIds.find(x=>!bayIds.has(x));
   if(unknown)throw new AircraftD3Invalid(`Arrangement ${positionId}: Atomic Bay ${unknown} does not exist in this configuration.`);
-  const[lf,lc,lt]=range(r.lateralFrom,r.lateralCentroid,r.lateralTo,"Lateral Arm"),indexPerWeightUnit=number(r.indexPerWeightUnit,"Index per Weight Unit",false),[bf,bc,bt]=range(r.balanceFrom,balanceArmCentroidInput(r.balanceCentroid,indexPerWeightUnit,formula),r.balanceTo,"Balance Arm",true),colour=String(r.colour??"").trim()||null;
+  const[lf,lc,lt]=range(r.lateralFrom,r.lateralCentroid,r.lateralTo,"Lateral Arm"),indexPerWeightUnit=number(r.indexPerWeightUnit,"Index per Weight Unit",false),[bf,bc,bt]=range(r.balanceFrom,preserveCentroid&&r.balanceCentroid!==null&&r.balanceCentroid!==undefined?r.balanceCentroid:balanceArmCentroidInput(r.balanceCentroid,indexPerWeightUnit,formula),r.balanceTo,"Balance Arm",true),colour=String(r.colour??"").trim()||null;
   if(colour!==null&&!/^#[0-9A-Fa-f]{6}$/.test(colour))throw new AircraftD3Invalid(`Arrangement ${positionId}: Colour must be a valid HEX value.`);
   return{rowType,positionId,compartmentId:rowType==="POSITION"?compartmentId:null,uldCode:rowType==="POSITION"?uldCode:null,uldType:rowType==="POSITION"?uldType:null,uldBaseCode:rowType==="POSITION"?uldBaseCode:null,groupId,occupiedBayIds,maxWeight:number(r.maxWeight,"Maximum Weight",true,true),volume:number(r.volume,"Volume",false,true),lateralCentroid:lc,lateralFrom:lf,lateralTo:lt,balanceCentroid:bc,balanceFrom:bf,balanceTo:bt,indexPerWeightUnit,colour};
  });
  if(!rows.some(r=>r.rowType==="POSITION"))throw new AircraftD3Invalid("Add at least one permitted loading arrangement.");
  return{holdId,code,description,expectedPositionCount:expected,atomicBays,rows};
+}
+
+const naturalIdOrder=(a:string,b:string)=>a.localeCompare(b,"en",{numeric:true});
+const armOrder=(a:number|null|undefined,b:number|null|undefined)=>{
+ const left=a!=null&&Number.isFinite(a)?a:null,right=b!=null&&Number.isFinite(b)?b:null;
+ return left===null?(right===null?0:1):right===null?-1:left-right;
+};
+export function compartmentsByBalanceArm(ids:string[],positions:{compartmentId:string|null;balanceCentroid:number|null}[]) {
+ const arms=new Map<string,number>();
+ for(const p of positions)if(p.compartmentId&&p.balanceCentroid!==null&&Number.isFinite(p.balanceCentroid))arms.set(p.compartmentId,Math.min(arms.get(p.compartmentId)??Infinity,p.balanceCentroid));
+ return [...ids].sort((a,b)=>armOrder(arms.get(a),arms.get(b))||naturalIdOrder(a,b));
+}
+export function sortAircraftD3Snapshot(snapshot:AircraftD3Snapshot):AircraftD3Snapshot {
+ return {...snapshot,
+  uldHolds:snapshot.uldHolds.map(hold=>({...hold,compartments:hold.compartments?compartmentsByBalanceArm(hold.compartments,snapshot.configurations.filter(c=>c.holdId===hold.id).flatMap(c=>c.atomicBays)):undefined})).sort((a,b)=>armOrder(a.sortBalanceArm??a.balanceCentroid,b.sortBalanceArm??b.balanceCentroid)||naturalIdOrder(a.id,b.id)),
+  configurations:[...snapshot.configurations].sort((a,b)=>{
+   const left=snapshot.uldHolds.find(h=>h.id===a.holdId),right=snapshot.uldHolds.find(h=>h.id===b.holdId);
+   return armOrder(left?.sortBalanceArm??left?.balanceCentroid,right?.sortBalanceArm??right?.balanceCentroid)||naturalIdOrder(a.holdId,b.holdId)||naturalIdOrder(a.code,b.code);
+  }).map(config=>{
+   const bays=new Map(config.atomicBays.map(b=>[b.id,b.balanceCentroid]));
+   return {...config,
+    atomicBays:[...config.atomicBays].sort((a,b)=>armOrder(a.balanceCentroid,b.balanceCentroid)||naturalIdOrder(a.id,b.id)),
+    rows:config.rows.map(row=>({...row,occupiedBayIds:[...row.occupiedBayIds].sort((a,b)=>armOrder(bays.get(a),bays.get(b))||naturalIdOrder(a,b))})).sort((a,b)=>armOrder(a.balanceCentroid,b.balanceCentroid)||naturalIdOrder(a.positionId,b.positionId)||naturalIdOrder(a.uldCode??"",b.uldCode??""))
+   };
+  })
+ };
 }

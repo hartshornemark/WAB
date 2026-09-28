@@ -12,3 +12,14 @@ test("E2 pantry totals exceed crew seat limit and reject missing weights",()=>{
  assert.throws(()=>validateE2Pantry([{...pantry,totalWeight:null}]));
  assert.throws(()=>validateE2Crew([{...crew,flightDeckSeats:1000}],base.flightDeckLocations,base.cabinCrewLocations,base.holds));
 });
+
+test("E2 flight-deck-only crew needs no cabin location and is configured",()=>{
+ const [row]=validateE2Crew([{...crew,cabinCrewSeats:0,cabinCrewLocationId:""}],base.flightDeckLocations,[],base.holds);
+ assert.equal(row.cabinCrewLocationId,"");assert.equal(row.cabinCrewSeats,0);
+ assert.equal(e2CrewStatus({...base,crewRows:[row],cabinCrewLocations:[]}),"configured");
+ assert.throws(()=>validateE2Crew([{...row,cabinCrewSeats:1}],base.flightDeckLocations,[],base.holds),/crew locations/);
+ assert.equal(e2CrewStatus({...base,crewRows:[{...row,cabinCrewSeats:1}]}),"partial");
+ const [cleared]=validateE2Crew([{...crew,cabinCrewSeats:0,cabinCrewBaggageLocation:"1"}],base.flightDeckLocations,base.cabinCrewLocations,base.holds);
+ assert.equal(cleared.cabinCrewLocationId,"");assert.equal(cleared.cabinCrewBaggageLocation,null);
+ assert.throws(()=>validateE2Crew([{...row,cabinCrewSeats:null}],base.flightDeckLocations,[],base.holds));
+});

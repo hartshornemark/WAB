@@ -12,14 +12,14 @@ export function c5EnvelopeStatus(values:AircraftC5Values,key:"tow"|"law"|"zfw"):
   const minimum=key==="zfw"?values.effectiveDow:0,maximum=values.maximumWeights[key],boundary=values.envelopes[key];
   const hasProgress=positiveWhole(maximum)||boundary.fwd.length>0||boundary.aft.length>0;
   if(!hasProgress)return"incomplete";
-  if(!positiveWhole(maximum)||(positiveWhole(minimum)&&minimum>maximum)||!boundaryComplete(boundary,minimum,maximum))return"partial";
+  if(!positiveWhole(maximum)||(positiveWhole(minimum)&&minimum>maximum)||!boundaryComplete(boundary,maximum))return"partial";
   if(key==="tow"&&positiveWhole(values.maximumWeights.mrw)&&maximum>values.maximumWeights.mrw)return"partial";
   if(key==="law"&&positiveWhole(values.maximumWeights.tow)&&maximum>values.maximumWeights.tow)return"partial";
   if(key==="zfw"&&positiveWhole(values.maximumWeights.law)&&maximum>values.maximumWeights.law)return"partial";
   return"configured";
 }
 
-function boundaryComplete(boundary:EnvelopeBoundary,minimum:number,maximum:number){return([boundary.fwd,boundary.aft] as EnvelopePoint[][]).every(points=>points.length>=2&&new Set(points.map(point=>point.weight)).size===points.length&&points.every(point=>pointValid(point,maximum))&&points.every((point,index)=>index===0||point.weight>points[index-1].weight)&&(!positiveWhole(minimum)||points[0].weight<=minimum)&&points.at(-1)?.weight===maximum)}
+function boundaryComplete(boundary:EnvelopeBoundary,maximum:number){return([boundary.fwd,boundary.aft] as EnvelopePoint[][]).every(points=>points.length>=2&&new Set(points.map(point=>point.weight)).size===points.length&&points.every(point=>pointValid(point,maximum))&&points.every((point,index)=>index===0||point.weight>points[index-1].weight)&&points.at(-1)?.weight===maximum)}
 
 const allRequired:AircraftC5Applicability={tow:true,law:true,zfw:true};
 export function aircraftC5Statuses(values:AircraftC5Values,applicability:AircraftC5Applicability=allRequired){

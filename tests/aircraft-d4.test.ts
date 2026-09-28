@@ -10,3 +10,12 @@ test("D4 rejects reversed door arms",()=>assert.throws(()=>validateAircraftD4Doo
 test("D4 restricts orientation to L R or C",()=>assert.throws(()=>validateAircraftD4Doors([{...row,orientation:"X"}], [row]),AircraftD4Invalid));
 test("D4 accepts a missing optional door height",()=>assert.equal(validateAircraftD4Doors([{...row,height:null}],[row])[0]?.height,null));
 test("D4 rejects a non-positive supplied door height",()=>assert.throws(()=>validateAircraftD4Doors([{...row,height:0}],[row]),AircraftD4Invalid));
+
+test("D4 saves unknown doors as blank alongside known doors without reducing completion of known doors",()=>{
+ const unknown={...row,holdId:"MDECK:MDA",forwardArm:null,aftArm:null,height:null,orientation:null};
+ const saved=validateAircraftD4Doors([row,unknown],[row,unknown]);
+ assert.deepEqual(saved[1],unknown);
+ assert.equal(aircraftD4DoorsStatus(saved),"configured");
+ assert.equal(aircraftD4DoorsStatus([unknown]),"incomplete");
+ assert.throws(()=>validateAircraftD4Doors([row,{...unknown,forwardArm:9}],[row,unknown]),AircraftD4Invalid);
+});

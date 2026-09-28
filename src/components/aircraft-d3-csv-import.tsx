@@ -1,8 +1,10 @@
 "use client";
+import { CsvImportHelp } from "@/components/csv-import-help";
 
 import { useState } from "react";
 import { SaveButton, SaveInput } from "@/components/save-feedback";
 import { aircraftD3CsvTemplate, parseAircraftD3Csv, type AircraftD3CsvResult } from "@/domain/aircraft-d3-csv";
+import { compartmentsByBalanceArm } from "@/domain/aircraft-d3";
 import type { AircraftD3Configuration, AircraftD3Hold, AircraftD3UldOption } from "@/domain/aircraft-d3";
 
 type HoldPreview = { hold: AircraftD3Hold; result: AircraftD3CsvResult };
@@ -10,10 +12,12 @@ type HoldPreview = { hold: AircraftD3Hold; result: AircraftD3CsvResult };
 export function AircraftD3CsvImport({
   holds,
   uldOptions,
+  geometry,
   onApply,
 }: {
   holds: AircraftD3Hold[];
   uldOptions: AircraftD3UldOption[];
+  geometry: Parameters<typeof parseAircraftD3Csv>[3];
   onApply: (configurations: AircraftD3Configuration[]) => Promise<boolean>;
 }) {
   const [open, setOpen] = useState(false);
@@ -29,7 +33,7 @@ export function AircraftD3CsvImport({
     setName(file.name);
     setPreviews(holds.map(hold => ({
       hold,
-      result: parseAircraftD3Csv(text, hold.compartments ?? [], uldOptions),
+      result: parseAircraftD3Csv(text, hold.compartments ?? [], uldOptions, geometry),
     })));
     setOpen(true);
   }
@@ -74,10 +78,10 @@ export function AircraftD3CsvImport({
     <div className="d3-sheet-import-heading">
       <div>
         <strong>IMPORT ALL ULD HOLDS</strong>
-        <p>Upload one AHM565 CSV. Positions are assigned to the applicable D2 hold from their compartment numbers.</p>
+        <p>Upload one AHM565 CSV.<br/>Positions are assigned to the applicable D2 hold from their compartment numbers.</p>
       </div>
       <div className="d3-csv-actions">
-        <label className="secondary button-like">IMPORT CSV
+        <CsvImportHelp kind="d3"/><label className="secondary button-like">IMPORT CSV
           <SaveInput type="file" accept=".csv,text/csv" onChange={event => void load(event.target.files?.[0])}/>
         </label>
         <SaveButton type="button" className="secondary" onClick={download}>DOWNLOAD AHM565 TEMPLATE</SaveButton>
@@ -98,7 +102,7 @@ export function AircraftD3CsvImport({
           <strong>{hold.id}</strong>
           <span>{result.atomicBays.length} Atomic Bays</span>
           <span>{result.rows.length} Loading Arrangements</span>
-          <small>Compartments {(hold.compartments ?? []).join(", ")}</small>
+          <small>Compartments {compartmentsByBalanceArm(hold.compartments ?? [], result.atomicBays).join(", ")}</small>
         </div>)}</div>}
       <p className="muted">Importing replaces configuration {code || "—"} in every listed hold. Other configuration codes remain unchanged.</p>
       <div className="d3-csv-preview-actions">

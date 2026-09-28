@@ -1,0 +1,15 @@
+{
+  "source": "/Users/mahartshorne/Documents/Other Stuff/Weight and Balance Project/Load Control/Aircraft SVG/Airbus/Airbus_A321_WTF.dxf",
+  "sourceSha256": "19c388c741adb4a42b087522ab94c0217e13d5bf6e803d26b6613985c5d399a6",
+  "cadUnits": "mm (source sheet annotation)",
+  "noseY": -15897.09375,
+  "tailY": 28732.20703125,
+  "centreX": 56812.8125,
+  "lengthMetres": 44.62930078125,
+  "noseX": 244,
+  "tailX": 4,
+  "scalePerMetre": 5.377632985476453,
+  "paths": 1969,
+  "sha256": "e502f7ed4dc22200d4aec4cceeec62bedf5a5222a329c5922773310d8581ffd8",
+  "byteSize": 554213
+}

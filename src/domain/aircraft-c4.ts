@@ -1,5 +1,5 @@
 export type AircraftC4Values={datum:number;referenceArm:number;constantK:number;constantC:number;macRcLength:number;lemacLerc:number};
-export type AircraftC4Snapshot={canView:boolean;canEdit:boolean;exists:boolean;revision:string;typeCode:string;subtype:string;lengthUnit:string;values:AircraftC4Values};
+export type AircraftC4Snapshot={canView:boolean;canEdit:boolean;exists:boolean;revision:string;typeCode:string;subtype:string;lengthUnit:string;datumLocked?:boolean;values:AircraftC4Values};
 export class AircraftC4Invalid extends Error{}
 export class AircraftC4Denied extends Error{}
 export class AircraftC4Conflict extends Error{}

@@ -9,3 +9,9 @@ export function dashboardSummaryStatus(statuses:Record<string,string>):Dashboard
   if(assessed.some(status=>complete.has(status)||status==="partial"))return "partial";
   return "incomplete";
 }
+
+export function dashboardAttentionPages(statuses:Record<string,string>):string[]{
+  return Object.entries(statuses)
+    .filter(([,status])=>!excluded.has(status)&&!complete.has(status))
+    .map(([code])=>code);
+}

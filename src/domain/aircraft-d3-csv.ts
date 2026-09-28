@@ -1,3 +1,4 @@
+import { balanceArmFromIndexPerWeightUnit, validIndexPerWeightUnitFormula, type IndexPerWeightUnitFormula } from "@/domain/index-per-weight-unit";
 import type { AircraftD3AtomicBay, AircraftD3Position, AircraftD3UldOption } from "@/domain/aircraft-d3";
 
 export type AircraftD3CsvResult = {
@@ -6,13 +7,13 @@ export type AircraftD3CsvResult = {
   errors: string[];
 };
 
-const headers = ["Group ID / Config", "Position Name", "Max Weight", "Centroid", "FWD", "AFT", "Index per wt unit"];
+const headers = ["Group ID / Config", "Position Name", "Max Weight", "Centroid", "FWD", "AFT", "Index per wt unit", "Fore-Aft Dimension (in)"];
 
 export const aircraftD3CsvTemplate = `${headers.join(",")}
-AKE,11L,1587,14.026,13.259,14.793,-0.004476
-AKE,11R,1587,14.026,13.259,14.793,-0.004476
-PLA,11,3174,14.026,13.259,14.793,-0.004476
-PMC,11P,5102,14.479,13.259,15.698,-0.004385`;
+AKE,11L,1587,14.026,13.259,14.793,-0.004476,
+AKE,11R,1587,14.026,13.259,14.793,-0.004476,
+PLA,11,3174,14.026,13.259,14.793,-0.004476,
+PMC,11P,5102,14.479,13.259,15.698,-0.004385,`;
 
 function csvRows(text: string) {
   const rows: string[][] = [];
@@ -55,16 +56,18 @@ export function parseAircraftD3Csv(
   text: string,
   compartments: string[] = [],
   uldOptions: AircraftD3UldOption[] = [],
+  geometry?: { formula?: IndexPerWeightUnitFormula | null; lengthUnit: string },
 ): AircraftD3CsvResult {
   const records = csvRows(text.replace(/^\uFEFF/, ""));
   const errors: string[] = [];
   if (!records.length) return { atomicBays: [], rows: [], errors: ["The CSV file is empty."] };
 
   const actualHeaders = records[0].map(normal);
-  const missing = headers.filter(header => !actualHeaders.includes(normal(header)));
+  const missing = headers.filter(header => !["Centroid", "FWD", "AFT", "Fore-Aft Dimension (in)"].includes(header) && !actualHeaders.includes(normal(header)));
   if (missing.length) return { atomicBays: [], rows: [], errors: [`Missing AHM565 columns: ${missing.join(", ")}.`] };
 
   const column = (row: string[], name: string) => row[actualHeaders.indexOf(normal(name))];
+  const compartmentFor = (position: string) => [...compartments].sort((a,b) => b.length-a.length).find(id => position.startsWith(id)) ?? "";
   const byIdentity = new Map(uldOptions.map(option => [option.code, option]));
 
   type Source = {
@@ -86,10 +89,12 @@ export function parseAircraftD3Csv(
     const line = rowIndex + 2;
     const uldIdentity = identity(column(row, "Group ID / Config"));
     const names = clean(column(row, "Position Name")).toUpperCase().split(/[,;/]+/).map(value => value.trim()).filter(Boolean);
+    if (names.length && !names.some(position => compartmentFor(position))) return;
     const maxWeight = numeric(column(row, "Max Weight"), "Max Weight", line, errors);
-    const centroid = numeric(column(row, "Centroid"), "Centroid", line, errors);
-    const from = numeric(column(row, "FWD"), "FWD", line, errors);
-    const to = numeric(column(row, "AFT"), "AFT", line, errors);
+    const optionalNumber = (name: string) => clean(column(row, name)) ? numeric(column(row, name), name, line, errors) : null;
+    let centroid = optionalNumber("Centroid");
+    let from = optionalNumber("FWD");
+    let to = optionalNumber("AFT");
     const index = numeric(column(row, "Index per wt unit"), "Index per wt unit", line, errors);
 
     if (!uldIdentity || !names.length) {
@@ -105,6 +110,21 @@ export function parseAircraftD3Csv(
     if (!option.adopted) {
       errors.push(`Line ${line}: ${uldIdentity} must first be selected on B5 for this aircraft.`);
     }
+    if (!clean(column(row, "Centroid")) && index !== null && validIndexPerWeightUnitFormula(geometry?.formula)) {
+      centroid = balanceArmFromIndexPerWeightUnit(index, geometry.formula);
+    }
+    const inchesToUnit: Record<string, number> = { M: 0.0254, CM: 2.54, IN: 1, FT: 1 / 12 };
+    const factor = inchesToUnit[geometry?.lengthUnit ?? ""];
+    const dimensionText = clean(column(row, "Fore-Aft Dimension (in)"));
+    const runningDimension = dimensionText ? numeric(dimensionText, "Fore-Aft Dimension (in)", line, errors) : option.baseLength;
+    if (dimensionText && runningDimension !== null && runningDimension <= 0) errors.push(`Line ${line}: Fore-Aft Dimension (in) must be greater than zero.`);
+    const length = runningDimension !== null && runningDimension > 0 && factor ? runningDimension * factor : null;
+    if (centroid === null) errors.push(`Line ${line}: provide Centroid or save C4 so it can be calculated from Index per wt unit.`);
+    if (centroid !== null && length !== null) {
+      if (!clean(column(row, "FWD"))) from = Math.round((centroid - length / 2) * 1e6) / 1e6;
+      if (!clean(column(row, "AFT"))) to = Math.round((centroid + length / 2) * 1e6) / 1e6;
+    }
+    if (from === null || to === null) errors.push(`Line ${line}: provide FWD/AFT or a Fore-Aft Dimension (in) / ULD base length and C1 length unit for calculation.`);
     if (from !== null && centroid !== null && to !== null && !(from <= centroid && centroid <= to)) {
       errors.push(`Line ${line}: FWD, Centroid and AFT are not in order.`);
     }
@@ -114,7 +134,7 @@ export function parseAircraftD3Csv(
         errors.push(`Line ${line}: Position ${positionId} is invalid.`);
         return;
       }
-      const compartmentId = positionId.match(/^\d/)?.[0] ?? "";
+      const compartmentId = compartmentFor(positionId);
       if (!compartments.includes(compartmentId)) return;
 
       const candidate: Source = { line, positionId, compartmentId, uldCode: option.code, uldType: option.type, baseCode: option.baseCode, maxWeight, centroid, from, to, index };
@@ -133,7 +153,10 @@ export function parseAircraftD3Csv(
   const sources = [...sourceByPositionAndType.values()];
   const bayMap = new Map<string, AircraftD3AtomicBay>();
   for (const source of sources) {
-    if (!/[LR]$/.test(source.positionId) || source.centroid === null) continue;
+    // Single-position holds need physical bays too (e.g. A321 positions 11, 12).
+    // Where paired bays exist in a compartment, wider alternatives occupy those bays.
+    const hasPairedBays = sources.some(item => item.compartmentId === source.compartmentId && /[LR]$/.test(item.positionId));
+    if ((hasPairedBays && !/[LR]$/.test(source.positionId)) || source.centroid === null) continue;
     const current = bayMap.get(source.positionId);
     if (current && !(sameNumber(current.balanceFrom, source.from) && sameNumber(current.balanceCentroid, source.centroid) && sameNumber(current.balanceTo, source.to))) {
       errors.push(`Position ${source.positionId} has inconsistent FWD/AFT limits.`);
@@ -157,7 +180,7 @@ export function parseAircraftD3Csv(
   const rows: AircraftD3Position[] = sources.map(source => {
     const positionSide = side(source.positionId);
     const occupiedBayIds = atomicBays.filter(bay =>
-      bay.balanceFrom !== null && bay.balanceTo !== null && source.from !== null && source.to !== null
+      bay.compartmentId === source.compartmentId && bay.balanceFrom !== null && bay.balanceTo !== null && source.from !== null && source.to !== null
       && bay.balanceFrom < source.to && bay.balanceTo > source.from
       && (positionSide === "B" || side(bay.id) === positionSide)).map(bay => bay.id);
     if (!occupiedBayIds.length) errors.push(`Line ${source.line}: ${source.positionId} does not overlap an Atomic Bay.`);
@@ -184,6 +207,6 @@ export function parseAircraftD3Csv(
   });
 
   if (!sources.length) errors.push(`No positions in this CSV belong to Compartments ${compartments.join(", ") || "configured for this hold"}.`);
-  if (!atomicBays.length) errors.push("No atomic L/R positions were found for this hold.");
+  if (!atomicBays.length) errors.push("No physical positions were found for this hold.");
   return { atomicBays, rows, errors: [...new Set(errors)] };
 }

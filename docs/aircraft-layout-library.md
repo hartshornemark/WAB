@@ -32,3 +32,23 @@ Future templates: create a new version through a reviewed migration (complete ca
 Both uploaded objects were downloaded and checksum-verified before publication. Regression tests preserve the approved A319/A320 geometry, distinguish physical datum from hold origin, and reject missing/corrupt/cross-aircraft calibration. Live checks include ZZ A319 hold layout and BC A320 configurations A/B. Unauthorised metadata, object and publication access are denied in database tests.
 
 Back up **both** Storage object bytes and database records; a database-only backup is insufficient to restore the complete library.
+
+## A321-P2F (28 September 2026)
+
+The user-supplied `Airbus_A321_WTF.dxf` (2013 ASCII DXF) supplies one general
+A321 plan for both Main Deck and Lower Deck. Rebuild with
+`output/aircraft-calibration/a321-p2f/build-template.py`. Source units are labelled
+mm; original plan endpoints span 44.62930078125 m. The separate side/front views
+are excluded. Curves are flattened within 1 mm, then clipped to the fuselage
+band. Geometry/checksum provenance is saved alongside the script.
+
+The initial template records the existing ZZ C4 nose arm of 0 m as provisional.
+The live 321-P2F overlay follows its carrier's saved C4 datum without changing C4.
+The original drawing does not establish P2F-specific cargo doors.
+
+When optional D2 limits are absent, complete D3 loading-position footprints can
+supply an occupied range for a ULD hold. This range is explicitly labelled and
+is not stored as a structural hold boundary. Supplied D2 boundaries take
+precedence. A hold without usable limits/footprints is listed as not drawn;
+other fully located holds remain visible. Bulk boundaries are never inferred
+from a centroid. Holds and configurations are matched by deck-aware hold ID.
