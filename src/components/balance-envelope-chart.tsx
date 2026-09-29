@@ -101,7 +101,8 @@ function EnvelopeSvg({ boundary, title, unit, scale, formula, idealTrim }: { bou
   </figure>;
 }
 
-function CombinedEnvelopeSvg({ values, unit, scale, formula, series, idealTrim }: { values: AircraftC5Values; unit: string; scale: SharedScale; formula: AircraftC4Values | null; series:{key:Phase;label:string;className:string}[]; idealTrim: PlottedPoint[] }) {
+type CombinedSeries={key:string;label:string;className:string;boundary:EnvelopeBoundary};
+function CombinedEnvelopeSvg({ unit, scale, formula, series, idealTrim }: { unit: string; scale: SharedScale; formula: AircraftC4Values | null; series:CombinedSeries[]; idealTrim: PlottedPoint[] }) {
   const indexDecimalPlaces=useIndexDecimalPlaces();
   const width = 920, height = 500;
   const margin = { left: 82, right: 30, top: 58, bottom: 70 };
@@ -126,7 +127,7 @@ function CombinedEnvelopeSvg({ values, unit, scale, formula, series, idealTrim }
       <rect x={margin.left} y={margin.top} width={innerWidth} height={innerHeight} className="envelope-plot-background" />
       {yTicks.map((value) => <g key={`combined-y-${value}`}><line x1={margin.left} y1={y(value)} x2={width - margin.right} y2={y(value)} className="envelope-grid-line" /><text x={margin.left - 12} y={y(value) + 4} textAnchor="end" className="envelope-axis-tick">{Math.round(value).toLocaleString()}</text></g>)}
       {xTicks.map((value) => <g key={`combined-x-${value}`}><line x1={x(value)} y1={margin.top} x2={x(value)} y2={height - margin.bottom} className="envelope-grid-line" /><text x={x(value)} y={height - margin.bottom + 24} textAnchor="middle" className="envelope-axis-tick">{formatNumeric(value,"index",indexDecimalPlaces)}</text></g>)}
-      {series.map(({ key, className }) => <polygon key={key} points={polygon(values.envelopes[key])} className={`combined-envelope-area combined-${className}`} />)}
+      {series.map(({ key, className, boundary }) => <polygon key={key} points={polygon(boundary)} className={`combined-envelope-area ${className}`} />)}
       {idealTrim.length>=2&&<polyline points={points(idealTrim)} className="envelope-ideal-trim-line" clipPath="url(#combined-mac-grid)" />}
       {formula&&<g><g clipPath="url(#combined-mac-grid)">{macValues.map(value=><line key={`combined-mac-line-${value}`} x1={x(indexForMacPercent(yMin,value,formula))} y1={y(yMin)} x2={x(indexForMacPercent(yMax,value,formula))} y2={y(yMax)} className={`envelope-mac-line ${value%5===0?"major":"minor"}`} />)}</g><line x1={margin.left} y1={margin.top} x2={width-margin.right} y2={margin.top} className="envelope-mac-axis" /><text x={margin.left+innerWidth/2} y="15" textAnchor="middle" className="envelope-mac-label">% MAC</text>{macValues.map(value=><line key={`combined-mac-top-tick-${value}`} x1={x(indexForMacPercent(yMax,value,formula))} y1={margin.top} x2={x(indexForMacPercent(yMax,value,formula))} y2={margin.top-(value%5===0?8:4)} className="envelope-mac-axis" />)}{macValues.filter(value=>value%5===0).map(value=><text key={`combined-mac-label-${value}`} x={x(indexForMacPercent(yMax,value,formula))} y={margin.top-10} textAnchor="middle" className="envelope-mac-tick">{value}</text>)}</g>}
       <line x1={margin.left} y1={height - margin.bottom} x2={width - margin.right} y2={height - margin.bottom} className="envelope-axis-line" />
@@ -134,7 +135,7 @@ function CombinedEnvelopeSvg({ values, unit, scale, formula, series, idealTrim }
       <text x={margin.left + innerWidth / 2} y={height - 14} textAnchor="middle" className="envelope-axis-label">Index</text>
       <text transform={`translate(20 ${margin.top + innerHeight / 2}) rotate(-90)`} textAnchor="middle" className="envelope-axis-label">Weight ({unit})</text>
     </svg>
-    <div className="c5-envelope-legend combined" aria-hidden="true">{series.slice().reverse().map(({ key, label, className }) => <span key={key}><i className={className} />{label} Envelope</span>)}{idealTrim.length>=2&&<span><i className="ideal-trim" />Ideal Trim</span>}</div>
+    <div className="c5-envelope-legend combined" aria-hidden="true">{series.map(({ key, label, className }) => <span key={key}><i className={className} />{label}</span>)}{idealTrim.length>=2&&<span><i className="ideal-trim" />Ideal Trim</span>}</div>
   </figure>;
 }
 
@@ -143,10 +144,12 @@ export function BalanceEnvelopeView({ values, applicability, unit, formula, idea
   const chartInstances=activeCharts.flatMap(chart=>envelopeMode(values,chart.key)==="CONDITIONAL"?conditionalEnvelopes(values,chart.key).map(item=>({key:`${chart.key}-${item.id}`,phase:chart.key,title:`${chart.title} — ${item.code}`,boundary:item.boundary,condition:item.conditionBasis==="OTHER"?item.conditionDescription:`${item.conditionBasis==="TAKE_OFF_FUEL"?"Take-off fuel":"Landing fuel"}: ${item.lowerBound===null?"":`${item.lowerInclusive?"≥":">"} ${item.lowerBound.toLocaleString()} ${unit}`} ${item.upperBound===null?"":`${item.upperInclusive?"≤":"<"} ${item.upperBound.toLocaleString()} ${unit}`}`.trim()})):[{key:chart.key,phase:chart.key,title:chart.title,boundary:values.envelopes[chart.key],condition:""}]);
   const idealTrim=idealTrimPoints.map(point=>({weight:point.weight,indexValue:point.indexValue??(formula&&point.macValue!==null?indexForMacPercent(point.weight,point.macValue,formula):Number.NaN)})).filter(point=>Number.isFinite(point.weight)&&Number.isFinite(point.indexValue)).sort((a,b)=>a.weight-b.weight);
   const scale = sharedScale(chartInstances.map(item=>item.boundary),idealTrim);
-  const combinedSeries=activeCharts.map(chart=>({key:chart.key,label:chart.key.toUpperCase(),className:chart.key}));
-  const hasConditional=activeCharts.some(chart=>envelopeMode(values,chart.key)==="CONDITIONAL");
+  const combinedSeries:CombinedSeries[]=chartInstances
+    .slice()
+    .sort((a,b)=>Math.max(...b.boundary.fwd.map(point=>point.weight),...b.boundary.aft.map(point=>point.weight))-Math.max(...a.boundary.fwd.map(point=>point.weight),...a.boundary.aft.map(point=>point.weight)))
+    .map((chart,index)=>({key:chart.key,label:chart.title.replace(" Balance Envelope",""),className:`combined-series-${index%8}`,boundary:chart.boundary}));
   return <section className="c5-envelope-view" aria-labelledby="balance-envelope-view-heading">
     <div className="c5-envelope-view-heading"><div><h3 id="balance-envelope-view-heading">AHM565 Sheet C5.2 — Balance Envelope</h3><p>Automatically generated from the configured C5.1 Forward and Aft limits.{formula?" Dashed guides show calculated constant % MAC.":""}{idealTrim.length>=2?" The Ideal Trim line is overlaid from C7.":""}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></div>
-    <div className="c5-envelope-charts">{activeCharts.length>1&&!hasConditional&&<CombinedEnvelopeSvg values={values} unit={unit} scale={scale} formula={formula} series={combinedSeries} idealTrim={idealTrim}/>} {chartInstances.map((chart) => <div key={chart.key}>{chart.condition&&<p className="c5-chart-condition">{chart.condition}</p>}<EnvelopeSvg boundary={chart.boundary} title={chart.title} unit={unit} scale={scale} formula={formula} idealTrim={idealTrim} /></div>)}</div>
+    <div className="c5-envelope-charts">{chartInstances.length>1&&<CombinedEnvelopeSvg unit={unit} scale={scale} formula={formula} series={combinedSeries} idealTrim={idealTrim}/>} {chartInstances.map((chart) => <div key={chart.key}>{chart.condition&&<p className="c5-chart-condition">{chart.condition}</p>}<EnvelopeSvg boundary={chart.boundary} title={chart.title} unit={unit} scale={scale} formula={formula} idealTrim={idealTrim} /></div>)}</div>
   </section>;
 }
