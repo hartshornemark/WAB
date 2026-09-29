@@ -73,6 +73,19 @@ A320 family and Standard passenger profile. The A320 calibration's historic
 zero cargo-plotting origin remains paired with its SVG and does not replace the
 physical 2.54 m master datum.
 
+The `DH3 / 300` identity uses the `DE_HAVILLAND_DHC8_300` family and Standard
+passenger profile. Its source layout retains the Q300 Model 311 station anchors
+and approved tapered aft-hold profile. Unlike the Airbus and Boeing families,
+its physical nose datum is not yet confirmed: zero remains the existing master
+default and is explicitly recorded as unverified rather than promoted to a
+locked physical fact.
+
+The `359 / 900` identity uses the `AIRBUS_A350_900` family and Standard
+passenger profile. Its source is active layout version 7, retaining the
+confirmed 1.84 m nose datum, forward-hold drawing correction, the Compartment 3
+anchor to the saved aft cargo-door start, and the approved tapered Hold 5
+profile.
+
 ## A321-P2F (28 September 2026)
 
 The user-supplied `Airbus_A321_WTF.dxf` (2013 ASCII DXF) supplies one general
