@@ -9,6 +9,7 @@ import { DashboardAircraftStatus,DashboardAircraftStatusProvider } from "@/compo
 const aircraftProfilesByType:Record<string,string>={
   "319":"/aircraft-profiles/a319-100.png?v=3",
   "320":"/aircraft-profiles/a320-200.png?v=3",
+  "321":"/aircraft-profiles/a321-passenger.png?v=1",
   "33F":"/aircraft-profiles/a330-200f.png?v=1",
   "359":"/aircraft-profiles/a359-900.png?v=1",
   "DH3":"/aircraft-profiles/dh3-300.png?v=3",
