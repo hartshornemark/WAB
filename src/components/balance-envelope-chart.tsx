@@ -1,6 +1,6 @@
 import {useIndexDecimalPlaces} from "@/components/index-display-preference";
 import {formatNumeric} from "@/domain/display-standards";
-import type { AircraftC5Values, EnvelopeBoundary, EnvelopePoint } from "@/domain/aircraft-c5";
+import {conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint} from "@/domain/aircraft-c5";
 import type { AircraftC4Values } from "@/domain/aircraft-c4";
 import type { AircraftC5Applicability } from "@/domain/aircraft-c2-status";
 import {trimAircraftC7LineToMaximum,type AircraftC7PlottedPoint,type AircraftC7Point} from "@/domain/aircraft-c7";
@@ -38,8 +38,8 @@ const rangeTicks = (minimum: number, maximum: number, step: number) => {
   if (maximum !== minimum) values.push(maximum);
   return values;
 };
-const sharedScale = (values: AircraftC5Values, activeCharts: typeof charts, idealTrim: PlottedPoint[]): SharedScale => {
-  const all = [...activeCharts.flatMap(({ key }) => [...values.envelopes[key].fwd, ...values.envelopes[key].aft]), ...idealTrim];
+const sharedScale = (boundaries:EnvelopeBoundary[], idealTrim: PlottedPoint[]): SharedScale => {
+  const all = [...boundaries.flatMap(boundary=>[...boundary.fwd,...boundary.aft]), ...idealTrim];
   const rawXMin = Math.min(...all.map((point) => point.indexValue));
   const rawXMax = Math.max(...all.map((point) => point.indexValue));
   const xPadding = Math.max((rawXMax - rawXMin) * 0.1, 1);
@@ -140,11 +140,13 @@ function CombinedEnvelopeSvg({ values, unit, scale, formula, series, idealTrim }
 
 export function BalanceEnvelopeView({ values, applicability, unit, formula, idealTrimPoints=[], onClose }: { values: AircraftC5Values; applicability:AircraftC5Applicability; unit: string; formula: AircraftC4Values | null; idealTrimPoints?: AircraftC7Point[]; onClose: () => void }) {
   const activeCharts=charts.filter(chart=>applicability[chart.key]);
+  const chartInstances=activeCharts.flatMap(chart=>envelopeMode(values,chart.key)==="CONDITIONAL"?conditionalEnvelopes(values,chart.key).map(item=>({key:`${chart.key}-${item.id}`,phase:chart.key,title:`${chart.title} — ${item.code}`,boundary:item.boundary,condition:item.conditionBasis==="OTHER"?item.conditionDescription:`${item.conditionBasis==="TAKE_OFF_FUEL"?"Take-off fuel":"Landing fuel"}: ${item.lowerBound===null?"":`${item.lowerInclusive?"≥":">"} ${item.lowerBound.toLocaleString()} ${unit}`} ${item.upperBound===null?"":`${item.upperInclusive?"≤":"<"} ${item.upperBound.toLocaleString()} ${unit}`}`.trim()})):[{key:chart.key,phase:chart.key,title:chart.title,boundary:values.envelopes[chart.key],condition:""}]);
   const idealTrim=idealTrimPoints.map(point=>({weight:point.weight,indexValue:point.indexValue??(formula&&point.macValue!==null?indexForMacPercent(point.weight,point.macValue,formula):Number.NaN)})).filter(point=>Number.isFinite(point.weight)&&Number.isFinite(point.indexValue)).sort((a,b)=>a.weight-b.weight);
-  const scale = sharedScale(values,activeCharts,idealTrim);
+  const scale = sharedScale(chartInstances.map(item=>item.boundary),idealTrim);
   const combinedSeries=activeCharts.map(chart=>({key:chart.key,label:chart.key.toUpperCase(),className:chart.key}));
+  const hasConditional=activeCharts.some(chart=>envelopeMode(values,chart.key)==="CONDITIONAL");
   return <section className="c5-envelope-view" aria-labelledby="balance-envelope-view-heading">
     <div className="c5-envelope-view-heading"><div><h3 id="balance-envelope-view-heading">AHM565 Sheet C5.2 — Balance Envelope</h3><p>Automatically generated from the configured C5.1 Forward and Aft limits.{formula?" Dashed guides show calculated constant % MAC.":""}{idealTrim.length>=2?" The Ideal Trim line is overlaid from C7.":""}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></div>
-    <div className="c5-envelope-charts">{activeCharts.length>1&&<CombinedEnvelopeSvg values={values} unit={unit} scale={scale} formula={formula} series={combinedSeries} idealTrim={idealTrim}/>} {activeCharts.map((chart) => <EnvelopeSvg key={chart.key} boundary={values.envelopes[chart.key]} title={chart.title} unit={unit} scale={scale} formula={formula} idealTrim={idealTrim} />)}</div>
+    <div className="c5-envelope-charts">{activeCharts.length>1&&!hasConditional&&<CombinedEnvelopeSvg values={values} unit={unit} scale={scale} formula={formula} series={combinedSeries} idealTrim={idealTrim}/>} {chartInstances.map((chart) => <div key={chart.key}>{chart.condition&&<p className="c5-chart-condition">{chart.condition}</p>}<EnvelopeSvg boundary={chart.boundary} title={chart.title} unit={unit} scale={scale} formula={formula} idealTrim={idealTrim} /></div>)}</div>
   </section>;
 }

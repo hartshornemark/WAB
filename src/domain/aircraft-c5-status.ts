@@ -1,4 +1,4 @@
-import type{AircraftC5Values,EnvelopeBoundary,EnvelopePoint}from"@/domain/aircraft-c5";
+import{conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint}from"@/domain/aircraft-c5";
 import type{AircraftC5Applicability}from"@/domain/aircraft-c2-status";
 import{aggregateConfigurationStatuses,type ConfigurationStatus,type DisplayConfigurationStatus}from"@/domain/configuration-status";
 
@@ -9,14 +9,22 @@ const pointValid=(point:EnvelopePoint,maximum:number)=>positiveWhole(point.weigh
 export function c5StatusSelection(values:AircraftC5Values):ConfigurationStatus{return values.curtailed===null?"incomplete":"configured"}
 
 export function c5EnvelopeStatus(values:AircraftC5Values,key:"tow"|"law"|"zfw"):ConfigurationStatus{
-  const minimum=key==="zfw"?values.effectiveDow:0,maximum=values.maximumWeights[key],boundary=values.envelopes[key];
-  const hasProgress=positiveWhole(maximum)||boundary.fwd.length>0||boundary.aft.length>0;
+  const minimum=key==="zfw"?values.effectiveDow:0,maximum=values.maximumWeights[key],boundary=values.envelopes[key],variants=conditionalEnvelopes(values,key),conditional=envelopeMode(values,key)==="CONDITIONAL";
+  const hasProgress=positiveWhole(maximum)||(conditional?variants.some(item=>item.boundary.fwd.length>0||item.boundary.aft.length>0):boundary.fwd.length>0||boundary.aft.length>0);
   if(!hasProgress)return"incomplete";
-  if(!positiveWhole(maximum)||(positiveWhole(minimum)&&minimum>maximum)||!boundaryComplete(boundary,maximum))return"partial";
+  if(!positiveWhole(maximum)||(positiveWhole(minimum)&&minimum>maximum)||(conditional?!conditionalComplete(variants,maximum):!boundaryComplete(boundary,maximum)))return"partial";
   if(key==="tow"&&positiveWhole(values.maximumWeights.mrw)&&maximum>values.maximumWeights.mrw)return"partial";
   if(key==="law"&&positiveWhole(values.maximumWeights.tow)&&maximum>values.maximumWeights.tow)return"partial";
   if(key==="zfw"&&positiveWhole(values.maximumWeights.law)&&maximum>values.maximumWeights.law)return"partial";
   return"configured";
+}
+
+function conditionalComplete(variants:ReturnType<typeof conditionalEnvelopes>,maximum:number){
+  if(variants.length<2||new Set(variants.map(item=>item.code.trim().toUpperCase())).size!==variants.length||variants.some(item=>!item.code.trim()||!boundaryComplete(item.boundary,maximum)))return false;
+  const basis=variants[0].conditionBasis;if(variants.some(item=>item.conditionBasis!==basis))return false;
+  if(basis==="OTHER")return variants.every(item=>item.conditionDescription.trim().length>0);
+  const ordered=[...variants].sort((a,b)=>(a.lowerBound??-1)-(b.lowerBound??-1));if(ordered[0].lowerBound!==null||ordered.at(-1)?.upperBound!==null)return false;
+  return ordered.slice(1).every((current,index)=>{const previous=ordered[index];return previous.upperBound===current.lowerBound&&previous.upperInclusive!==current.lowerInclusive});
 }
 
 function boundaryComplete(boundary:EnvelopeBoundary,maximum:number){return([boundary.fwd,boundary.aft] as EnvelopePoint[][]).every(points=>points.length>=2&&new Set(points.map(point=>point.weight)).size===points.length&&points.every(point=>pointValid(point,maximum))&&points.every((point,index)=>index===0||point.weight>points[index-1].weight)&&points.at(-1)?.weight===maximum)}

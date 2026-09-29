@@ -73,6 +73,7 @@ export type Database = {
       get_aircraft_c5_effective_dow:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       get_aircraft_c5_input_mode:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_c5:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_section:string;p_values:Json};Returns:Json};
+      save_aircraft_c5_envelope:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_phase:string;p_values:Json};Returns:Json};
       save_aircraft_c5_status:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_values:Json};Returns:Json};
       get_aircraft_c8:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_c8:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_section:string;p_values:Json};Returns:Json};
