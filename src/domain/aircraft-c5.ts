@@ -30,6 +30,12 @@ export function withAircraftC5Maximum(values:AircraftC5Values,section:"tow"|"law
 export const emptyConditionalEnvelopes=():Record<AircraftC5Phase,ConditionalEnvelope[]>=>({tow:[],law:[],zfw:[]});
 export const envelopeMode=(values:AircraftC5Values,phase:AircraftC5Phase):AircraftC5EnvelopeMode=>values.envelopeModes?.[phase]??"STANDARD";
 export const conditionalEnvelopes=(values:AircraftC5Values,phase:AircraftC5Phase):ConditionalEnvelope[]=>values.conditionalEnvelopes?.[phase]??[];
+export const conditionBandsMeet=(previous:ConditionalEnvelope,current:ConditionalEnvelope)=>{
+  if(previous.upperBound===null||current.lowerBound===null)return false;
+  const sharedBoundary=previous.upperBound===current.lowerBound&&previous.upperInclusive!==current.lowerInclusive;
+  const consecutiveWholeWeights=Number.isSafeInteger(previous.upperBound)&&Number.isSafeInteger(current.lowerBound)&&current.lowerBound===previous.upperBound+1&&previous.upperInclusive&&current.lowerInclusive;
+  return sharedBoundary||consecutiveWholeWeights;
+};
 
 const finite=(value:unknown,label:string)=>{const n=typeof value==="number"?value:Number(value);if(value===""||value===null||value===undefined||!Number.isFinite(n)||Math.abs(n)>1_000_000_000)throw new AircraftC5Invalid(`Enter a valid ${label}.`);return n};
 const weight=(value:unknown,label:string)=>{const n=finite(value,label);if(!Number.isInteger(n)||n<=0)throw new AircraftC5Invalid(`${label} must be a positive whole number.`);return n};
@@ -68,7 +74,7 @@ function completeConditionalEnvelopes(value:unknown,phase:AircraftC5Phase,maximu
   if(basis!=="OTHER"){
     const ordered=[...variants].sort((a,b)=>(a.lowerBound??-1)-(b.lowerBound??-1));
     if(ordered[0].lowerBound!==null||ordered.at(-1)?.upperBound!==null)throw new AircraftC5Invalid(`${phase.toUpperCase()} fuel bands must cover every possible value.`);
-    for(let index=1;index<ordered.length;index++){const previous=ordered[index-1],current=ordered[index];if(previous.upperBound!==current.lowerBound||previous.upperInclusive===current.lowerInclusive)throw new AircraftC5Invalid(`${phase.toUpperCase()} fuel bands must meet without gaps or overlaps.`)}
+    for(let index=1;index<ordered.length;index++){const previous=ordered[index-1],current=ordered[index];if(!conditionBandsMeet(previous,current))throw new AircraftC5Invalid(`${phase.toUpperCase()} fuel bands must meet without gaps or overlaps.`)}
   }
   return variants;
 }

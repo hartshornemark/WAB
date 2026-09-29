@@ -1,4 +1,4 @@
-import{conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint}from"@/domain/aircraft-c5";
+import{conditionBandsMeet,conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint}from"@/domain/aircraft-c5";
 import type{AircraftC5Applicability}from"@/domain/aircraft-c2-status";
 import{aggregateConfigurationStatuses,type ConfigurationStatus,type DisplayConfigurationStatus}from"@/domain/configuration-status";
 
@@ -34,7 +34,7 @@ function conditionalComplete(variants:ReturnType<typeof conditionalEnvelopes>,ma
   const basis=variants[0].conditionBasis;if(variants.some(item=>item.conditionBasis!==basis))return false;
   if(basis==="OTHER")return variants.every(item=>item.conditionDescription.trim().length>0);
   const ordered=[...variants].sort((a,b)=>(a.lowerBound??-1)-(b.lowerBound??-1));if(ordered[0].lowerBound!==null||ordered.at(-1)?.upperBound!==null)return false;
-  return ordered.slice(1).every((current,index)=>{const previous=ordered[index];return previous.upperBound===current.lowerBound&&previous.upperInclusive!==current.lowerInclusive});
+  return ordered.slice(1).every((current,index)=>conditionBandsMeet(ordered[index],current));
 }
 
 function boundaryComplete(boundary:EnvelopeBoundary,maximum:number){return([boundary.fwd,boundary.aft] as EnvelopePoint[][]).every(points=>c5BoundaryStatus(points,maximum)==="configured")}
