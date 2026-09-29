@@ -58,6 +58,14 @@ policies. Carrier reads and administrator changes pass through the permission-
 checked `get_aircraft_master_geometry`, `assign_airframe_geometry` and
 `activate_airframe_geometry` functions.
 
+The Boeing 737-800 and 737 MAX 9 use separate geometry families because their
+calibrated fuselage lengths differ. Each family references its existing
+verified SVG and uses the Boeing 737 AMM Task 06-21-00 datum of 130 inches
+forward of the nose. Their current `738 / 800` and `7M9 / 900` identities are
+assigned to the Standard passenger profile. A freighter or conversion profile
+must be introduced through another sourced, versioned geometry publication;
+it is not inferred from the passenger outline.
+
 ## A321-P2F (28 September 2026)
 
 The user-supplied `Airbus_A321_WTF.dxf` (2013 ASCII DXF) supplies one general
