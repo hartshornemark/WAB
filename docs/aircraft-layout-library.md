@@ -33,6 +33,31 @@ Both uploaded objects were downloaded and checksum-verified before publication. 
 
 Back up **both** Storage object bytes and database records; a database-only backup is insufficient to restore the complete library.
 
+## Shared airframe master geometry
+
+`Airframe_Geometry_Families` and its immutable version tables separate the
+physical airframe from an operational aircraft identity. An identity such as
+`321 / P2F` or a future passenger `321` is assigned explicitly to one profile
+in the active `AIRBUS_A321` family version. A missing dedicated SVG can then use
+the family's verified source SVG without copying or recalibrating it.
+
+Profiles distinguish geometry that affects an overlay: standard passenger,
+Airbus Cabin Flex, P2F and XLR. Engine choice alone does not create another
+airframe family. Assignment is deliberately explicit; subtype text is never
+used to guess ACF, XLR or a conversion.
+
+Master decks, structural cabin/hold zones and doors are normalized child
+records. Only authoritative physical geometry belongs there. Carrier maximum
+weights, volumes, indexes, compartments, ULD arrangements, cabin areas, rows
+and seat groupings remain carrier configuration. New geometry is published as
+a complete family version, and activation is rejected if it omits a profile
+already assigned to an aircraft identity.
+
+The geometry tables intentionally have no direct authenticated grants or RLS
+policies. Carrier reads and administrator changes pass through the permission-
+checked `get_aircraft_master_geometry`, `assign_airframe_geometry` and
+`activate_airframe_geometry` functions.
+
 ## A321-P2F (28 September 2026)
 
 The user-supplied `Airbus_A321_WTF.dxf` (2013 ASCII DXF) supplies one general

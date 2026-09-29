@@ -37,6 +37,19 @@ test("additional aircraft can use the same contract without a code registry",()=
  const parsed=parseLayoutVersion({...v,aircraft_type:"321",aircraft_subtype:"200",object_path,calibration:{...v.calibration,typeCode:"321",subtype:"200"}});
  assert.equal(parsed.calibration.typeCode,"321");
 });
+test("an assigned aircraft identity can reuse a verified family SVG",()=>{
+ const source=version(seeds.findIndex(s=>s.typeCode==="321"&&s.subtype==="P2F"&&s.version===2));
+ const parsed=parseLayoutVersion({...source,
+  aircraft_type:"321",aircraft_subtype:"200",
+  asset_aircraft_type:"321",asset_aircraft_subtype:"P2F",
+  geometry_family_code:"AIRBUS_A321",geometry_profile_code:"STANDARD",
+  calibration:{...source.calibration,typeCode:"321",subtype:"200"}
+ });
+ assert.equal(parsed.aircraft_subtype,"200");
+ assert.equal(parsed.asset_aircraft_subtype,"P2F");
+ assert.equal(parsed.geometry_profile_code,"STANDARD");
+ assert.equal(parsed.object_path,source.object_path);
+});
 test("MAX 9 provisional inch calibration anchors nose and aft positions without metre mixing",()=>{
  const i=seeds.findIndex(s=>s.typeCode==="7M9");assert.ok(i>=0);
  const v=parseLayoutVersion(version(i));const c={...v.calibration,asset:"signed"};
