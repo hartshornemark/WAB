@@ -101,6 +101,7 @@ export type Database = {
       get_aircraft_e11:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_e11:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_value:Json};Returns:Json};
       get_aircraft_e12:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
+      save_aircraft_fuel_configurations:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
       save_aircraft_e12_standard:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_value:Json};Returns:Json};
       save_aircraft_e12_registrations:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
       get_aircraft_e2:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};

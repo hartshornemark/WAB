@@ -3,7 +3,7 @@ export type EnvelopeBoundary={fwd:EnvelopePoint[];aft:EnvelopePoint[]};
 export type AircraftC5Phase="tow"|"law"|"zfw";
 export type AircraftC5EnvelopeMode="STANDARD"|"CONDITIONAL";
 export type EnvelopeConditionBasis="TAKE_OFF_FUEL"|"LANDING_FUEL"|"OTHER";
-export type ConditionalEnvelope={id:string;code:string;conditionBasis:EnvelopeConditionBasis;conditionDescription:string;lowerBound:number|null;lowerInclusive:boolean;upperBound:number|null;upperInclusive:boolean;boundary:EnvelopeBoundary};
+export type ConditionalEnvelope={id:string;code:string;configurationCode?:string|null;conditionBasis:EnvelopeConditionBasis;conditionDescription:string;lowerBound:number|null;lowerInclusive:boolean;upperBound:number|null;upperInclusive:boolean;boundary:EnvelopeBoundary};
 export type AircraftC5InputMode="INDEX"|"MAC";
 export type AircraftC5Section="status"|"mrw"|"towMaximum"|"lawMaximum"|"zfwMaximum"|"tow"|"law"|"zfw";
 export type AircraftC5Values={
@@ -57,20 +57,20 @@ function progressConditionalEnvelopes(value:unknown,phase:AircraftC5Phase,maximu
   if(!Array.isArray(value))throw new AircraftC5Invalid(`${phase.toUpperCase()} conditional envelopes are invalid.`);
   const codes=new Set<string>();
   return value.map((entry,index)=>{
-    const row=entry as Record<string,unknown>,code=String(row.code??"").trim().toUpperCase(),basis=String(row.conditionBasis??"") as EnvelopeConditionBasis,description=String(row.conditionDescription??"").trim(),lower=nullableBound(row.lowerBound,`condition ${index+1} lower limit`),upper=nullableBound(row.upperBound,`condition ${index+1} upper limit`);
+    const row=entry as Record<string,unknown>,code=String(row.code??"").trim().toUpperCase(),configurationCode=String(row.configurationCode??"").trim().toUpperCase()||null,basis=String(row.conditionBasis??"") as EnvelopeConditionBasis,description=String(row.conditionDescription??"").trim(),lower=nullableBound(row.lowerBound,`condition ${index+1} lower limit`),upper=nullableBound(row.upperBound,`condition ${index+1} upper limit`);
     if(!code)throw new AircraftC5Invalid(`Enter a code for conditional envelope ${index+1}.`);if(codes.has(code))throw new AircraftC5Invalid(`Conditional envelope code ${code} is duplicated.`);codes.add(code);
     if(!["TAKE_OFF_FUEL","LANDING_FUEL","OTHER"].includes(basis))throw new AircraftC5Invalid(`Select the condition for ${code}.`);
     if(basis==="OTHER"&&!description)throw new AircraftC5Invalid(`Describe the operational condition for ${code}.`);
     if(lower!==null&&upper!==null&&lower>=upper)throw new AircraftC5Invalid(`${code} lower condition limit must be below its upper limit.`);
     const source=row.boundary as Record<string,unknown>;
-    return{id:String(row.id??""),code,conditionBasis:basis,conditionDescription:description,lowerBound:lower,lowerInclusive:Boolean(row.lowerInclusive),upperBound:upper,upperInclusive:Boolean(row.upperInclusive),boundary:{fwd:progressPoints(source?.fwd,`${phase.toUpperCase()} ${code} FWD`,maximum),aft:progressPoints(source?.aft,`${phase.toUpperCase()} ${code} AFT`,maximum)}};
+    return{id:String(row.id??""),code,configurationCode,conditionBasis:basis,conditionDescription:description,lowerBound:lower,lowerInclusive:Boolean(row.lowerInclusive),upperBound:upper,upperInclusive:Boolean(row.upperInclusive),boundary:{fwd:progressPoints(source?.fwd,`${phase.toUpperCase()} ${code} FWD`,maximum),aft:progressPoints(source?.aft,`${phase.toUpperCase()} ${code} AFT`,maximum)}};
   });
 }
 function completeConditionalEnvelopes(value:unknown,phase:AircraftC5Phase,maximum:number){
   const variants=progressConditionalEnvelopes(value,phase,maximum);
   if(variants.length<2)throw new AircraftC5Invalid(`${phase.toUpperCase()} conditional mode requires at least two complete envelopes.`);
   const basis=variants[0].conditionBasis;if(variants.some(item=>item.conditionBasis!==basis))throw new AircraftC5Invalid(`${phase.toUpperCase()} conditional envelopes must use the same condition.`);
-  for(const item of variants){item.boundary={fwd:points(item.boundary.fwd,`${phase.toUpperCase()} ${item.code} FWD`),aft:points(item.boundary.aft,`${phase.toUpperCase()} ${item.code} AFT`)};for(const side of ["fwd","aft"] as const)if(item.boundary[side].at(-1)?.weight!==maximum)throw new AircraftC5Invalid(`${phase.toUpperCase()} ${item.code} ${side.toUpperCase()} must end at its applicable maximum Weight.`)}
+  for(const item of variants){item.boundary={fwd:points(item.boundary.fwd,`${phase.toUpperCase()} ${item.code} FWD`),aft:points(item.boundary.aft,`${phase.toUpperCase()} ${item.code} AFT`)};const fwdMaximum=item.boundary.fwd.at(-1)?.weight,aftMaximum=item.boundary.aft.at(-1)?.weight;if(fwdMaximum!==aftMaximum||!fwdMaximum||fwdMaximum>maximum)throw new AircraftC5Invalid(`${phase.toUpperCase()} ${item.code} FWD and AFT must end at the same applicable maximum Weight.`)}
   if(basis!=="OTHER"){
     const ordered=[...variants].sort((a,b)=>(a.lowerBound??-1)-(b.lowerBound??-1));
     if(ordered[0].lowerBound!==null||ordered.at(-1)?.upperBound!==null)throw new AircraftC5Invalid(`${phase.toUpperCase()} fuel bands must cover every possible value.`);

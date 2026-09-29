@@ -30,7 +30,8 @@ export function c5EnvelopeStatus(values:AircraftC5Values,key:"tow"|"law"|"zfw"):
 }
 
 function conditionalComplete(variants:ReturnType<typeof conditionalEnvelopes>,maximum:number){
-  if(variants.length<2||new Set(variants.map(item=>item.code.trim().toUpperCase())).size!==variants.length||variants.some(item=>!item.code.trim()||!boundaryComplete(item.boundary,maximum)))return false;
+  const boundaryCompleteAtOwnMaximum=(item:(typeof variants)[number])=>{const fwd=item.boundary.fwd.at(-1)?.weight,aft=item.boundary.aft.at(-1)?.weight;return Boolean(fwd&&fwd===aft&&fwd<=maximum&&boundaryComplete(item.boundary,fwd))};
+  if(variants.length<2||new Set(variants.map(item=>item.code.trim().toUpperCase())).size!==variants.length||variants.some(item=>!item.code.trim()||!boundaryCompleteAtOwnMaximum(item)))return false;
   const basis=variants[0].conditionBasis;if(variants.some(item=>item.conditionBasis!==basis))return false;
   if(basis==="OTHER")return variants.every(item=>item.conditionDescription.trim().length>0);
   const ordered=[...variants].sort((a,b)=>(a.lowerBound??-1)-(b.lowerBound??-1));if(ordered[0].lowerBound!==null||ordered.at(-1)?.upperBound!==null)return false;
