@@ -12,6 +12,10 @@ export function c5BoundaryStatus(points:EnvelopePoint[],maximum:number):Configur
   return configured?"configured":"partial";
 }
 
+export function c5ConditionalEnvelopeStatus(boundary:EnvelopeBoundary,maximum:number):ConfigurationStatus{
+  return aggregateConfigurationStatuses([c5BoundaryStatus(boundary.fwd,maximum),c5BoundaryStatus(boundary.aft,maximum)]);
+}
+
 export function c5StatusSelection(values:AircraftC5Values):ConfigurationStatus{return values.curtailed===null?"incomplete":"configured"}
 
 export function c5EnvelopeStatus(values:AircraftC5Values,key:"tow"|"law"|"zfw"):ConfigurationStatus{
