@@ -6,6 +6,12 @@ const positiveWhole=(value:number)=>Number.isSafeInteger(value)&&value>0;
 const finite=(value:number)=>Number.isFinite(value)&&Math.abs(value)<=1_000_000_000;
 const pointValid=(point:EnvelopePoint,maximum:number)=>positiveWhole(point.weight)&&point.weight<=maximum&&finite(point.indexValue)&&(point.macValue===null||(finite(point.macValue)&&point.macValue>=0&&point.macValue<=100));
 
+export function c5BoundaryStatus(points:EnvelopePoint[],maximum:number):ConfigurationStatus{
+  if(points.length===0)return"incomplete";
+  const configured=positiveWhole(maximum)&&points.length>=2&&new Set(points.map(point=>point.weight)).size===points.length&&points.every(point=>pointValid(point,maximum))&&points.every((point,index)=>index===0||point.weight>points[index-1].weight)&&points.some(point=>point.weight===maximum);
+  return configured?"configured":"partial";
+}
+
 export function c5StatusSelection(values:AircraftC5Values):ConfigurationStatus{return values.curtailed===null?"incomplete":"configured"}
 
 export function c5EnvelopeStatus(values:AircraftC5Values,key:"tow"|"law"|"zfw"):ConfigurationStatus{
@@ -27,7 +33,7 @@ function conditionalComplete(variants:ReturnType<typeof conditionalEnvelopes>,ma
   return ordered.slice(1).every((current,index)=>{const previous=ordered[index];return previous.upperBound===current.lowerBound&&previous.upperInclusive!==current.lowerInclusive});
 }
 
-function boundaryComplete(boundary:EnvelopeBoundary,maximum:number){return([boundary.fwd,boundary.aft] as EnvelopePoint[][]).every(points=>points.length>=2&&new Set(points.map(point=>point.weight)).size===points.length&&points.every(point=>pointValid(point,maximum))&&points.every((point,index)=>index===0||point.weight>points[index-1].weight)&&points.at(-1)?.weight===maximum)}
+function boundaryComplete(boundary:EnvelopeBoundary,maximum:number){return([boundary.fwd,boundary.aft] as EnvelopePoint[][]).every(points=>c5BoundaryStatus(points,maximum)==="configured")}
 
 const allRequired:AircraftC5Applicability={tow:true,law:true,zfw:true};
 export function aircraftC5Statuses(values:AircraftC5Values,applicability:AircraftC5Applicability=allRequired){
