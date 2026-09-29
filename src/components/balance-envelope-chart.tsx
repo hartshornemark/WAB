@@ -1,3 +1,4 @@
+import {useState} from "react";
 import {useIndexDecimalPlaces} from "@/components/index-display-preference";
 import {formatNumeric} from "@/domain/display-standards";
 import {conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint} from "@/domain/aircraft-c5";
@@ -142,14 +143,18 @@ function CombinedEnvelopeSvg({ unit, scale, formula, series, idealTrim }: { unit
 export function BalanceEnvelopeView({ values, applicability, unit, formula, idealTrimPoints=[], onClose }: { values: AircraftC5Values; applicability:AircraftC5Applicability; unit: string; formula: AircraftC4Values | null; idealTrimPoints?: AircraftC7Point[]; onClose: () => void }) {
   const activeCharts=charts.filter(chart=>applicability[chart.key]);
   const chartInstances=activeCharts.flatMap(chart=>envelopeMode(values,chart.key)==="CONDITIONAL"?conditionalEnvelopes(values,chart.key).map(item=>({key:`${chart.key}-${item.id}`,phase:chart.key,title:`${chart.title} — ${item.code}`,boundary:item.boundary,condition:item.conditionBasis==="OTHER"?item.conditionDescription:`${item.conditionBasis==="TAKE_OFF_FUEL"?"Take-off fuel":"Landing fuel"}: ${item.lowerBound===null?"":`${item.lowerInclusive?"≥":">"} ${item.lowerBound.toLocaleString()} ${unit}`} ${item.upperBound===null?"":`${item.upperInclusive?"≤":"<"} ${item.upperBound.toLocaleString()} ${unit}`}`.trim()})):[{key:chart.key,phase:chart.key,title:chart.title,boundary:values.envelopes[chart.key],condition:""}]);
+  const conditionalGroups=activeCharts.flatMap(chart=>{const options=chartInstances.filter(item=>item.phase===chart.key&&item.condition);return options.length?[{phase:chart.key,label:`${chart.key.toUpperCase()} CONDITION`,options}]:[]});
+  const[selectedConditions,setSelectedConditions]=useState<Record<string,string>>(()=>Object.fromEntries(conditionalGroups.map(group=>[group.phase,group.options[0].key])));
+  const overlayInstances=chartInstances.filter(chart=>!chart.condition||selectedConditions[chart.phase]===chart.key);
   const idealTrim=idealTrimPoints.map(point=>({weight:point.weight,indexValue:point.indexValue??(formula&&point.macValue!==null?indexForMacPercent(point.weight,point.macValue,formula):Number.NaN)})).filter(point=>Number.isFinite(point.weight)&&Number.isFinite(point.indexValue)).sort((a,b)=>a.weight-b.weight);
   const scale = sharedScale(chartInstances.map(item=>item.boundary),idealTrim);
-  const combinedSeries:CombinedSeries[]=chartInstances
+  const combinedSeries:CombinedSeries[]=overlayInstances
     .slice()
     .sort((a,b)=>Math.max(...b.boundary.fwd.map(point=>point.weight),...b.boundary.aft.map(point=>point.weight))-Math.max(...a.boundary.fwd.map(point=>point.weight),...a.boundary.aft.map(point=>point.weight)))
     .map((chart,index)=>({key:chart.key,label:chart.title.replace(" Balance Envelope",""),className:`combined-series-${index%8}`,boundary:chart.boundary}));
   return <section className="c5-envelope-view" aria-labelledby="balance-envelope-view-heading">
     <div className="c5-envelope-view-heading"><div><h3 id="balance-envelope-view-heading">AHM565 Sheet C5.2 — Balance Envelope</h3><p>Automatically generated from the configured C5.1 Forward and Aft limits.{formula?" Dashed guides show calculated constant % MAC.":""}{idealTrim.length>=2?" The Ideal Trim line is overlaid from C7.":""}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></div>
+    {conditionalGroups.map(group=><nav className="c5-envelope-condition-selectors" aria-label={`${group.label} overlay`} key={group.phase}><span>{group.label}</span>{group.options.map(option=><button type="button" className={selectedConditions[group.phase]===option.key?"selected":""} aria-pressed={selectedConditions[group.phase]===option.key} key={option.key} onClick={()=>setSelectedConditions(current=>({...current,[group.phase]:option.key}))}>{option.title.split(" — ").at(-1)}</button>)}</nav>)}
     <div className="c5-envelope-charts">{chartInstances.length>1&&<CombinedEnvelopeSvg unit={unit} scale={scale} formula={formula} series={combinedSeries} idealTrim={idealTrim}/>} {chartInstances.map((chart) => <div key={chart.key}>{chart.condition&&<p className="c5-chart-condition">{chart.condition}</p>}<EnvelopeSvg boundary={chart.boundary} title={chart.title} unit={unit} scale={scale} formula={formula} idealTrim={idealTrim} /></div>)}</div>
   </section>;
 }
