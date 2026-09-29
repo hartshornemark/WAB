@@ -66,6 +66,13 @@ assigned to the Standard passenger profile. A freighter or conversion profile
 must be introduced through another sourced, versioned geometry publication;
 it is not inferred from the passenger outline.
 
+The A319 and A320 also use separate families because their fuselage lengths
+differ. Both retain the fixed A320-family datum of 2.54 m forward of the nose.
+`319 / 100` uses the A319 family; both `320 / 100` and `320 / 200` use the same
+A320 family and Standard passenger profile. The A320 calibration's historic
+zero cargo-plotting origin remains paired with its SVG and does not replace the
+physical 2.54 m master datum.
+
 ## A321-P2F (28 September 2026)
 
 The user-supplied `Airbus_A321_WTF.dxf` (2013 ASCII DXF) supplies one general
