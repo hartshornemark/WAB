@@ -4,6 +4,8 @@ import seeds from '../src/infrastructure/aircraft-layouts/seed.json';
 import {holdLayoutX,type AircraftLayoutCalibration} from '../src/domain/hold-layout';
 const layout={...seeds.find(s=>s.typeCode==='DH3')!.calibration,asset:'test.svg'} as AircraftLayoutCalibration;
 test('DH3 station anchors align with the source drawing independently of nose datum',()=>{
+ assert.equal(layout.noseArm,43);
+ assert.ok(Math.abs(holdLayoutX(43,layout)-212.0727257196549)<1e-9);
  assert.ok(Math.abs(holdLayoutX(109,layout)-192.2)<1e-9);
  assert.ok(Math.abs(holdLayoutX(577.28,layout)-51.2)<1e-9);
  assert.equal(holdLayoutX(662,layout),holdLayoutX(662,{...layout,noseArm:100}));

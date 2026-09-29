@@ -75,10 +75,10 @@ physical 2.54 m master datum.
 
 The `DH3 / 300` identity uses the `DE_HAVILLAND_DHC8_300` family and Standard
 passenger profile. Its source layout retains the Q300 Model 311 station anchors
-and approved tapered aft-hold profile. Unlike the Airbus and Boeing families,
-its physical nose datum is not yet confirmed: zero remains the existing master
-default and is explicitly recorded as unverified rather than promoted to a
-locked physical fact.
+and approved tapered aft-hold profile. Dash 8 AMM Chapter 06 defines the basic
+aircraft longitudinal origin `X 00.00` as 43 inches (1.0922 m) forward of the
+nose. The EASA TCDS datum plate at Station 423.0 inches is retained as a
+separate physical reference and is not treated as the longitudinal origin.
 
 The `359 / 900` identity uses the `AIRBUS_A350_900` family and Standard
 passenger profile. Its source is active layout version 7, retaining the

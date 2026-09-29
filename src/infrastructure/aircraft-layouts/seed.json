@@ -100,15 +100,15 @@
     "sha256": "4c54d090a334e3bf50a650e5384672a2e74909a3cf88375115a4f92d1a083a51",
     "byteSize": 1551,
     "objectPath": "DH3/300/4c54d090a334e3bf50a650e5384672a2e74909a3cf88375115a4f92d1a083a51.svg",
-    "noseArm": 0,
-    "datumDescription": "Station-based drawing calibration; physical nose datum is unverified. Existing zero master default retained, not inferred from the drawing.",
-    "datumSource": "Q300 Model 311 Figure 2-5 station X109 and X577.28 anchors; RR formula uses station arms in inches.",
+    "noseArm": 1.0922,
+    "datumDescription": "Aircraft station X 00.00 is 43 inches (1.0922 m) forward of the aircraft nose; station values increase aft.",
+    "datumSource": "Dash 8 AMM Chapter 06, 06-20-00 Aircraft Stations. EASA TCDS EASA.IM.A.191 Issue 16 separately locates the datum reference plate at Station 423.0 inches on the fuselage centreline.",
     "sourceDrawing": "D8_300.pdf Figure 2-5 and D8300_Compartments.pdf Figure 2-8, 27 July 2001; schematic vector tracing.",
     "calibration": {
       "typeCode": "DH3",
       "subtype": "300",
       "length": 800,
-      "noseArm": 0,
+      "noseArm": 43,
       "tailX": 244.44076193730248,
       "span": 240.88152387460497,
       "stationOriginX": 225.0201076279149,
@@ -127,7 +127,7 @@
       "leftDoorY": 12,
       "rightDoorY": 38,
       "labelCharWidth": 0.58,
-      "diagramCaption": "Fuselage section traced from the Q300 Model 311 plan. Dashed aft join is indicative. Station values are in inches.",
+      "diagramCaption": "Fuselage section traced from the Q300 Model 311 plan. X 00.00 is 43 inches forward of the nose; the Station 423 datum reference plate is a separate physical reference. Dashed aft join is indicative.",
       "combinedHoldProfile": {
         "points": [
           {
