@@ -1,7 +1,7 @@
 import test from"node:test";
 import assert from"node:assert/strict";
 import{createFlightSchedules}from"../src/application/flight-schedules";
-import{firstAircraftConfiguration,scheduleAircraftCarriesPassengers,scheduleAircraftSubtype,FlightScheduleInvalid}from"../src/domain/flight-schedules";
+import{firstAircraftConfiguration,scheduleAircraftCarriesPassengers,scheduleAircraftConfiguration,scheduleAircraftSubtype,FlightScheduleInvalid}from"../src/domain/flight-schedules";
 import type{FlightScheduleRepository,FlightScheduleWorkspace,ManualScheduleLegInput}from"../src/ports/flight-schedule-repository";
 
 const emptyWorkspace:FlightScheduleWorkspace={canView:true,canConfigure:true,publishedImportId:null,legs:[],serviceTypes:[],airports:[],aircraft:[],aircraftConfigurations:[],crewCodes:[],pantryCodes:[],variations:[]};
@@ -22,6 +22,8 @@ test("manual itinerary saves consecutive connected segments in one operation",as
 test("manual itinerary rejects a disconnected segment",async()=>{const{service}=setup(),shared={flightNumber:"040",itineraryVariation:"01",serviceType:"J",periodStart:"2026-10-25",periodEnd:"2027-03-27",operatingDays:"1111111",aircraftType:"319",aircraftSubtype:"100"};await assert.rejects(()=>service.saveManualItinerary("ZZ","11111111-1111-1111-1111-111111111111",[{...shared,legSequence:1,departureAirport:"MLE",arrivalAirport:"AUH",departureTime:"09:00",arrivalTime:"13:00",arrivalDayOffset:0},{...shared,legSequence:2,departureAirport:"DOH",arrivalAirport:"LHR",departureTime:"14:30",arrivalTime:"19:00",arrivalDayOffset:0}]),FlightScheduleInvalid)});
 
 test("aircraft selection defaults to the first listed cabin configuration",()=>{const rows=[{typeCode:"319",subtype:"100",code:"A"},{typeCode:"319",subtype:"100",code:"B"}];assert.equal(firstAircraftConfiguration(rows,"319","100"),"A");assert.equal(firstAircraftConfiguration(rows,"321","200"),null)});
+
+test("SSIM XX aircraft configuration is treated as unspecified",()=>{assert.equal(scheduleAircraftConfiguration("XX"),null);assert.equal(scheduleAircraftConfiguration(" A "),"A")});
 
 test("schedule passenger parameters follow the selected aircraft operating role",()=>{const aircraft=[{typeCode:"321",subtype:"200",operatingRole:"PASSENGER" as const},{typeCode:"321",subtype:"P2F",operatingRole:"FREIGHTER" as const},{typeCode:"763",subtype:"300",operatingRole:"COMBI" as const}];assert.equal(scheduleAircraftCarriesPassengers(aircraft,"321","P2F"),false);assert.equal(scheduleAircraftCarriesPassengers(aircraft,"321","200"),true);assert.equal(scheduleAircraftCarriesPassengers(aircraft,"763","300"),true);assert.equal(scheduleAircraftCarriesPassengers(aircraft,"359","900"),true)});
 test("schedule parameters default to the subtype saved on the flight leg",()=>{assert.equal(scheduleAircraftSubtype({aircraftSubtype:"P2F",parameters:null},"200"),"P2F");assert.equal(scheduleAircraftSubtype({aircraftSubtype:"P2F",parameters:{aircraftSubtype:"200"}},"P2F"),"200");assert.equal(scheduleAircraftSubtype({aircraftSubtype:null,parameters:null},"200"),"200")});
