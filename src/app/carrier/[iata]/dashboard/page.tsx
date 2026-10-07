@@ -44,7 +44,7 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
     <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl}/><div><h1>Carrier Home</h1><p className="muted">{result.carrier.name}</p></div></div>
     <>
       <div className="dashboard-home-actions">
-        <Link className="button-link" href={`${carrierBase}/loadsheet-simulator`}>OPEN EDP LOADSHEET SIMULATOR</Link>
+        <Link className="button-link secondary" href={`${carrierBase}/loadsheet-simulator`}>LOADSHEET SIMULATOR</Link>
         <Link className="button-link secondary" href={`${carrierBase}/flight-schedules`}>FLIGHT SCHEDULES</Link>
         <Link className="button-link secondary" href={`${carrierBase}/aircraft`}>ADD OR CHANGE AIRCRAFT</Link>
       </div>
