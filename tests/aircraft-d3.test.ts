@@ -1,6 +1,6 @@
 import test from"node:test";
 import assert from"node:assert/strict";
-import{sortAircraftD3Snapshot,AircraftD3Invalid,blockedAircraftD3PositionIds,validateAircraftD3Configuration,type AircraftD3Configuration,type AircraftD3Position,type AircraftD3Snapshot,type AircraftD3UldOption}from"../src/domain/aircraft-d3";
+import{effectiveAircraftD3Snapshot,sortAircraftD3Snapshot,AircraftD3Invalid,blockedAircraftD3PositionIds,validateAircraftD3Configuration,type AircraftD3Configuration,type AircraftD3Position,type AircraftD3Snapshot,type AircraftD3UldOption}from"../src/domain/aircraft-d3";
 import{aircraftD3ConfigurationStatus,aircraftD3Status}from"../src/domain/aircraft-d3-status";
 
 const uldTypes=["LD3-45"];
@@ -24,6 +24,9 @@ test("accepts blank optional values and a signed decimal Index Per Weight Unit",
 test("derives the Balance Arm Centroid from C4 and Index Per Weight Unit",()=>{const validated=validate({...config,rows:[{...row,balanceCentroid:99,balanceFrom:null,balanceTo:null,indexPerWeightUnit:-0.00972}]},{referenceArm:18.85,constantC:838.7});assert.equal(validated.rows[0].balanceCentroid,10.697836)});
 
 test("import validation preserves CSV centroids instead of replacing them from C4",()=>{const validated=validateAircraftD3Configuration(config,[{id:"1"}],{referenceArm:20,constantC:1000},uldOptions,true);assert.equal(validated.rows[0].balanceCentroid,12.5)});
+
+test("a fitted configuration filters atomic bays and their dependent loading positions",()=>{const secondBay={...atomicBay,id:"12L",configurationCodes:["0ACT"]};const secondRow={...row,positionId:"12P",occupiedBayIds:["12L"],configurationCodes:["0ACT"]};const model=snap({fuelConfigurations:[{code:"0ACT",description:"None"},{code:"2ACT",description:"Two"}],configurations:[{...config,expectedPositionCount:2,atomicBays:[atomicBay,secondBay],rows:[row,secondRow]}]});const effective=effectiveAircraftD3Snapshot(model,"2ACT");assert.deepEqual(effective.configurations[0].atomicBays.map(item=>item.id),["11L"]);assert.deepEqual(effective.configurations[0].rows.map(item=>item.positionId),["11P"]);assert.equal(effective.configurations[0].expectedPositionCount,1)});
+test("position overrides replace only the selected fitted configuration values",()=>{const model=snap({fuelConfigurations:[{code:"2ACT",description:"Two"}],configurations:[{...config,rows:[{...row,configurationOverrides:[{configurationCode:"2ACT",maxWeight:1200,volume:9}]}]}]});const effective=effectiveAircraftD3Snapshot(model,"2ACT");assert.equal(effective.configurations[0].rows[0].maxWeight,1200);assert.equal(effective.configurations[0].rows[0].volume,9)});
 
 test("hold lists and configurations use derived sorting arms without filling missing centroids",()=>{
  const input=snap({uldHolds:[{id:"AFT",balanceCentroid:null,sortBalanceArm:30},{id:"UNKNOWN",balanceCentroid:null},{id:"FWD",balanceCentroid:null,sortBalanceArm:13}],configurations:[{...config,holdId:"AFT"},{...config,holdId:"UNKNOWN"},{...config,holdId:"FWD"}]});

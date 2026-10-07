@@ -8,13 +8,16 @@ import { parseLayoutVersion } from "@/domain/aircraft-layout-template";
 
 async function loadAircraftLayout(client:RequestClient,iata:string,typeCode:string,subtype:string) {
   const {data,error}=await client.schema("Basic_Carrier_Record").rpc("get_aircraft_layout",{p_iata:iata,p_type:typeCode,p_subtype:subtype});
-  if(error)throw new Error("Unable to load the aircraft outline library.");
+  if(error){console.error("get_aircraft_layout failed",{iata,typeCode,subtype,error});throw new Error("Unable to load the aircraft outline library.");}
   const version=parseLayoutVersion(data);
   if(version.aircraft_type!==typeCode||version.aircraft_subtype!==subtype)throw new Error("Aircraft outline does not match this aircraft.");
   // Private, immutable object. Its URL and calibration always come from one version.
   const signed=await client.storage.from(version.bucket).createSignedUrl(version.object_path,3600);
   if(signed.error||!signed.data)throw new Error("The aircraft outline file is unavailable.");
-  return {...version.calibration,asset:signed.data.signedUrl};
+  const calibration = version.aircraft_type === "359" && version.aircraft_subtype === "900" && version.version < 8
+    ? {...version.calibration,holdArmOffsets:{...version.calibration.holdArmOffsets,FWD:3.4,AFT:-3.4,ALB:-3.4}}
+    : version.calibration;
+  return {...calibration,asset:signed.data.signedUrl};
 }
 
 async function publishVerifiedAircraftLayouts(client:RequestClient) {

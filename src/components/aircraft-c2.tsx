@@ -44,6 +44,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
   const [saved, setSaved] = useState(initial);
   const [draft, setDraft] = useState<AircraftC2Values>(valueFrom(initial));
   const [editingSection, setEditingSection] = useState<EditingSection>(null);
+  const [expanded, setExpanded] = useState({ balance: true, trim: true });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pending, start,saveFeedback] = useSaveFeedback();
@@ -62,6 +63,9 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
 
   function beginEditing(section: Exclude<EditingSection, null>) {
     setDraft(valueFrom(saved));
+    if (section === "balance" || section === "trim") {
+      setExpanded((current) => ({ ...current, [section]: true }));
+    }
     setEditingSection(section);
     setError("");
     setMessage("");
@@ -106,6 +110,19 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
     }
     if (editingSection !== null) return null;
     return <SaveButton className="secondary" onClick={() => beginEditing(section)}>EDIT</SaveButton>;
+  }
+
+  function collapseAction(section: "balance" | "trim", label: string) {
+    const open = expanded[section];
+    return <SaveButton
+      type="button"
+      className="secondary c2-collapse-toggle"
+      aria-expanded={open}
+      aria-controls={`c2-${section}-content`}
+      aria-label={`${open ? "Collapse" : "Expand"} ${label}`}
+      disabled={editingSection === section}
+      onClick={() => setExpanded((current) => ({ ...current, [section]: !current[section] }))}
+    >{open ? "COLLAPSE" : "EXPAND"}</SaveButton>;
   }
 
   function setOutput(index: number, key: keyof C2Output, value: boolean) {
@@ -192,9 +209,9 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
       <div className="c2-section">
         <div className="c2-section-heading">
           <h3>Balance Output</h3>
-          <div className="c5-heading-actions">{sectionActions("balance", "Balance Output")}<ConfigurationStatusBadge status={statuses.balance}/></div>
+          <div className="c5-heading-actions">{collapseAction("balance", "BALANCE OUTPUT")}{sectionActions("balance", "Balance Output")}<ConfigurationStatusBadge status={statuses.balance}/></div>
         </div>
-        {visibleOutputFields.length === 0 ? (
+        {expanded.balance && <div id="c2-balance-content" className="c2-collapsible-content">{visibleOutputFields.length === 0 ? (
           <p className="muted">Select at least one Loadsheet Document to display its Balance Output column.</p>
         ) : (
           <div className="c2-table-wrap">
@@ -255,15 +272,15 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
               </tbody>
             </table>
           </div>
-        )}
+        )}</div>}
       </div>
 
       <div className="c2-section">
         <div className="c2-section-heading">
           <h3>Passenger Trim Output</h3>
-          <div className="c5-heading-actions">{operatingRole!=="FREIGHTER"&&sectionActions("trim", "Passenger Trim Output")}<ConfigurationStatusBadge status={statuses.trim}/></div>
+          <div className="c5-heading-actions">{collapseAction("trim", "PASSENGER TRIM OUTPUT")}{operatingRole!=="FREIGHTER"&&sectionActions("trim", "Passenger Trim Output")}<ConfigurationStatusBadge status={statuses.trim}/></div>
         </div>
-        {operatingRole==="FREIGHTER"?<p className="muted">Passenger Trim Output is not required for a Freighter aircraft. Any previously saved data is retained.</p>:<><p>Select each Passenger Trim method used by this aircraft and give selected methods a unique priority.</p>
+        {expanded.trim&&<div id="c2-trim-content" className="c2-collapsible-content">{operatingRole==="FREIGHTER"?<p className="muted">Passenger Trim Output is not required for a Freighter aircraft. Any previously saved data is retained.</p>:<><p>Select each Passenger Trim method used by this aircraft and give selected methods a unique priority.</p>
         <div className="c2-trim-grid">
           {draft.trimOptions.map((row, index) => (
             <div className="c2-trim-row" key={row.option}>
@@ -311,6 +328,7 @@ export function AircraftC2({ iata, initial, operatingRole }: { iata: string; ini
           />
           <small>This standalone remark applies to Passenger Trim Output as a whole and is not attached to an individual option.</small>
         </div></>}
+        </div>}
       </div>
 
       <div className="c2-section">

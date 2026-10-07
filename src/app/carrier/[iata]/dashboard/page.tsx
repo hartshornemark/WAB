@@ -7,6 +7,8 @@ import { CarrierLogo } from "@/components/carrier-logo";
 import { DashboardAircraftStatus,DashboardAircraftStatusProvider } from "@/components/dashboard-aircraft-status";
 
 const aircraftProfilesByType:Record<string,string>={
+  "310":"/aircraft-profiles/a310-300.png?v=1",
+  "313":"/aircraft-profiles/a310-300.png?v=1",
   "319":"/aircraft-profiles/a319-100.png?v=3",
   "320":"/aircraft-profiles/a320-200.png?v=3",
   "321":"/aircraft-profiles/a321-passenger.png?v=1",
@@ -14,7 +16,9 @@ const aircraftProfilesByType:Record<string,string>={
   "359":"/aircraft-profiles/a359-900.png?v=1",
   "DH3":"/aircraft-profiles/dh3-300.png?v=3",
   "738":"/aircraft-profiles/738-800.png?v=2",
+  "763":"/aircraft-profiles/b767-300.png?v=1",
   "7M9":"/aircraft-profiles/7m9-900.png?v=2",
+  "SSC":"/aircraft-profiles/concorde.png?v=1",
 };
 
 const aircraftProfilesByTypeAndSubtype:Record<string,string>={
@@ -39,6 +43,11 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
     <p className="eyebrow">CARRIER WORKSPACE / {result.carrier.iata}</p>
     <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl}/><div><h1>Carrier Home</h1><p className="muted">{result.carrier.name}</p></div></div>
     <>
+      <div className="dashboard-home-actions">
+        <Link className="button-link" href={`${carrierBase}/loadsheet-simulator`}>OPEN EDP LOADSHEET SIMULATOR</Link>
+        <Link className="button-link secondary" href={`${carrierBase}/flight-schedules`}>FLIGHT SCHEDULES</Link>
+        <Link className="button-link secondary" href={`${carrierBase}/aircraft`}>ADD OR CHANGE AIRCRAFT</Link>
+      </div>
       <p className="dashboard-intro">Select an aircraft to open its complete configuration dashboard.</p>
       <DashboardAircraftStatusProvider iata={iata} aircraft={aircraft.rows}><div className="dashboard-aircraft-grid">{aircraft.rows.map(row=>{
         const href=`${carrierBase}/aircraft/${encodeURIComponent(row.typeCode)}/${encodeURIComponent(row.subtype)}/dashboard`;
@@ -50,7 +59,6 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
           <span className={`dashboard-aircraft-body${profile?" has-profile":""}`}><span className="dashboard-aircraft-copy"><h2>{row.identityName||row.aircraftName}</h2><span className="dashboard-aircraft-maker">{row.manufacturerName}</span></span>{profile&&<img className="dashboard-aircraft-profile" src={profile} alt={`${row.identityName||row.aircraftName} side profile`}/>}</span>
         </Link>;
       })}</div></DashboardAircraftStatusProvider>
-      <Link className="button-link dashboard-manage-aircraft" href={`${carrierBase}/aircraft`}>ADD OR CHANGE AIRCRAFT</Link>
     </>
   </WorkspaceShell>;
 }

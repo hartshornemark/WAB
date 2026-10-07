@@ -30,6 +30,19 @@ import { aircraftE5Status } from "@/domain/aircraft-e5-status";
 import { aircraftF1Status } from "@/domain/aircraft-f1-status";
 import { aircraftG1DashboardStatus } from "@/domain/aircraft-g1-status";
 import { aircraftH1Status } from "@/domain/aircraft-h1-status";
+import { aircraftD2SectionStatus } from "@/domain/aircraft-d2-status";
+import { aircraftD5Statuses } from "@/domain/aircraft-d5-status";
+import { aircraftD6Statuses } from "@/domain/aircraft-d6-status";
+import { d9ConfigurationStatuses } from "@/domain/aircraft-d9-status";
+import { e2CrewStatus, e2PantryStatus } from "@/domain/aircraft-e2-status";
+import { e3ServiceStatus, e3WaterStatus } from "@/domain/aircraft-e3-status";
+import { e4AdditionalStatus, e4MainStatus } from "@/domain/aircraft-e4-status";
+import { h1DgrStatus, h1IataStatus, h1SpecialLoadsStatus } from "@/domain/aircraft-h1-status";
+import {
+  dashboardProgressFromStatuses,
+  weightedDashboardWork,
+  type DashboardWork,
+} from "@/domain/dashboard-progress";
 
 export type AircraftDashboardRead=Awaited<ReturnType<Awaited<ReturnType<typeof dashboardStatusServices>>["get"]>>;
 
@@ -51,4 +64,89 @@ export function aircraftDashboardStatuses(read:AircraftDashboardRead){
     "E1.1":e11?(aircraftE11Status(e11)==="configured"?"auto":aircraftE11Status(e11)):incomplete,"E1.2":e12?aircraftE12Status(e12):incomplete,E2:e2?aircraftE2Status(e2):incomplete,E3:e3?aircraftE3Status(e3):incomplete,E4:e4?aircraftE4Status(e4):incomplete,E5:e5?aircraftE5Status(e5):incomplete,
     F1:f1?aircraftF1Status(f1):incomplete,G1:aircraftG1DashboardStatus(g1,d2?.uldApplicable),H1:h1?aircraftH1Status(h1):incomplete,
   } as const;
+}
+
+export function aircraftDashboardReport(read:AircraftDashboardRead) {
+  const statuses = aircraftDashboardStatuses(read);
+  const progress: Record<string, DashboardWork> = dashboardProgressFromStatuses(statuses);
+  const [, , , , , , , , c1, c2, c4, c5, c7, c8, , d2, , , d5, d6, , d9, , , , e2, e3, e4, , , , h1] = read;
+  const operatingRole = c1?.operatingRole ?? "PASSENGER";
+
+  if (c5 && c2 && aircraftC2Statuses(c2, operatingRole).page === "configured") {
+    const parts = aircraftC5Statuses(c5.values, aircraftC5ApplicabilityFromC2(c2));
+    progress["C5.1"] = weightedDashboardWork([
+      { status: parts.status, weight: 1 },
+      { status: parts.tow, weight: 4 },
+      { status: parts.law, weight: 4 },
+      { status: parts.zfw, weight: 4 },
+    ]);
+  }
+  if (c7) {
+    const parts = aircraftC7Statuses(c7.values, c5?.values.maximumWeights.mrw || null);
+    progress.C7 = weightedDashboardWork([
+      { status: parts.idealTrim, weight: 2 },
+      { status: parts.tippingLimits, weight: 1 },
+    ]);
+  }
+  if (c8) {
+    const parts = aircraftC8Statuses(c8.values);
+    progress.C8 = weightedDashboardWork([
+      { status: parts.standard, weight: 4 },
+      { status: parts.byTank, weight: 5 },
+      { status: parts.bySchedule, weight: 5 },
+      { status: parts.taxiFuel, weight: 1 },
+    ]);
+  }
+  if (d2) {
+    progress.D2 = weightedDashboardWork([
+      { status: aircraftD2SectionStatus(d2.bulkApplicable, d2.bulkBalanceLimitsRequired, d2.rows.filter(row => row.holdType === "BLK")), weight: 4 },
+      { status: aircraftD2SectionStatus(d2.uldApplicable, d2.uldBalanceLimitsRequired, d2.rows.filter(row => row.holdType === "ULD")), weight: 5 },
+    ]);
+  }
+  if (d5) {
+    const parts = aircraftD5Statuses(d5, operatingRole);
+    progress.D5 = weightedDashboardWork([
+      { status: parts.cabinAreas, weight: 4 },
+      { status: parts.flightDeckLocations, weight: 2 },
+      { status: parts.cabinCrewLocations, weight: 2 },
+    ]);
+  }
+  if (d6) {
+    const parts = aircraftD6Statuses(d6);
+    progress.D6 = weightedDashboardWork([
+      { status: parts.waterLocations, weight: 2 },
+      { status: parts.galleyLocations, weight: 2 },
+    ]);
+  }
+  if (d9 && operatingRole !== "FREIGHTER") {
+    const formula = c4 && aircraftC4Status(c4) === "configured"
+      ? { referenceArm: c4.values.referenceArm, constantC: c4.values.constantC }
+      : undefined;
+    progress.D9 = weightedDashboardWork(d9.configurations.flatMap(configuration => {
+      const parts = d9ConfigurationStatuses(configuration, d9.cabinAreas, d9.classes, formula, d9.excludedRows);
+      return [{ status: parts.cabin, weight: 4 }, { status: parts.classInfo, weight: 2 }];
+    }));
+  }
+  if (e2) progress.E2 = weightedDashboardWork([
+    { status: e2CrewStatus(e2), weight: 3 },
+    { status: e2PantryStatus(e2), weight: 3 },
+  ]);
+  if (e3) progress.E3 = weightedDashboardWork([
+    { status: e3.applicabilityReviewed ? "configured" : "incomplete", weight: 1 },
+    { status: e3WaterStatus(e3), weight: 2 },
+    { status: e3ServiceStatus(e3), weight: 2 },
+  ]);
+  if (e4) progress.E4 = weightedDashboardWork([
+    { status: e4.applicabilityReviewed ? "configured" : "incomplete", weight: 1 },
+    { status: e4MainStatus(e4), weight: 4 },
+    { status: e4AdditionalStatus(e4), weight: 2 },
+  ]);
+  if (h1) progress.H1 = weightedDashboardWork([
+    { status: h1.applicabilityReviewed ? "configured" : "incomplete", weight: 1 },
+    { status: h1DgrStatus(h1), weight: 2 },
+    { status: h1IataStatus(h1), weight: 2 },
+    { status: h1SpecialLoadsStatus(h1), weight: 2 },
+  ]);
+
+  return { statuses, progress };
 }

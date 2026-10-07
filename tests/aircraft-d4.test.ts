@@ -19,3 +19,8 @@ test("D4 saves unknown doors as blank alongside known doors without reducing com
  assert.equal(aircraftD4DoorsStatus([unknown]),"incomplete");
  assert.throws(()=>validateAircraftD4Doors([row,{...unknown,forwardArm:9}],[row,unknown]),AircraftD4Invalid);
 });
+test("D4 accepts a completely blank form row as a NULL door",()=>{
+ const blankFormRow={...row,forwardArm:"",aftArm:"",height:"",orientation:""};
+ const saved=validateAircraftD4Doors([blankFormRow],[row]);
+ assert.deepEqual(saved[0],{...row,forwardArm:null,aftArm:null,height:null,orientation:null});
+});

@@ -1,0 +1,4 @@
+-- Applied by supabase/migrations/20261003114500_c11_weight_mac_matrix.sql.
+-- Adds LINEAR/MATRIX C11.1 methods, stores the sparse weight/%MAC matrix as
+-- validated JSONB, and updates the existing read/save RPCs without changing
+-- the permission model. See the migration for the executable change record.

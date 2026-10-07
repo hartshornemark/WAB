@@ -1,5 +1,5 @@
 import { AuthenticationRequired, CarrierUnavailable } from "@/domain/models";
-import { AircraftD2Conflict, AircraftD2Denied, validateAircraftD2Section, type AircraftD2Section, type AircraftD2Snapshot } from "@/domain/aircraft-d2";
+import { AircraftD2Conflict, AircraftD2Denied, AircraftD2Invalid, validateAircraftD2Section, type AircraftD2Section, type AircraftD2Snapshot } from "@/domain/aircraft-d2";
 import { aircraftC4Status } from "@/domain/aircraft-c4-status";
 import type { IndexPerWeightUnitFormula } from "@/domain/index-per-weight-unit";
 import type { AuthService } from "@/ports/auth-service";
@@ -29,7 +29,22 @@ export function createAircraftD2(auth: AuthService, carriers: CarrierRepository,
       const { current, balanceFormula } = await context(iata, typeCode, subtype);
       if (!current.canEdit) throw new AircraftD2Denied();
       if (current.revision !== revision) throw new AircraftD2Conflict();
-      return enrich(await repo.save(iata, typeCode, subtype, revision, section, validateAircraftD2Section(section, values, current.deckTypes)), balanceFormula);
+      return enrich(await repo.save(iata, typeCode, subtype, revision, section, validateAircraftD2Section(section, values, current.deckTypes,current.fuelConfigurations??[])), balanceFormula);
+    },
+    async importAll(iata:string,typeCode:string,subtype:string,revision:string,values:{sourceTypeCode?:unknown;sourceSubtype?:unknown;bulkRows?:unknown;uldRows?:unknown}){
+      await check(iata);
+      const sourceTypeCode=String(values?.sourceTypeCode??"").trim().toUpperCase(),sourceSubtype=String(values?.sourceSubtype??"").trim().toUpperCase();
+      if(sourceTypeCode!==typeCode.trim().toUpperCase()||sourceSubtype!==subtype.trim().toUpperCase())throw new AircraftD2Invalid(`CSV aircraft ${sourceTypeCode||"missing"}-${sourceSubtype||"missing"} does not match this page ${typeCode.toUpperCase()}-${subtype.toUpperCase()}. Nothing has been imported.`);
+      const{current,balanceFormula}=await context(iata,typeCode,subtype);
+      if(!current.canEdit)throw new AircraftD2Denied();
+      if(current.revision!==revision)throw new AircraftD2Conflict();
+      const hasBulk=Array.isArray(values?.bulkRows),hasUld=Array.isArray(values?.uldRows);
+      if(!hasBulk&&!hasUld)throw new AircraftD2Invalid("The D2 import contains no Bulk or ULD Holds.");
+      const imported={
+        bulk:hasBulk?validateAircraftD2Section("BULK",{applicable:true,balanceLimitsRequired:false,rows:values.bulkRows},current.deckTypes,current.fuelConfigurations??[]):null,
+        uld:hasUld?validateAircraftD2Section("ULD",{applicable:true,balanceLimitsRequired:false,rows:values.uldRows},current.deckTypes,current.fuelConfigurations??[]):null,
+      };
+      return enrich(await repo.importAll(iata,typeCode,subtype,revision,sourceTypeCode,sourceSubtype,imported),balanceFormula);
     },
   };
 }

@@ -7,6 +7,7 @@ import {
   type FuelScheduleEffectPoint,
 } from "@/domain/aircraft-c8-schedule-effect";
 import { formatNumeric } from "@/domain/display-standards";
+import { integerAxisScale } from "@/domain/chart-axis";
 import { useIndexDecimalPlaces } from "@/components/index-display-preference";
 
 type ChartPoint = { x: number; y: number; label: string };
@@ -17,14 +18,12 @@ function EffectChart({
   points,
   xLabel,
   yLabel,
-  formatX,
 }: {
   title: string;
   description: string;
   points: ChartPoint[];
   xLabel: string;
   yLabel: string;
-  formatX: (value: number) => string;
 }) {
   const width = 620;
   const height = 330;
@@ -39,8 +38,9 @@ function EffectChart({
   const rawXMin = Math.min(...xValues);
   const rawXMax = Math.max(...xValues);
   const xPadding = Math.max((rawXMax - rawXMin) * 0.08, Math.abs(rawXMax) * 0.04, 0.25);
-  const xMin = rawXMin - xPadding;
-  const xMax = rawXMax + xPadding;
+  const xScale = integerAxisScale(rawXMin - xPadding, rawXMax + xPadding);
+  const xMin = xScale.min;
+  const xMax = xScale.max;
   const yMax = Math.max(...yValues) * 1.08;
   const x = (value: number) => left + ((value - xMin) / (xMax - xMin)) * plotWidth;
   const y = (value: number) => top + plotHeight - (value / yMax) * plotHeight;
@@ -56,10 +56,9 @@ function EffectChart({
         const position = y(value);
         return <g key={`y-${tick}`}><line className="c8-chart-grid" x1={left} x2={width - right} y1={position} y2={position}/><text className="c8-chart-tick" x={left - 12} y={position + 5} textAnchor="end">{Math.ceil(value)}</text></g>;
       })}
-      {ticks.map((tick) => {
-        const value = xMin + (xMax - xMin) * tick / 4;
+      {xScale.ticks.map((value) => {
         const position = x(value);
-        return <g key={`x-${tick}`}><line className="c8-chart-grid" x1={position} x2={position} y1={top} y2={top + plotHeight}/><text className="c8-chart-tick" x={position} y={top + plotHeight + 27} textAnchor="middle">{formatX(value)}</text></g>;
+        return <g key={`x-${value}`}><line className="c8-chart-grid" x1={position} x2={position} y1={top} y2={top + plotHeight}/><text className="c8-chart-tick" x={position} y={top + plotHeight + 27} textAnchor="middle">{value}</text></g>;
       })}
       <line className="c8-chart-axis" x1={left} x2={left} y1={top} y2={top + plotHeight}/>
       <line className="c8-chart-axis" x1={left} x2={width - right} y1={top + plotHeight} y2={top + plotHeight}/>
@@ -98,8 +97,8 @@ export function AircraftC8ScheduleEffect({
   return <section className="c8-effect-section">
     <div className="c8-effect-heading"><h4>Fuel Loading Effect</h4><p>Cumulative result after each ordered loading step.</p></div>
     <div className="c8-effect-charts">
-      <EffectChart title="Fuel Index" description="How the cumulative fuel index changes as fuel is loaded." points={chartPoints(effect.points, (point) => point.indexValue)} xLabel="Index" yLabel={`Fuel Weight (${weightUnit})`} formatX={(value) => formatNumeric(value, "index", indexDecimalPlaces)}/>
-      <EffectChart title="Fuel Balance Arm" description="How the cumulative fuel balance arm moves as tanks are loaded." points={chartPoints(effect.points, (point) => point.balanceArm)} xLabel={`Balance Arm (${lengthUnit})`} yLabel={`Fuel Weight (${weightUnit})`} formatX={(value) => value.toFixed(2)}/>
+      <EffectChart title="Fuel Index" description="How the cumulative fuel index changes as fuel is loaded." points={chartPoints(effect.points, (point) => point.indexValue)} xLabel="Index" yLabel={`Fuel Weight (${weightUnit})`}/>
+      <EffectChart title="Fuel Balance Arm" description="How the cumulative fuel balance arm moves as tanks are loaded." points={chartPoints(effect.points, (point) => point.balanceArm)} xLabel={`Balance Arm (${lengthUnit})`} yLabel={`Fuel Weight (${weightUnit})`}/>
     </div>
     <div className="c8-effect-values" role="table" aria-label="Fuel loading effect values">
       <div className="c8-effect-value c8-head" role="row"><span>Step</span><span>Cumulative Weight ({weightUnit})</span><span>Index</span><span>Balance Arm ({lengthUnit})</span></div>

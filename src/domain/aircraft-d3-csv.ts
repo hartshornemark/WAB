@@ -1,19 +1,21 @@
 import { balanceArmFromIndexPerWeightUnit, validIndexPerWeightUnitFormula, type IndexPerWeightUnitFormula } from "@/domain/index-per-weight-unit";
+import { bulkHoldIdentity, resolveBulkHoldName } from "@/domain/aircraft-d2";
 import type { AircraftD3AtomicBay, AircraftD3Position, AircraftD3UldOption } from "@/domain/aircraft-d3";
+import { csvAircraftIdentityError, csvAircraftIdentityHeaders, normaliseCsvAircraftIdentity, type CsvAircraftIdentity } from "@/domain/csv-aircraft-identity";
 
 export type AircraftD3CsvResult = {
   atomicBays: AircraftD3AtomicBay[];
   rows: AircraftD3Position[];
   errors: string[];
+  source: CsvAircraftIdentity | null;
+  sourceRowCount: number;
+  matchedRowCount: number;
 };
 
-const headers = ["Group ID / Config", "Position Name", "Max Weight", "Centroid", "FWD", "AFT", "Index per wt unit", "Fore-Aft Dimension (in)"];
+const legacyHeaders = ["Group ID / Config", "Position Name", "Max Weight", "Centroid", "FWD", "AFT", "Index per wt unit", "Fore-Aft Dimension (in)"];
+const routedHeaders = [...csvAircraftIdentityHeaders, "Deck ID", "Hold ID", "Hold Sub Code", "Compartment ID", "Bay ID", "ULD ID / Config", "Max Weight", "Centroid", "FWD", "AFT", "Index per wt unit", "Fore-Aft Dimension (in)"];
 
-export const aircraftD3CsvTemplate = `${headers.join(",")}
-AKE,11L,1587,14.026,13.259,14.793,-0.004476,
-AKE,11R,1587,14.026,13.259,14.793,-0.004476,
-PLA,11,3174,14.026,13.259,14.793,-0.004476,
-PMC,11P,5102,14.479,13.259,15.698,-0.004385,`;
+export const aircraftD3CsvTemplate = (typeCode: string, subtype: string) => `${routedHeaders.join(",")}\n${normaliseCsvAircraftIdentity(typeCode)},${normaliseCsvAircraftIdentity(subtype)},${",".repeat(routedHeaders.length - 3)}\n`;
 
 function csvRows(text: string) {
   const rows: string[][] = [];
@@ -57,17 +59,26 @@ export function parseAircraftD3Csv(
   compartments: string[] = [],
   uldOptions: AircraftD3UldOption[] = [],
   geometry?: { formula?: IndexPerWeightUnitFormula | null; lengthUnit: string },
+  route?: { holdId: string; deckName?: string; typeCode?: string; subtype?: string },
 ): AircraftD3CsvResult {
   const records = csvRows(text.replace(/^\uFEFF/, ""));
   const errors: string[] = [];
-  if (!records.length) return { atomicBays: [], rows: [], errors: ["The CSV file is empty."] };
+  if (!records.length) return { atomicBays: [], rows: [], errors: ["The CSV file is empty."], source: null, sourceRowCount: 0, matchedRowCount: 0 };
+  const sourceRowCount = records.slice(1).filter(row => row.some(value => value.trim())).length;
+  let matchedRowCount = 0;
 
   const actualHeaders = records[0].map(normal);
-  const missing = headers.filter(header => !["Centroid", "FWD", "AFT", "Fore-Aft Dimension (in)"].includes(header) && !actualHeaders.includes(normal(header)));
-  if (missing.length) return { atomicBays: [], rows: [], errors: [`Missing AHM565 columns: ${missing.join(", ")}.`] };
+  const routed = ["Deck ID", "Hold ID", "Hold Sub Code", "Compartment ID", "Bay ID", "ULD ID / Config"].some(header => actualHeaders.includes(normal(header)));
+  const expectedHeaders = routed ? routedHeaders : legacyHeaders;
+  const optionalHeaders = ["Centroid", "FWD", "AFT", "Fore-Aft Dimension (in)"];
+  const missing = expectedHeaders.filter(header => !optionalHeaders.includes(header) && !actualHeaders.includes(normal(header)));
+  if (route?.typeCode && route?.subtype) {
+    for (const header of csvAircraftIdentityHeaders) if (!actualHeaders.includes(normal(header))) missing.unshift(header);
+  }
+  if (missing.length) return { atomicBays: [], rows: [], errors: [`Missing AHM565 columns: ${[...new Set(missing)].join(", ")}. Download a new template for this aircraft.`], source: null, sourceRowCount, matchedRowCount };
 
   const column = (row: string[], name: string) => row[actualHeaders.indexOf(normal(name))];
-  const compartmentFor = (position: string) => [...compartments].sort((a,b) => b.length-a.length).find(id => position.startsWith(id)) ?? "";
+  const inferredCompartmentFor = (position: string) => [...compartments].sort((a,b) => b.length-a.length).find(id => position.startsWith(id)) ?? "";
   const byIdentity = new Map(uldOptions.map(option => [option.code, option]));
 
   type Source = {
@@ -84,12 +95,50 @@ export function parseAircraftD3Csv(
     index: number | null;
   };
   const sourceByPositionAndType = new Map<string, Source>();
+  let source: CsvAircraftIdentity | null = null;
 
   records.slice(1).forEach((row, rowIndex) => {
     const line = rowIndex + 2;
-    const uldIdentity = identity(column(row, "Group ID / Config"));
-    const names = clean(column(row, "Position Name")).toUpperCase().split(/[,;/]+/).map(value => value.trim()).filter(Boolean);
-    if (names.length && !names.some(position => compartmentFor(position))) return;
+    if (route?.typeCode && route?.subtype) {
+      const rowSource = { typeCode: normaliseCsvAircraftIdentity(column(row, "Aircraft Type IATA")), subtype: normaliseCsvAircraftIdentity(column(row, "Series/Sub-Type")) };
+      const identityError = csvAircraftIdentityError(rowSource, { typeCode: route.typeCode, subtype: route.subtype }, line);
+      if (identityError) { errors.push(identityError); return; }
+      if (source && (source.typeCode !== rowSource.typeCode || source.subtype !== rowSource.subtype)) { errors.push(`Line ${line}: aircraft identity differs from earlier rows.`); return; }
+      source = rowSource;
+    }
+    let explicitCompartment = "";
+    if (routed) {
+      const deckId = identity(column(row, "Deck ID"));
+      const holdId = identity(column(row, "Hold ID"));
+      const subCode = identity(column(row, "Hold Sub Code"));
+      explicitCompartment = identity(column(row, "Compartment ID"));
+      const resolved = subCode ? resolveBulkHoldName(holdId, subCode) : holdId;
+      if (!deckId || !holdId || !resolved) {
+        errors.push(`Line ${line}: check Deck ID, Hold ID and Hold Sub Code.`);
+        return;
+      }
+      if (route) {
+        const [targetDeck, ...targetNameParts] = route.holdId.split(":");
+        const targetName = targetNameParts.join(":");
+        const targetFamily = bulkHoldIdentity(targetName).holdId;
+        const sameDeck = [targetDeck.toUpperCase(), route.deckName?.toUpperCase()].filter(Boolean).includes(deckId);
+        // D2 may store a complete compartment under one optional sub-code
+        // (for example ALA), while D3 uses ALF/ALM/ALA to describe successive
+        // bay groups within that same compartment. Route by deck, parent hold
+        // family and the compartment actually saved on D2. The sub-code is
+        // descriptive here; it must not make valid bays disappear.
+        if (!sameDeck || targetFamily !== holdId || !compartments.includes(explicitCompartment)) return;
+      }
+      if (!explicitCompartment || !compartments.includes(explicitCompartment)) {
+        errors.push(`Line ${line}: Compartment ID must belong to the selected D2 hold.`);
+        return;
+      }
+      matchedRowCount += 1;
+    }
+    const uldIdentity = identity(column(row, routed ? "ULD ID / Config" : "Group ID / Config"));
+    const names = clean(column(row, routed ? "Bay ID" : "Position Name")).toUpperCase().split(/[,;/]+/).map(value => value.trim()).filter(Boolean);
+    if (!routed && names.length && !names.some(position => inferredCompartmentFor(position))) return;
+    if (!routed) matchedRowCount += 1;
     const maxWeight = numeric(column(row, "Max Weight"), "Max Weight", line, errors);
     const optionalNumber = (name: string) => clean(column(row, name)) ? numeric(column(row, name), name, line, errors) : null;
     let centroid = optionalNumber("Centroid");
@@ -134,7 +183,7 @@ export function parseAircraftD3Csv(
         errors.push(`Line ${line}: Position ${positionId} is invalid.`);
         return;
       }
-      const compartmentId = compartmentFor(positionId);
+      const compartmentId = routed ? explicitCompartment : inferredCompartmentFor(positionId);
       if (!compartments.includes(compartmentId)) return;
 
       const candidate: Source = { line, positionId, compartmentId, uldCode: option.code, uldType: option.type, baseCode: option.baseCode, maxWeight, centroid, from, to, index };
@@ -208,5 +257,5 @@ export function parseAircraftD3Csv(
 
   if (!sources.length) errors.push(`No positions in this CSV belong to Compartments ${compartments.join(", ") || "configured for this hold"}.`);
   if (!atomicBays.length) errors.push("No physical positions were found for this hold.");
-  return { atomicBays, rows, errors: [...new Set(errors)] };
+  return { atomicBays, rows, errors: [...new Set(errors)], source, sourceRowCount, matchedRowCount };
 }

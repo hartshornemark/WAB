@@ -10,15 +10,21 @@ import type { AircraftD3Configuration, AircraftD3Hold, AircraftD3UldOption } fro
 type HoldPreview = { hold: AircraftD3Hold; result: AircraftD3CsvResult };
 
 export function AircraftD3CsvImport({
+  typeCode,
+  subtype,
   holds,
   uldOptions,
   geometry,
   onApply,
+  error,
 }: {
+  typeCode: string;
+  subtype: string;
   holds: AircraftD3Hold[];
   uldOptions: AircraftD3UldOption[];
   geometry: Parameters<typeof parseAircraftD3Csv>[3];
-  onApply: (configurations: AircraftD3Configuration[]) => Promise<boolean>;
+  onApply: (configurations: AircraftD3Configuration[], source: {typeCode:string;subtype:string}) => Promise<boolean>;
+  error?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -33,7 +39,7 @@ export function AircraftD3CsvImport({
     setName(file.name);
     setPreviews(holds.map(hold => ({
       hold,
-      result: parseAircraftD3Csv(text, hold.compartments ?? [], uldOptions, geometry),
+      result: parseAircraftD3Csv(text, hold.compartments ?? [], uldOptions, geometry, { holdId: hold.id, deckName: hold.deckName, typeCode, subtype }),
     })));
     setOpen(true);
   }
@@ -49,7 +55,9 @@ export function AircraftD3CsvImport({
       rows: result.rows,
     }));
     setPending(true);
-    const saved = await onApply(configurations);
+    const source = previews[0]?.result.source;
+    if (!source) return;
+    const saved = await onApply(configurations, source);
     setPending(false);
     if (saved) close();
   }
@@ -61,16 +69,19 @@ export function AircraftD3CsvImport({
   }
 
   function download() {
-    const blob = new Blob([aircraftD3CsvTemplate], { type: "text/csv;charset=utf-8" });
+    const blob = new Blob([aircraftD3CsvTemplate(typeCode, subtype)], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "d3-uld-positions-template.csv";
+    link.download = `d3-${typeCode}-${subtype}-uld-positions-template.csv`;
     link.click();
     URL.revokeObjectURL(url);
   }
 
-  const errors = previews.flatMap(({ hold, result }) => result.errors.map(error => `${hold.id}: ${error}`));
+  const routingError = previews.length && previews.reduce((total, preview) => total + preview.result.matchedRowCount, 0) !== previews[0].result.sourceRowCount
+    ? [`Every CSV data row must belong to exactly one configured D2 ULD hold. Check Deck ID, Hold ID, optional Hold Sub Code and Compartment ID.`]
+    : [];
+  const errors = [...previews.flatMap(({ hold, result }) => result.errors.map(error => `${hold.id}: ${error}`)), ...routingError];
   const validCode = /^[A-Z0-9][A-Z0-9_-]{0,19}$/.test(code);
   const valid = previews.length === holds.length && previews.length > 0 && errors.length === 0 && validCode;
 
@@ -90,7 +101,7 @@ export function AircraftD3CsvImport({
     {open && <section className="d3-csv-preview">
       <div>
         <strong>AIRCRAFT IMPORT PREVIEW</strong>
-        <p>{name} · {previews.length} ULD holds</p>
+        <p>{name} · CSV aircraft {previews[0]?.result.source ? `${previews[0].result.source.typeCode}-${previews[0].result.source.subtype}` : "—"} · Open page {typeCode}-{subtype} · {previews.length} ULD holds</p>
       </div>
       <div className="d3-config-fields">
         <label><span>Configuration Code</span><SaveInput value={code} maxLength={20} onChange={event => setCode(event.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ""))}/></label>
@@ -105,6 +116,7 @@ export function AircraftD3CsvImport({
           <small>Compartments {compartmentsByBalanceArm(hold.compartments ?? [], result.atomicBays).join(", ")}</small>
         </div>)}</div>}
       <p className="muted">Importing replaces configuration {code || "—"} in every listed hold. Other configuration codes remain unchanged.</p>
+      {error && <p className="field-error d3-import-error" role="alert"><strong>Import not saved.</strong> {error}</p>}
       <div className="d3-csv-preview-actions">
         <SaveButton type="button" className="secondary" onClick={close} disabled={pending}>CANCEL</SaveButton>
         <SaveButton type="button" disabled={!valid || pending} onClick={() => void apply()}>{pending ? "IMPORTING" : "IMPORT ALL HOLDS"}</SaveButton>

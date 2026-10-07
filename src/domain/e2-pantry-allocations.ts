@@ -7,6 +7,7 @@ export function availableGalleyLocations(galleys:GalleyLocation[],allocations:Pa
   return galleys.filter(galley=>!selected.has(galley.id));
 }
 export function pantryDraft(row:E2PantryRow):PantryDraft {
+  if(row.adjustmentMethod==='ONE_LINE')return {...row,allocations:[]};
   const parts=row.galleyLocations.trim().split(/\s+/).filter(Boolean);
   const allocations=parts.map(part=>{const m=/^([A-Z0-9]{1,3})(?:\/(\d+)(?:KG|LB)?)?$/i.exec(part);return m?{locationId:m[1].toUpperCase(),weight:m[2]?Number(m[2]):parts.length===1?row.totalWeight:null}:{locationId:'',weight:null};});
   return {...row,allocations:allocations.length?allocations:[{locationId:'',weight:null}]};
@@ -23,5 +24,5 @@ export function calculatePantry(row:PantryDraft,galleys:GalleyLocation[]):E2Pant
     if(g.centroid===null||g.index===null||!Number.isFinite(g.centroid)||!Number.isFinite(g.index))throw new AircraftE2Invalid(`Complete the balance data for ${g.id} on D6.`);
     total+=a.weight;moment+=a.weight*g.centroid;index+=a.weight*g.index;
   }
-  return {pantryCode:row.pantryCode,galleyLocations:row.allocations.map(a=>`${a.locationId}/${a.weight}`).join(' '),totalWeight:total,balanceArm:total?moment/total:0,index};
+  return {pantryCode:row.pantryCode,adjustmentMethod:row.adjustmentMethod,galleyLocations:row.allocations.map(a=>`${a.locationId}/${a.weight}`).join(' '),totalWeight:total,balanceArm:total?moment/total:0,index,isBase:row.isBase,weightAdjustment:row.weightAdjustment,indexAdjustment:row.indexAdjustment};
 }

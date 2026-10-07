@@ -2,6 +2,6 @@ import type { AircraftD3ConfigurationValues, AircraftD3Snapshot } from "@/domain
 export interface AircraftD3Repository {
   get(i:string,t:string,s:string):Promise<AircraftD3Snapshot>;
   save(i:string,t:string,s:string,r:string,originalCode:string|null,values:AircraftD3ConfigurationValues):Promise<AircraftD3Snapshot>;
-  importAll(i:string,t:string,s:string,r:string,values:AircraftD3ConfigurationValues[]):Promise<AircraftD3Snapshot>;
+  importAll(i:string,t:string,s:string,r:string,sourceTypeCode:string,sourceSubtype:string,values:AircraftD3ConfigurationValues[]):Promise<AircraftD3Snapshot>;
   remove(i:string,t:string,s:string,r:string,holdId:string,code:string):Promise<AircraftD3Snapshot>;
 }

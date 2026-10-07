@@ -1,0 +1,46 @@
+import{AuthenticationRequired,CarrierUnavailable}from"@/domain/models";
+import{FlightScheduleInvalid}from"@/domain/flight-schedules";
+import{parseSsimChapter7}from"@/domain/ssim-chapter7";
+import type{AuthService}from"@/ports/auth-service";
+import type{CarrierRepository}from"@/ports/carrier-repository";
+import type{FlightScheduleRepository}from"@/ports/flight-schedule-repository";
+import type{FlightScheduleParameters,FlightWeightBasis,ManualScheduleLegInput}from"@/ports/flight-schedule-repository";
+
+const basis=(value:unknown,label:string):FlightWeightBasis=>{const result=String(value??"").trim().toUpperCase();if(!["STANDARD","VARIATION","ACTUAL"].includes(result))throw new FlightScheduleInvalid(`Select the ${label} weight method.`);return result as FlightWeightBasis};
+const cleanCode=(value:unknown,label:string,expression:RegExp)=>{const result=String(value??"").trim().toUpperCase();if(!expression.test(result))throw new FlightScheduleInvalid(`Enter a valid ${label}.`);return result};
+function parameters(value:unknown):FlightScheduleParameters{const row=value as Partial<FlightScheduleParameters>,passengerWeightBasis=basis(row?.passengerWeightBasis,"passenger"),baggageWeightBasis=basis(row?.baggageWeightBasis,"baggage"),passengerVariation=passengerWeightBasis==="VARIATION"?cleanCode(row?.passengerVariation,"passenger variation",/^[A-Z0-9]{3}$/):null,baggageVariation=baggageWeightBasis==="VARIATION"?cleanCode(row?.baggageVariation,"baggage variation",/^[A-Z0-9]{3}$/):null,remarks=String(row?.remarks??"").trim();if(remarks.length>1000)throw new FlightScheduleInvalid("Keep schedule remarks within 1,000 characters.");return{aircraftSubtype:cleanCode(row?.aircraftSubtype,"aircraft subtype",/^[A-Z0-9]{1,4}$/),crewCode:cleanCode(row?.crewCode,"crew code",/^[A-Z0-9]$/),pantryCode:cleanCode(row?.pantryCode,"pantry code",/^[A-Z0-9]$/),passengerWeightBasis,passengerVariation,baggageWeightBasis,baggageVariation,remarks}}
+function manualLeg(iata:string,value:unknown):ManualScheduleLegInput{const row=value as Partial<ManualScheduleLegInput>;const flightNumber=cleanCode(row?.flightNumber,"flight number",/^(?:\d{1,4}|\d{1,3}[A-Z])$/),periodStart=String(row?.periodStart??""),periodEnd=String(row?.periodEnd??""),operatingDays=String(row?.operatingDays??"");if(!/^\d{4}-\d{2}-\d{2}$/.test(periodStart)||!/^\d{4}-\d{2}-\d{2}$/.test(periodEnd)||periodEnd<periodStart)throw new FlightScheduleInvalid("Enter a valid operating period.");if(!/^[01]{7}$/.test(operatingDays)||operatingDays==="0000000")throw new FlightScheduleInvalid("Select at least one operating day.");const departureTime=String(row?.departureTime??""),arrivalTime=String(row?.arrivalTime??"");if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(departureTime)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(arrivalTime))throw new FlightScheduleInvalid("Enter valid departure and arrival times.");const legSequence=Number(row?.legSequence),arrivalDayOffset=Number(row?.arrivalDayOffset);if(!Number.isInteger(legSequence)||legSequence<1||legSequence>99||!Number.isInteger(arrivalDayOffset)||arrivalDayOffset<0||arrivalDayOffset>2)throw new FlightScheduleInvalid("Check the leg sequence and arrival day.");return{airlineDesignator:iata.toUpperCase(),flightNumber,operationalSuffix:String(row?.operationalSuffix??"").trim().toUpperCase(),itineraryVariation:cleanCode(row?.itineraryVariation||"01","itinerary variation",/^[A-Z0-9]{1,8}$/),legSequence,serviceType:cleanCode(row?.serviceType,"service type",/^[A-Z0-9]$/),periodStart,periodEnd,operatingDays,departureAirport:cleanCode(row?.departureAirport,"departure airport",/^[A-Z]{3}$/),arrivalAirport:cleanCode(row?.arrivalAirport,"arrival airport",/^[A-Z]{3}$/),departureTime,arrivalTime,arrivalDayOffset,aircraftType:cleanCode(row?.aircraftType,"aircraft type",/^[A-Z0-9]{2,4}$/),aircraftSubtype:cleanCode(row?.aircraftSubtype,"aircraft subtype",/^[A-Z0-9]{1,4}$/),aircraftConfiguration:String(row?.aircraftConfiguration??"").trim().toUpperCase()||null}}
+
+export function createFlightSchedules(auth:AuthService,carriers:CarrierRepository,repository:FlightScheduleRepository){
+  async function access(iata:string){
+    const user=await auth.currentUser();if(!user)throw new AuthenticationRequired();
+    const carrier=await carriers.findAuthorised(iata);if(!carrier)throw new CarrierUnavailable();
+    return{user,carrier};
+  }
+  return{
+    async get(iata:string){const context=await access(iata);const[imports,workspace]=await Promise.all([repository.list(iata),repository.workspace(iata)]);return{...context,imports,workspace}},
+    async getEdition(iata:string,importId:string){const context=await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId))throw new FlightScheduleInvalid("The selected schedule edition is invalid.");return{...context,edition:await repository.edition(iata,importId)}},
+    async importFile(iata:string,input:{fileName:string;text:string;sha256:string;sizeBytes:number}){
+      await access(iata);
+      const fileName=input.fileName.trim();
+      if(!fileName||fileName.length>255||!/\.txt$/i.test(fileName))throw new FlightScheduleInvalid("Select an SSIM Chapter 7 TXT file.");
+      if(input.sizeBytes<=0||input.sizeBytes>2*1024*1024)throw new FlightScheduleInvalid("The SSIM file must be between 1 byte and 2 MB.");
+      if(!/^[0-9a-f]{64}$/.test(input.sha256))throw new FlightScheduleInvalid("The uploaded file could not be verified.");
+      const parsed=parseSsimChapter7(input.text,iata);
+      const errors=parsed.records.filter(record=>record.parseStatus==="ERROR");
+      if(errors.length){
+        const first=errors[0];
+        throw new FlightScheduleInvalid(`SSIM validation found ${errors.length} error${errors.length===1?"":"s"}. Line ${first.lineNumber}: ${first.validationMessages[0]??"Invalid record."}`);
+      }
+      return repository.createAndStage(iata,{sourceCarrierIata:parsed.sourceCarrierIata,fileName,sha256:input.sha256,sizeBytes:input.sizeBytes,seasonCode:parsed.seasonCode,creatorReference:parsed.creatorReference},parsed.records,parsed.legs);
+    },
+    async publish(iata:string,importId:string){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId))throw new FlightScheduleInvalid("The selected schedule edition is invalid.");return repository.publish(iata,importId)},
+    async createRevision(iata:string,importId:string){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId))throw new FlightScheduleInvalid("The selected published schedule is invalid.");return repository.createRevision(iata,importId)},
+    async saveParameters(iata:string,scheduleLegId:string,input:unknown){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(scheduleLegId))throw new FlightScheduleInvalid("The selected flight is invalid.");return repository.saveParameters(iata,scheduleLegId,parameters(input))},
+    async createManual(iata:string,name:unknown,seasonCode:unknown){await access(iata);const cleanName=String(name??"").trim(),cleanSeason=String(seasonCode??"").trim().toUpperCase()||null;if(!cleanName||cleanName.length>120)throw new FlightScheduleInvalid("Enter a manual schedule name of up to 120 characters.");if(cleanSeason&&!/^[A-Z0-9/-]{1,8}$/.test(cleanSeason))throw new FlightScheduleInvalid("Enter a valid season code.");return repository.createManual(iata,cleanName,cleanSeason)},
+    async saveManualLeg(iata:string,importId:string,scheduleLegId:string|null,input:unknown){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId)||scheduleLegId&&!/^[0-9a-f-]{36}$/i.test(scheduleLegId))throw new FlightScheduleInvalid("The selected manual schedule is invalid.");return repository.saveManualLeg(iata,importId,scheduleLegId,manualLeg(iata,input))},
+    async saveManualItinerary(iata:string,importId:string,input:unknown){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId))throw new FlightScheduleInvalid("The selected manual schedule is invalid.");if(!Array.isArray(input)||input.length<1||input.length>20)throw new FlightScheduleInvalid("Enter between 1 and 20 itinerary segments.");const legs=input.map(value=>manualLeg(iata,value)),first=legs[0];legs.forEach((leg,index)=>{if(leg.legSequence!==index+1)throw new FlightScheduleInvalid("Itinerary segments must be in consecutive order.");if(index>0&&leg.departureAirport!==legs[index-1].arrivalAirport)throw new FlightScheduleInvalid(`Segment ${index+1} must depart from ${legs[index-1].arrivalAirport}.`);for(const key of ["airlineDesignator","flightNumber","operationalSuffix","itineraryVariation","serviceType","periodStart","periodEnd","operatingDays","aircraftType","aircraftSubtype","aircraftConfiguration"] as const)if(leg[key]!==first[key])throw new FlightScheduleInvalid("Every itinerary segment must use the same flight, operating period and aircraft configuration.")});return repository.saveManualItinerary(iata,importId,legs)},
+    async deleteManualLeg(iata:string,importId:string,scheduleLegId:string){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId)||!/^[0-9a-f-]{36}$/i.test(scheduleLegId))throw new FlightScheduleInvalid("The selected manual flight is invalid.");return repository.deleteManualLeg(iata,importId,scheduleLegId)},
+    async deleteEdition(iata:string,importId:string){await access(iata);if(!/^[0-9a-f-]{36}$/i.test(importId))throw new FlightScheduleInvalid("The selected schedule edition is invalid.");return repository.deleteEdition(iata,importId)},
+  };
+}

@@ -1,26 +1,45 @@
 import type { IndexPerWeightUnitFormula } from "@/domain/index-per-weight-unit";
+import{applyFuelConfigurationOverride,appliesToFuelConfiguration,validateFuelConfigurationScope,type FuelConfigurationOption,type FuelConfigurationScoped}from"@/domain/fuel-configuration-scope";
 
 export type AircraftD2DeckType = { code: string; name: string };
-export type AircraftD2Area = { id: string; maxWeight: number | null; maxVolume: number | null; indexPerWeightUnit: number | null };
-export type AircraftD2Compartment = { id: string; areas: AircraftD2Area[] };
+export type AircraftD2Area = FuelConfigurationScoped&{ id: string; maxWeight: number | null; maxVolume: number | null; indexPerWeightUnit: number | null };
+export type AircraftD2Compartment = FuelConfigurationScoped&{ id: string; areas: AircraftD2Area[] };
 export type AircraftD2HoldRow = {
   id?: string;
   sortBalanceArm?: number | null;
+  hasDoor?: boolean | null;
   name: string; holdType: "BLK" | "ULD"; deckCode: string; maxWeight: number | null; maxVolume: number | null;
   lateralCentroid: number | null; lateralFrom: number | null; lateralTo: number | null;
   balanceCentroid: number | null; balanceFrom: number | null; balanceTo: number | null;
   indexPerWeightUnit: number | null; compartments: AircraftD2Compartment[];
-};
+}&FuelConfigurationScoped;
 export type AircraftD2Snapshot = {
   canView: boolean; canEdit: boolean; revision: string; typeCode: string; subtype: string;
   bulkApplicable: boolean | null; uldApplicable: boolean | null; bulkBalanceLimitsRequired: boolean; uldBalanceLimitsRequired: boolean;
-  rows: AircraftD2HoldRow[]; deckTypes: AircraftD2DeckType[]; balanceFormula?: IndexPerWeightUnitFormula | null;
+  rows: AircraftD2HoldRow[]; deckTypes: AircraftD2DeckType[]; fuelConfigurations?:FuelConfigurationOption[]; balanceFormula?: IndexPerWeightUnitFormula | null;
 };
 export type AircraftD2Section = "BULK" | "ULD";
 export type AircraftD2SectionValues = { applicable: boolean; balanceLimitsRequired: boolean; rows: AircraftD2HoldRow[] };
+export type AircraftD2ImportValues = { bulk: AircraftD2SectionValues | null; uld: AircraftD2SectionValues | null };
 export class AircraftD2Invalid extends Error {}
 export class AircraftD2Denied extends Error {}
 export class AircraftD2Conflict extends Error {}
+export const bulkHoldNames=["FWD","AFT","FLF","FLA","FLM","ALF","ALA","ALM","ALB"] as const;
+export const validBulkHoldName=(value:string)=>(bulkHoldNames as readonly string[]).includes(value);
+export const bulkHoldIdentity=(value:string)=>{
+ const code=value.trim().toUpperCase();
+ if(["FLF","FLM","FLA"].includes(code))return{holdId:"FWD",subCode:code};
+ if(["ALF","ALM","ALA"].includes(code))return{holdId:"AFT",subCode:code};
+ return{holdId:code,subCode:""};
+};
+export const resolveBulkHoldName=(holdId:string,subCode:string)=>{
+ const parent=holdId.trim().toUpperCase(),child=subCode.trim().toUpperCase();
+ if(parent==="FWD"&&(!child||["FLF","FLM","FLA"].includes(child)))return child||parent;
+ if(parent==="AFT"&&(!child||["ALF","ALM","ALA"].includes(child)))return child||parent;
+ if(parent==="ALB"&&!child)return parent;
+ return null;
+};
+const validateD2FuelScope=<T extends FuelConfigurationScoped>(value:T,options:FuelConfigurationOption[])=>{try{return validateFuelConfigurationScope(value,options)}catch(error){throw new AircraftD2Invalid(error instanceof Error?error.message:"Check the fitted fuel configuration scope.")}};
 
 export const aircraftD2HoldId = (row: Pick<AircraftD2HoldRow, "id" | "deckCode" | "name">) =>
   row.id?.trim() || row.name.trim().toUpperCase();
@@ -69,7 +88,7 @@ const balanceArm = (centroid: unknown, from: unknown, to: unknown) => {
   return [c, f, t] as const;
 };
 
-export function validateAircraftD2Section(section: AircraftD2Section, input: unknown, deckTypes: AircraftD2DeckType[]): AircraftD2SectionValues {
+export function validateAircraftD2Section(section: AircraftD2Section, input: unknown, deckTypes: AircraftD2DeckType[],fuelConfigurations:FuelConfigurationOption[]=[]): AircraftD2SectionValues {
   const value = input as { applicable?: unknown; balanceLimitsRequired?: unknown; rows?: unknown };
   if (typeof value?.applicable !== "boolean" || typeof value.balanceLimitsRequired !== "boolean" || !Array.isArray(value.rows)) throw new AircraftD2Invalid("Check the D2 section values.");
   const balanceLimitsRequired = false, applicable = value.applicable;
@@ -82,19 +101,17 @@ export function validateAircraftD2Section(section: AircraftD2Section, input: unk
   const holdType: AircraftD2HoldRow["holdType"] = section === "BULK" ? "BLK" : "ULD";
   const rows = value.rows.map((raw, index) => {
     const row = raw as Partial<AircraftD2HoldRow>, name = String(row.name ?? "").trim().toUpperCase(), deckCode = String(row.deckCode ?? "").trim().toUpperCase();
-    if (holdType === "ULD" ? !/^[A-Z]{3}$/.test(name) : !/^[A-Z0-9]$/.test(name)) {
+    if (holdType === "ULD" ? !/^[A-Z]{3}$/.test(name) : !validBulkHoldName(name)) {
       throw new AircraftD2Invalid(holdType === "ULD"
         ? `Row ${index + 1}: enter a three-letter ULD Hold Name.`
-        : `Row ${index + 1}: enter a one-character Hold Name.`);
+        : `Row ${index + 1}: select an approved three-character Bulk Hold ID.`);
     }
     if (!decks.has(deckCode)) throw new AircraftD2Invalid(`Row ${index + 1}: select a valid Deck.`);
     const identity = `${deckCode}:${name}`;
     if (identities.has(identity)) throw new AircraftD2Invalid(`Hold Name ${name} is duplicated on ${deckTypes.find(deck => deck.code === deckCode)?.name ?? deckCode}.`);
     identities.add(identity);
     const maxWeight = finite(row.maxWeight, "Maximum Weight", true);
-    const maxVolume = holdType === "ULD"
-      ? optionalPositive(row.maxVolume, "Maximum Volume")
-      : finite(row.maxVolume, "Maximum Volume", true);
+    const maxVolume = optionalPositive(row.maxVolume, "Maximum Volume");
     if (!Array.isArray(row.compartments)) throw new AircraftD2Invalid(`Hold ${name}: check its compartments.`);
     const compartmentIds = new Set<string>();
     const compartments = row.compartments.map((rawCompartment, compartmentIndex) => {
@@ -110,12 +127,22 @@ export function validateAircraftD2Section(section: AircraftD2Section, input: unk
         if (!/^[A-Z0-9]{1,3}$/.test(areaId)) throw new AircraftD2Invalid(`Hold ${name}, Compartment ${id}, Area ${areaIndex + 1}: enter 1–3 letters or numbers.`);
         if (areaIds.has(areaId)) throw new AircraftD2Invalid(`Hold ${name}, Compartment ${id}: Area ${areaId} is duplicated.`);
         areaIds.add(areaId);
-        return { id: areaId, maxWeight: finite(area.maxWeight, `Maximum Weight for Area ${areaId}`, true), maxVolume: optionalPositive(area.maxVolume, `Volume for Area ${areaId}`), indexPerWeightUnit: finite(area.indexPerWeightUnit, `Index per Weight Unit for Area ${areaId}`) };
+        return validateD2FuelScope({ id: areaId, maxWeight: finite(area.maxWeight, `Maximum Weight for Area ${areaId}`, true), maxVolume: optionalPositive(area.maxVolume, `Volume for Area ${areaId}`), indexPerWeightUnit: finite(area.indexPerWeightUnit, `Index per Weight Unit for Area ${areaId}`),configurationCodes:area.configurationCodes,configurationOverrides:area.configurationOverrides },fuelConfigurations);
       });
-      return { id, areas };
+      return validateD2FuelScope({ id, areas,configurationCodes:rawCompartment.configurationCodes,configurationOverrides:rawCompartment.configurationOverrides },fuelConfigurations);
     });
     const [balanceCentroid, balanceFrom, balanceTo] = balanceArm(row.balanceCentroid, row.balanceFrom, row.balanceTo);
-    return { id: identity, name, holdType, deckCode, maxWeight, maxVolume, lateralCentroid: row.lateralCentroid ?? null, lateralFrom: row.lateralFrom ?? null, lateralTo: row.lateralTo ?? null, balanceCentroid, balanceFrom, balanceTo, indexPerWeightUnit: finite(row.indexPerWeightUnit, "Index per Weight Unit"), compartments: holdType === "BLK" ? calculateMissingAreaVolumes(compartments, maxVolume as number) : compartments };
+    const resolvedCompartments = holdType === "BLK" && maxVolume !== null ? calculateMissingAreaVolumes(compartments, maxVolume) : compartments;
+    if (row.hasDoor !== null && row.hasDoor !== undefined && typeof row.hasDoor !== "boolean") throw new AircraftD2Invalid(`Row ${index + 1}: select whether the Hold has a door.`);
+    return validateD2FuelScope({ id: identity, name, holdType, deckCode, hasDoor: row.hasDoor ?? null, maxWeight, maxVolume, lateralCentroid: row.lateralCentroid ?? null, lateralFrom: row.lateralFrom ?? null, lateralTo: row.lateralTo ?? null, balanceCentroid, balanceFrom, balanceTo, indexPerWeightUnit: finite(row.indexPerWeightUnit, "Index per Weight Unit"), compartments: resolvedCompartments,configurationCodes:row.configurationCodes,configurationOverrides:row.configurationOverrides },fuelConfigurations);
   });
   return { applicable: true, balanceLimitsRequired, rows };
+}
+export function effectiveAircraftD2Snapshot(snapshot:AircraftD2Snapshot,configurationCode:string|null):AircraftD2Snapshot{
+ if(!configurationCode)return snapshot;
+ const rows=snapshot.rows.filter(row=>appliesToFuelConfiguration(row,configurationCode)).map(raw=>{
+  const row=applyFuelConfigurationOverride(raw,configurationCode);
+  return{...row,compartments:row.compartments.filter(compartment=>appliesToFuelConfiguration(compartment,configurationCode)).map(compartment=>({...compartment,areas:compartment.areas.filter(area=>appliesToFuelConfiguration(area,configurationCode)).map(area=>applyFuelConfigurationOverride(area,configurationCode))}))};
+ });
+ return{...snapshot,rows,bulkApplicable:snapshot.bulkApplicable===false?false:rows.some(row=>row.holdType==="BLK"),uldApplicable:snapshot.uldApplicable===false?false:rows.some(row=>row.holdType==="ULD")};
 }

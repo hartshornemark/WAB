@@ -1,5 +1,5 @@
 export type AircraftC8SectionKey="standard"|"nonStandard"|"taxiFuel";
-export type StandardFuelRow={specificGravity:number;fuelVolume:number|null;fuelWeight:number;hArm:number|null;indexValue:number};
+export type StandardFuelRow={configurationCode?:string|null;specificGravity:number;fuelVolume:number|null;fuelWeight:number;hArm:number|null;indexValue:number};
 export type TankFuelPoint={volume:number;balanceArm:number;importedWeight:number|null;importedIndex:number|null};
 export type NonStandardFuelTank={configurationCode?:string|null;tankName:string;tankShortCode:string;maximumVolume:number|null;sourceSpecificGravity:number|null;curveSpecificGravities?:number[];indexPerUnitWeight:number|null;weights:number[];points:TankFuelPoint[]};
 export type FuelScheduleQuantityBasis="VOLUME"|"WEIGHT";
@@ -44,9 +44,9 @@ export function validateAircraftC8Section(input:unknown,key:AircraftC8SectionKey
   return{rows};
  }
  if(typeof value?.enabled!=="boolean")throw new AircraftC8Invalid("The C8 section is incomplete.");
- const rows=value.rows.map((entry,index)=>{const r=entry as Record<string,unknown>;return{specificGravity:positive(r.specificGravity,`Specific Gravity at row ${index+1}`),fuelVolume:optionalWholePositive(r.fuelVolume,`Fuel Volume at row ${index+1}`),fuelWeight:wholeNonNegative(r.fuelWeight,`Fuel Weight at row ${index+1}`),hArm:optional(r.hArm,`H-Arm at row ${index+1}`),indexValue:finite(r.indexValue,`Index at row ${index+1}`)}}).sort((a,b)=>a.fuelWeight-b.fuelWeight);
- if(new Set(rows.map(r=>`${r.fuelWeight}|${r.specificGravity}`)).size!==rows.length)throw new AircraftC8Invalid("Each Fuel Weight and Specific Gravity combination may appear only once.");
- for(const sg of new Set(rows.map(row=>row.specificGravity)))if(!rows.some(row=>row.specificGravity===sg&&row.fuelWeight===0))rows.push({specificGravity:sg,fuelWeight:0,fuelVolume:null,hArm:null,indexValue:0});
+ const rows=value.rows.map((entry,index)=>{const r=entry as Record<string,unknown>,configurationCode=String(r.configurationCode??"").trim().toUpperCase()||null;return{...(configurationCode?{configurationCode}:{}),specificGravity:positive(r.specificGravity,`Specific Gravity at row ${index+1}`),fuelVolume:optionalWholePositive(r.fuelVolume,`Fuel Volume at row ${index+1}`),fuelWeight:wholeNonNegative(r.fuelWeight,`Fuel Weight at row ${index+1}`),hArm:optional(r.hArm,`H-Arm at row ${index+1}`),indexValue:finite(r.indexValue,`Index at row ${index+1}`)}}).sort((a,b)=>a.fuelWeight-b.fuelWeight);
+ if(new Set(rows.map(r=>`${r.configurationCode??"ALL"}|${r.fuelWeight}|${r.specificGravity}`)).size!==rows.length)throw new AircraftC8Invalid("Each Fuel Weight and Specific Gravity combination may appear only once within a fitted fuel configuration.");
+ for(const table of new Set(rows.map(row=>`${row.configurationCode??""}|${row.specificGravity}`))){const[configurationCode,gravity]=table.split("|"),specificGravity=Number(gravity);if(!rows.some(row=>(row.configurationCode??"")===configurationCode&&row.specificGravity===specificGravity&&row.fuelWeight===0))rows.push({...(configurationCode?{configurationCode}:{}),specificGravity,fuelWeight:0,fuelVolume:null,hArm:null,indexValue:0})}
  rows.sort((a,b)=>a.fuelWeight-b.fuelWeight);
  return{enabled:value.enabled,rows};
 }

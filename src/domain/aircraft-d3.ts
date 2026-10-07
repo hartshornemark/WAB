@@ -1,14 +1,16 @@
 import {balanceArmCentroidInput,type IndexPerWeightUnitFormula} from "@/domain/index-per-weight-unit";
+import{applyFuelConfigurationOverride,appliesToFuelConfiguration,validateFuelConfigurationScope,type FuelConfigurationOption,type FuelConfigurationScoped}from"@/domain/fuel-configuration-scope";
 
-export type AircraftD3Hold={id:string;sortBalanceArm?:number|null;balanceCentroid?:number|null;name?:string;deckName?:string;compartments?:string[]};
+export type AircraftD3Hold=FuelConfigurationScoped&{id:string;sortBalanceArm?:number|null;balanceCentroid?:number|null;name?:string;deckName?:string;compartments?:string[]};
 export type AircraftD3RowType="POSITION"|"GROUP_LIMIT";
 export type AircraftD3UldOption={code:string;type:string;baseCode:string|null;baseWidth:number|null;baseLength:number|null;adopted:boolean};
-export type AircraftD3AtomicBay={id:string;compartmentId:string;lateralCentroid:number|null;lateralFrom:number|null;lateralTo:number|null;balanceCentroid:number|null;balanceFrom:number|null;balanceTo:number|null;colour:string|null};
-export type AircraftD3Position={rowType:AircraftD3RowType;positionId:string;compartmentId:string|null;uldCode:string|null;uldType:string|null;uldBaseCode:string|null;groupId:string|null;occupiedBayIds:string[];maxWeight:number|null;volume:number|null;lateralCentroid:number|null;lateralFrom:number|null;lateralTo:number|null;balanceCentroid:number|null;balanceFrom:number|null;balanceTo:number|null;indexPerWeightUnit:number|null;colour:string|null};
+export type AircraftD3AtomicBay=FuelConfigurationScoped&{id:string;compartmentId:string;lateralCentroid:number|null;lateralFrom:number|null;lateralTo:number|null;balanceCentroid:number|null;balanceFrom:number|null;balanceTo:number|null;colour:string|null};
+export type AircraftD3Position=FuelConfigurationScoped&{rowType:AircraftD3RowType;positionId:string;compartmentId:string|null;uldCode:string|null;uldType:string|null;uldBaseCode:string|null;groupId:string|null;occupiedBayIds:string[];maxWeight:number|null;volume:number|null;lateralCentroid:number|null;lateralFrom:number|null;lateralTo:number|null;balanceCentroid:number|null;balanceFrom:number|null;balanceTo:number|null;indexPerWeightUnit:number|null;colour:string|null};
 export type AircraftD3Configuration={holdId:string;code:string;description:string|null;expectedPositionCount:number;atomicBays:AircraftD3AtomicBay[];rows:AircraftD3Position[]};
-export type AircraftD3Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;uldHolds:AircraftD3Hold[];uldTypes:string[];uldOptions?:AircraftD3UldOption[];configurations:AircraftD3Configuration[];balanceFormula?:IndexPerWeightUnitFormula|null};
+export type AircraftD3Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;uldHolds:AircraftD3Hold[];uldTypes:string[];uldOptions?:AircraftD3UldOption[];fuelConfigurations?:FuelConfigurationOption[];configurations:AircraftD3Configuration[];balanceFormula?:IndexPerWeightUnitFormula|null};
 export type AircraftD3ConfigurationValues=AircraftD3Configuration;
 export class AircraftD3Invalid extends Error{} export class AircraftD3Denied extends Error{} export class AircraftD3Conflict extends Error{}
+const validateD3FuelScope=<T extends FuelConfigurationScoped>(value:T,options:FuelConfigurationOption[])=>{try{return validateFuelConfigurationScope(value,options)}catch(error){throw new AircraftD3Invalid(error instanceof Error?error.message:"Check the fitted fuel configuration scope.")}};
 
 /** Returns every other loading position blocked by the selected arrangement's occupied footprint. */
 export function blockedAircraftD3PositionIds(configuration:AircraftD3Configuration,positionId:string,uldCode?:string){
@@ -23,7 +25,7 @@ const number=(v:unknown,label:string,required=true,positive=false)=>{if(blank(v)
 const range=(from:unknown,centroid:unknown,to:unknown,label:string,centroidRequired=false)=>{const allBlank=blank(from)&&blank(centroid)&&blank(to);if(allBlank&&!centroidRequired)return[null,null,null]as const;const c=number(centroid,`${label} Centroid`);if(blank(from)&&blank(to))return[null,c,null]as const;if(blank(from)||blank(to))throw new AircraftD3Invalid(`${label} From and To must both be completed or both left blank.`);const f=number(from,`${label} From`),t=number(to,`${label} To`);if(!((f as number)<=c!&&c!<=(t as number)))throw new AircraftD3Invalid(`${label} must be ordered From, Centroid, To.`);return[f,c,t]as const};
 const id=(v:unknown)=>String(v??"").trim().toUpperCase(),validId=(v:string)=>/^[A-Z0-9]{1,6}$/.test(v);
 
-export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Hold[],formula?:IndexPerWeightUnitFormula|null,availableUldOptions:AircraftD3UldOption[]=[],preserveCentroid=false):AircraftD3ConfigurationValues{
+export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Hold[],formula?:IndexPerWeightUnitFormula|null,availableUldOptions:AircraftD3UldOption[]=[],preserveCentroid=false,fuelConfigurations:FuelConfigurationOption[]=[]):AircraftD3ConfigurationValues{
  const v=input as Partial<AircraftD3Configuration>,holdId=id(v?.holdId),code=id(v?.code),description=String(v?.description??"").trim()||null,selectedHold=holds.find(h=>h.id===holdId);
  if(!selectedHold)throw new AircraftD3Invalid("Select a valid ULD Hold.");
  if(!/^[A-Z0-9][A-Z0-9_-]{0,19}$/.test(code))throw new AircraftD3Invalid("Configuration Code must use 1–20 letters, numbers, hyphens or underscores.");
@@ -39,7 +41,7 @@ export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Ho
   if(!compartmentId||(selectedHold.compartments!==undefined&&!selectedHold.compartments.includes(compartmentId)))throw new AircraftD3Invalid(`Atomic Bay ${bayId}: select a Compartment configured for ULD Hold ${holdId} on D2.`);
   const[lf,lc,lt]=range(b.lateralFrom,b.lateralCentroid,b.lateralTo,`Atomic Bay ${bayId} Lateral Arm`),[bf,bc,bt]=range(b.balanceFrom,b.balanceCentroid,b.balanceTo,`Atomic Bay ${bayId} Balance Arm`,true),colour=String(b.colour??"").trim()||null;
   if(colour!==null&&!/^#[0-9A-Fa-f]{6}$/.test(colour))throw new AircraftD3Invalid(`Atomic Bay ${bayId}: Colour must be a valid HEX value.`);
-  return{id:bayId,compartmentId,lateralCentroid:lc,lateralFrom:lf,lateralTo:lt,balanceCentroid:bc,balanceFrom:bf,balanceTo:bt,colour};
+  return validateD3FuelScope({id:bayId,compartmentId,lateralCentroid:lc,lateralFrom:lf,lateralTo:lt,balanceCentroid:bc,balanceFrom:bf,balanceTo:bt,colour,configurationCodes:b.configurationCodes,configurationOverrides:b.configurationOverrides},fuelConfigurations);
  });
  if(atomicBays.length!==expected)throw new AircraftD3Invalid(`Expected ${expected} Atomic Bays but ${atomicBays.length} have been entered.`);
  const allowedOptions=new Map(availableUldOptions.filter(option=>option.adopted).map(option=>[option.code,option])),keys=new Set<string>();
@@ -58,10 +60,20 @@ export function validateAircraftD3Configuration(input:unknown,holds:AircraftD3Ho
   if(unknown)throw new AircraftD3Invalid(`Arrangement ${positionId}: Atomic Bay ${unknown} does not exist in this configuration.`);
   const[lf,lc,lt]=range(r.lateralFrom,r.lateralCentroid,r.lateralTo,"Lateral Arm"),indexPerWeightUnit=number(r.indexPerWeightUnit,"Index per Weight Unit",false),[bf,bc,bt]=range(r.balanceFrom,preserveCentroid&&r.balanceCentroid!==null&&r.balanceCentroid!==undefined?r.balanceCentroid:balanceArmCentroidInput(r.balanceCentroid,indexPerWeightUnit,formula),r.balanceTo,"Balance Arm",true),colour=String(r.colour??"").trim()||null;
   if(colour!==null&&!/^#[0-9A-Fa-f]{6}$/.test(colour))throw new AircraftD3Invalid(`Arrangement ${positionId}: Colour must be a valid HEX value.`);
-  return{rowType,positionId,compartmentId:rowType==="POSITION"?compartmentId:null,uldCode:rowType==="POSITION"?uldCode:null,uldType:rowType==="POSITION"?uldType:null,uldBaseCode:rowType==="POSITION"?uldBaseCode:null,groupId,occupiedBayIds,maxWeight:number(r.maxWeight,"Maximum Weight",true,true),volume:number(r.volume,"Volume",false,true),lateralCentroid:lc,lateralFrom:lf,lateralTo:lt,balanceCentroid:bc,balanceFrom:bf,balanceTo:bt,indexPerWeightUnit,colour};
+  return validateD3FuelScope({rowType,positionId,compartmentId:rowType==="POSITION"?compartmentId:null,uldCode:rowType==="POSITION"?uldCode:null,uldType:rowType==="POSITION"?uldType:null,uldBaseCode:rowType==="POSITION"?uldBaseCode:null,groupId,occupiedBayIds,maxWeight:number(r.maxWeight,"Maximum Weight",true,true),volume:number(r.volume,"Volume",false,true),lateralCentroid:lc,lateralFrom:lf,lateralTo:lt,balanceCentroid:bc,balanceFrom:bf,balanceTo:bt,indexPerWeightUnit,colour,configurationCodes:r.configurationCodes,configurationOverrides:r.configurationOverrides},fuelConfigurations);
  });
  if(!rows.some(r=>r.rowType==="POSITION"))throw new AircraftD3Invalid("Add at least one permitted loading arrangement.");
  return{holdId,code,description,expectedPositionCount:expected,atomicBays,rows};
+}
+export function effectiveAircraftD3Snapshot(snapshot:AircraftD3Snapshot,configurationCode:string|null):AircraftD3Snapshot{
+ if(!configurationCode)return snapshot;
+ const uldHolds=snapshot.uldHolds.filter(hold=>appliesToFuelConfiguration(hold,configurationCode));
+ const holdIds=new Set(uldHolds.map(hold=>hold.id));
+ return{...snapshot,uldHolds,configurations:snapshot.configurations.filter(item=>holdIds.has(item.holdId)).map(item=>{
+  const atomicBays=item.atomicBays.filter(bay=>appliesToFuelConfiguration(bay,configurationCode)).map(bay=>applyFuelConfigurationOverride(bay,configurationCode));
+  const bayIds=new Set(atomicBays.map(bay=>bay.id));
+  return{...item,expectedPositionCount:atomicBays.length,atomicBays,rows:item.rows.filter(row=>appliesToFuelConfiguration(row,configurationCode)&&row.occupiedBayIds.every(id=>bayIds.has(id))).map(row=>applyFuelConfigurationOverride(row,configurationCode))};
+ })};
 }
 
 const naturalIdOrder=(a:string,b:string)=>a.localeCompare(b,"en",{numeric:true});

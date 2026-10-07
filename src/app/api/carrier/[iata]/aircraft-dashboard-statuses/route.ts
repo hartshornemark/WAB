@@ -1,25 +1,27 @@
 import {NextResponse} from "next/server";
-import {carrierHomeServices,dashboardStatusServices} from "@/composition/services";
-import {AuthenticationRequired,CarrierUnavailable} from "@/domain/models";
-import {dashboardAttentionPages,dashboardSummaryStatus} from "@/domain/dashboard-summary";
-import {aircraftDashboardStatuses,type AircraftDashboardRead} from "@/app/api/carrier/aircraft-dashboard-status";
+import {AuthenticationRequired} from "@/domain/models";
+import {resolveDashboardStatusSnapshots} from "@/domain/dashboard-status-snapshot";
+import {readDashboardStatusSnapshots} from "@/composition/dashboard-status-refresh";
+import {scheduleCarrierDashboardStatusRefresh} from "@/composition/dashboard-status-refresh-schedule";
 
-export async function GET(_request:Request,{params}:{params:Promise<{iata:string}>}){
+const requestedAircraft=(request:Request)=>new URL(request.url).searchParams.getAll("aircraft").flatMap(value=>{
+  const separator=value.indexOf(":");
+  if(separator<1)return[];
+  const typeCode=value.slice(0,separator).trim().toUpperCase();
+  const subtype=value.slice(separator+1).trim().toUpperCase();
+  return/^[A-Z0-9]{3}$/.test(typeCode)&&/^[A-Z0-9-]{1,20}$/.test(subtype)?[{typeCode,subtype}]:[];
+}).slice(0,100);
+
+export async function GET(request:Request,{params}:{params:Promise<{iata:string}>}){
   try{
     const{iata}=await params;
-    const home=await(await carrierHomeServices()).get(iata);
-    const service=await dashboardStatusServices();
-    const reads=await service.getMany(iata,home.aircraft.rows);
-    const statuses=Object.fromEntries(home.aircraft.rows.map((aircraft,index)=>{
-      const key=`${aircraft.typeCode.trim().toUpperCase()}:${aircraft.subtype.trim().toUpperCase()}`;
-      if(reads[index]===null)return[key,{status:"unavailable",attention:[]}];
-      const pages=aircraftDashboardStatuses(reads[index] as AircraftDashboardRead);
-      return[key,{status:dashboardSummaryStatus(pages),attention:dashboardAttentionPages(pages)}];
-    }));
-    return NextResponse.json({carrier:iata.toUpperCase(),statuses},{headers:{"Cache-Control":"no-store"}});
+    const saved=await readDashboardStatusSnapshots(iata);
+    const aircraft=requestedAircraft(request);
+    const{statuses,refreshing}=resolveDashboardStatusSnapshots(aircraft.length?aircraft:saved,saved);
+    if(refreshing.length)scheduleCarrierDashboardStatusRefresh(iata);
+    return NextResponse.json({carrier:iata.toUpperCase(),statuses,refreshing},{headers:{"Cache-Control":"no-store"}});
   }catch(error){
     if(error instanceof AuthenticationRequired)return NextResponse.json({error:"Authentication required."},{status:401});
-    if(error instanceof CarrierUnavailable)return NextResponse.json({error:"Carrier unavailable."},{status:404});
     console.error("Aircraft dashboard statuses failed",error);
     return NextResponse.json({error:"Unable to read aircraft dashboard statuses."},{status:503});
   }

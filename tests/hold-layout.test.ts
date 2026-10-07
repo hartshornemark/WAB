@@ -3,12 +3,12 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { buildHoldLayout as build, holdLayoutUnavailable as unavailable, holdLayoutX as position, separateUldPositionDisplayRanges } from "../src/domain/hold-layout";
+import { buildHoldLayout as build, holdLayoutMirrorsAircraftProfile, holdLayoutUnavailable as unavailable, holdLayoutX as position, separateUldPositionDisplayRanges } from "../src/domain/hold-layout";
 import { A319_LAYOUT,A320_LAYOUT,aircraftLayoutFor } from "./fixtures/aircraft-layouts";
 const buildHoldLayout=(d2:AircraftD2Snapshot,d4:AircraftD4Snapshot,d3?:AircraftD3Snapshot)=>build(d2,d4,d3,aircraftLayoutFor(d2.typeCode,d2.subtype)!);
 const holdLayoutUnavailable=(d2:AircraftD2Snapshot)=>unavailable(d2,aircraftLayoutFor(d2.typeCode,d2.subtype));
 const holdLayoutX=(arm:number,aircraft=A319_LAYOUT)=>position(arm,aircraft);
-import type { AircraftD2Snapshot, AircraftD2HoldRow } from "../src/domain/aircraft-d2";
+import { effectiveAircraftD2Snapshot, type AircraftD2Snapshot, type AircraftD2HoldRow } from "../src/domain/aircraft-d2";
 import type { AircraftD4Snapshot } from "../src/domain/aircraft-d4";
 import type { AircraftD3Snapshot } from "../src/domain/aircraft-d3";
 const hold: AircraftD2HoldRow = { name:"5",holdType:"BLK",deckCode:"LOWER",maxWeight:1497,maxVolume:7.22,balanceCentroid:24.649,balanceFrom:24.028,balanceTo:27.270,indexPerWeightUnit:0.00840,lateralCentroid:null,lateralFrom:null,lateralTo:null,compartments:[] };
@@ -18,6 +18,10 @@ test("D2 configured and D4 incomplete produces holds only",()=>{const layout=bui
 test("aircraft hold overlays remain centred on their calibrated fuselage",()=>{
   assert.equal(A319_LAYOUT.holdY+A319_LAYOUT.holdHeight/2,A319_LAYOUT.centreY);
   assert.equal(A320_LAYOUT.holdY+A320_LAYOUT.holdHeight/2,A320_LAYOUT.centreY);
+});
+test("B767-300 hold profile is mirrored into the common tail-left, nose-right display",()=>{
+  assert.equal(holdLayoutMirrorsAircraftProfile({typeCode:"763",subtype:"300"}),true);
+  assert.equal(holdLayoutMirrorsAircraftProfile({typeCode:"319",subtype:"100"}),false);
 });
 test("aircraft vector assets and image frames require an explicit calibration review when changed",()=>{
   const assetHash=(name:string)=>createHash("sha256").update(readFileSync(join(process.cwd(),"src/assets/aircraft-layouts",name))).digest("hex");
@@ -39,12 +43,46 @@ test("aircraft vector assets and image frames require an explicit calibration re
   );
 });
 test("configured D4 adds current saved doors and correct datum positions",()=>{const layout=buildHoldLayout(d2(),d4());assert.equal(layout.doorsIncluded,true);assert.equal(layout.doors[0].x,holdLayoutX(26.240));assert.ok(Math.abs(layout.holds[0].width-(27.270-24.028)*A319_LAYOUT.span/A319_LAYOUT.length)<1e-8);assert.equal(holdLayoutX(A319_LAYOUT.noseArm),A319_LAYOUT.tailX)});
+test("B767-300 station calibration follows both reviewed cargo-door anchors",()=>{
+  const aircraft={...A319_LAYOUT,typeCode:"763",subtype:"300",length:2163,noseArm:92.5,stationOriginX:1939.213513,span:2053.154428};
+  assert.ok(Math.abs(position(361,aircraft)-1596.5465)<.001);
+  assert.ok(Math.abs(position(1470.2,aircraft)-543.676)<.001);
+  assert.ok(position(300.7,aircraft)>1596.5465&&position(425.5,aircraft)<1596.5465);
+});
 test("partial D4 never leaks doors missing required data into the diagram",()=>{const snap=d4();snap.doors[0].orientation=null;assert.deepEqual(buildHoldLayout(d2(),snap).doors,[])});
 test("D4 must cover every applicable hold",()=>{const snap=d4();snap.doors[0].holdId="1";assert.equal(buildHoldLayout(d2(),snap).doorsIncluded,false)});
 test("all checked bulk and ULD holds are drawn, separately grouped by deck",()=>{const snap=d2({uldApplicable:true,rows:[hold,{...hold,name:"FWD",holdType:"ULD",deckCode:"MAIN",maxVolume:null}]});const layout=buildHoldLayout(snap,d4());assert.equal(layout.holds.length,2);assert.equal(layout.decks.length,2);assert.equal(layout.doorsIncluded,false)});
 test("unchecked sections are excluded even if stale rows exist",()=>{const snap=d2({rows:[hold,{...hold,name:"A",holdType:"ULD"}]});assert.deepEqual(buildHoldLayout(snap,d4()).holds.map(h=>h.name),["5"])});
 test("incomplete D2 cannot render a diagram",()=>assert.throws(()=>buildHoldLayout(d2({uldApplicable:null}),d4()),/Complete all applicable/));
 test("D2 can be configured without limits but a diagram cannot invent them",()=>assert.match(holdLayoutUnavailable(d2({bulkBalanceLimitsRequired:false,rows:[{...hold,balanceFrom:null,balanceTo:null}]}))!,/From and To/));
+test("a bulk Hold without explicit limits is derived from its saved Area centroids",()=>{
+  const areaHold={...hold,name:"ALB",balanceCentroid:null,balanceFrom:null,balanceTo:null,compartments:[{id:"5",areas:[
+    {id:"51",maxWeight:374,maxVolume:1.47,indexPerWeightUnit:.024},
+    {id:"52",maxWeight:353,maxVolume:1.39,indexPerWeightUnit:.025},
+    {id:"53",maxWeight:770,maxVolume:3.02,indexPerWeightUnit:.027},
+  ]}]};
+  const snap=d2({bulkBalanceLimitsRequired:false,balanceFormula:{referenceArm:0,constantC:1000},rows:[areaHold]});
+  assert.equal(holdLayoutUnavailable(snap),null);
+  const layout=buildHoldLayout(snap,d4({doors:[]}));
+  assert.equal(layout.holds[0].balanceFrom,23.5);
+  assert.equal(layout.holds[0].balanceTo,28);
+  assert.deepEqual(layout.holds[0].subdivisions.map(segment=>segment.id),["53","52","51"]);
+  assert.ok(layout.boundaryNotes?.some(note=>note.includes("derived from its saved Area centroids")));
+});
+test("a calibrated legacy Hold 5 profile keeps an ALB overlay ahead of centroid inference",()=>{
+  const areaHold={...hold,name:"ALB",balanceCentroid:null,balanceFrom:null,balanceTo:null,compartments:[{id:"5",areas:[
+    {id:"51",maxWeight:374,maxVolume:1.47,indexPerWeightUnit:.024},
+    {id:"52",maxWeight:353,maxVolume:1.39,indexPerWeightUnit:.025},
+    {id:"53",maxWeight:770,maxVolume:3.02,indexPerWeightUnit:.027},
+  ]}]};
+  const snap=d2({bulkBalanceLimitsRequired:false,balanceFormula:{referenceArm:0,constantC:1000},rows:[areaHold]});
+  const aircraft={...A319_LAYOUT,holdProfiles:{"5":{points:[{arm:24,halfWidth:4},{arm:25,halfWidth:3.5},{arm:27,halfWidth:2}]}}};
+  const layout=build(snap,d4({doors:[]}),undefined,aircraft);
+  assert.equal(layout.holds[0].balanceFrom,24);
+  assert.equal(layout.holds[0].balanceTo,27);
+  assert.equal(layout.usesGlobalHoldBoundaries,true);
+  assert.ok(!layout.boundaryNotes?.some(note=>note.includes("Area centroids")));
+});
 test("A320-200 uses global aircraft-type hold boundaries when optional D2 limits are blank",()=>{
   const a320Hold={...hold,name:"1",balanceFrom:null,balanceTo:null};
   const a320D2=d2({typeCode:"320",subtype:"200",bulkBalanceLimitsRequired:false,rows:[a320Hold]});
@@ -92,6 +130,21 @@ test("bulk Areas divide their Hold by saved weight and retain their identifiers"
   assert.deepEqual(layout.holds[0].subdivisions.map(segment=>segment.id),["51","52","53"]);
   assert.ok(Math.abs(layout.holds[0].subdivisions.reduce((sum,segment)=>sum+segment.width,0)-layout.holds[0].width)<1e-8);
 });
+test("a fitted configuration contracts a bulk Hold to its applicable Area footprint",()=>{
+  const areaHold={...hold,name:"ALF",balanceCentroid:29,balanceFrom:26,balanceTo:32,compartments:[{id:"3",areas:[
+    {id:"31",maxWeight:1289,maxVolume:5.21,indexPerWeightUnit:.027,configurationCodes:["0ACT"]},
+    {id:"32",maxWeight:1177,maxVolume:4.76,indexPerWeightUnit:.029,configurationCodes:["0ACT"]},
+    {id:"33",maxWeight:1021,maxVolume:4.76,indexPerWeightUnit:.031,configurationCodes:[]},
+  ]}]};
+  const source=d2({fuelConfigurations:[{code:"0ACT",description:"None"},{code:"2ACT",description:"Two"}],balanceFormula:{referenceArm:0,constantC:1000},rows:[areaHold]});
+  const effective=effectiveAircraftD2Snapshot(source,"2ACT");
+  const layout=build(effective,d4({doors:[]}),undefined,A319_LAYOUT,source);
+  assert.deepEqual(layout.holds[0].subdivisions.map(segment=>segment.id),["33"]);
+  assert.equal(layout.holds[0].balanceFrom,30);
+  assert.equal(layout.holds[0].balanceTo,32);
+  assert.equal(layout.holds[0].x,holdLayoutX(32));
+  assert.equal(layout.holds[0].width,holdLayoutX(30)-holdLayoutX(32));
+});
 test("a Hold ID labels an undivided Hold",()=>{
   const layout=buildHoldLayout(d2(),d4());
   assert.deepEqual(layout.holds[0].subdivisions.map(segment=>[segment.kind,segment.id]),[["HOLD","5"]]);
@@ -108,6 +161,23 @@ test("aircraft master compartment boundaries can align an internal divider to a 
   const layout=build(d2({rows:[compartmentHold]}),d4(),undefined,aircraft);
   assert.deepEqual(layout.holds[0].subdivisions.map(segment=>segment.id),["5B","5A"]);
   assert.equal(layout.holds[0].subdivisions[1].x,holdLayoutX(25,aircraft));
+});
+test("split forward and aft hold codes inherit their family drawing offsets",()=>{
+  const split=(name:string):AircraftD2HoldRow=>({...hold,name,holdType:"ULD",maxVolume:null,balanceCentroid:25,balanceFrom:20,balanceTo:30,compartments:[{id:"1",areas:[]}]});
+  const snap=d2({bulkApplicable:false,uldApplicable:true,rows:[split("FLF"),split("ALA")]});
+  const aircraft={...A319_LAYOUT,holdArmOffsets:{FWD:2,AFT:-2}};
+  const layout=build(snap,d4({doors:[]}),undefined,aircraft);
+  const forward=layout.holds.find(item=>item.name==="FLF")!,aft=layout.holds.find(item=>item.name==="ALA")!;
+  assert.equal(forward.x,holdLayoutX(32,aircraft));
+  assert.equal(aft.x,holdLayoutX(28,aircraft));
+});
+test("aft lower bulk inherits the aft-family drawing offset",()=>{
+  const bulk={...hold,name:"ALB",balanceCentroid:31,balanceFrom:30,balanceTo:32};
+  const snap=d2({rows:[bulk]});
+  const aircraft={...A319_LAYOUT,holdArmOffsets:{AFT:-2}};
+  const layout=build(snap,d4({doors:[]}),undefined,aircraft);
+  assert.equal(layout.holds[0].x,holdLayoutX(30,aircraft));
+  assert.equal(layout.holds[0].width,holdLayoutX(28,aircraft)-holdLayoutX(30,aircraft));
 });
 test("configured D3 physical positions become Bay subdivisions ordered by centroid",()=>{
   const uldHold={...hold,name:"FWD",holdType:"ULD" as const,maxVolume:null,compartments:[{id:"1",areas:[]}]};
@@ -146,6 +216,21 @@ test("ULD display normalisation preserves the saved footprint for mutually exclu
   const positions=separateUldPositionDisplayRanges(source,8,16);
   assert.notEqual(positions[0].width,positions[0].sourceWidth);
   assert.deepEqual(positions.map(position=>[position.sourceX,position.sourceWidth]),[[10,6],[13,6]]);
+});
+test("overlapping ULD positions become mutually exclusive overlay arrangements",()=>{
+  const uldHold={...hold,name:"FLF",holdType:"ULD" as const,maxVolume:null,balanceCentroid:16.5,balanceFrom:13,balanceTo:20,compartments:[{id:"1",areas:[]}]};
+  const snap=d2({bulkApplicable:false,uldApplicable:true,rows:[uldHold]});
+  const bay=(id:string,from:number,to:number)=>({id,compartmentId:"1",lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:(from+to)/2,balanceFrom:from,balanceTo:to,colour:null});
+  const row=(id:string,from:number,to:number):AircraftD3Snapshot["configurations"][number]["rows"][number]=>({rowType:"POSITION",positionId:id,occupiedBayIds:[id],compartmentId:"1",uldCode:"PKC",uldType:"LD1",uldBaseCode:"K",groupId:null,maxWeight:1587,volume:null,lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:(from+to)/2,balanceFrom:from,balanceTo:to,indexPerWeightUnit:.01,colour:null});
+  const ranges:[[string,number,number],[string,number,number],[string,number,number],[string,number,number]]=[["11L",13.2,14.7],["12L",14.8,16.4],["13L",15.7,17.3],["14L",16.4,18]];
+  const d3:AircraftD3Snapshot={canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",uldHolds:[{id:"FLF",compartments:["1"]}],uldTypes:["LD1"],configurations:[{holdId:"FLF",code:"A",description:"DEFAULT",expectedPositionCount:4,atomicBays:ranges.map(([id,from,to])=>bay(id,from,to)),rows:ranges.map(([id,from,to])=>row(id,from,to))}]};
+  const layout=build(snap,d4({doors:[]}),d3,A319_LAYOUT);
+  const selector=layout.uldArrangementSelectors[0];
+  assert.notEqual(selector,undefined,JSON.stringify(layout.holds[0].uldPositions));
+  assert.equal(selector.label,"HOLD FLF ARRANGEMENT");
+  assert.deepEqual(selector.options.map(option=>option.label),["12 + 14","13"]);
+  assert.ok(selector.options.every(option=>option.includedPositionIds.includes("11L")));
+  assert.ok(!selector.options.some(option=>option.includedPositionIds.includes("12L")&&option.includedPositionIds.includes("13L")));
 });
 test("ULD family overlays combine code-specific lock arrangements into selectable bay positions",()=>{
   const uldHold={...hold,name:"FWD",holdType:"ULD" as const,maxVolume:null,balanceFrom:20,balanceTo:30,compartments:[{id:"1",areas:[]}]};
@@ -205,6 +290,23 @@ test("configured D3 bays retain the aircraft compartment boundary and follow its
   assert.equal(layout.holds[0].subdivisions[1].x,holdLayoutX(24.5,aircraft));
 });
 
+test("configured D3 physical bays expand a stale D2 ULD outline instead of being clipped",()=>{
+  const uldHold={...hold,name:"ALF",holdType:"ULD" as const,maxVolume:null,balanceCentroid:26,balanceFrom:25,balanceTo:27,compartments:[{id:"3",areas:[]}]};
+  const snap=d2({bulkApplicable:false,uldApplicable:true,rows:[uldHold]});
+  const d3:AircraftD3Snapshot={canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",uldHolds:[{id:"ALF",compartments:["3"]}],uldTypes:["LD1"],configurations:[{
+    holdId:"ALF",code:"A",description:"DEFAULT",expectedPositionCount:3,atomicBays:[
+      {id:"31L",compartmentId:"3",lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:24.5,balanceFrom:24,balanceTo:25,colour:null},
+      {id:"32L",compartmentId:"3",lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:25.5,balanceFrom:25,balanceTo:26,colour:null},
+      {id:"33L",compartmentId:"3",lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:26.5,balanceFrom:26,balanceTo:27,colour:null},
+    ],rows:[{rowType:"POSITION",positionId:"31L",occupiedBayIds:["31L"],compartmentId:"3",uldCode:"PKC",uldType:"LD1",uldBaseCode:"K",groupId:null,maxWeight:1000,volume:null,lateralCentroid:null,lateralFrom:null,lateralTo:null,balanceCentroid:24.5,balanceFrom:24,balanceTo:25,indexPerWeightUnit:.01,colour:null}],
+  }]};
+  const layout=build(snap,d4({doors:[]}),d3,A319_LAYOUT);
+  assert.equal(layout.holds[0].balanceFrom,24);
+  assert.equal(layout.holds[0].balanceTo,27);
+  assert.deepEqual(layout.holds[0].subdivisions.map(segment=>segment.id),["33L","32L","31L"]);
+  assert.ok(layout.boundaryNotes?.some(note=>note.includes("expanded to include every configured D3 physical bay")));
+});
+
 test("missing D2 limits use D3 occupied ranges independently per deck and identify undrawn bulk holds",()=>{
   const uld=(deckCode:string):AircraftD2HoldRow=>({...hold,id:`${deckCode}:FWD`,name:"FWD",holdType:"ULD",deckCode,balanceCentroid:null,balanceFrom:null,balanceTo:null,compartments:[{id:"1",areas:[]}]});
   const snap=d2({uldApplicable:true,rows:[uld("MAIN"),uld("LOWER"),{...hold,balanceFrom:null,balanceTo:null}],deckTypes:[{code:"MAIN",name:"Main Deck"},{code:"LOWER",name:"Lower Deck"}]});
@@ -229,4 +331,18 @@ test("unknown main-deck doors never become zero-width doors when D4 is configure
  const doors=d4({doors:[...d4().doors,{holdId:"MAIN:FWD",holdType:"ULD",deckName:"Main Deck",forwardArm:null,aftArm:null,height:null,orientation:null}]});
  const layout=buildHoldLayout(snap,doors);
  assert.equal(layout.doors.length,1);assert.equal(layout.doors[0].holdId,"5");
+});
+
+test("a saved door remains visible when its bulk hold boundary is not yet drawable",()=>{
+ const uld={...hold,id:"LOWER:FWD",name:"FWD",holdType:"ULD" as const,balanceCentroid:null,balanceFrom:10,balanceTo:14};
+ const bulk={...hold,id:"LOWER:ALB",name:"ALB",balanceFrom:null,balanceTo:null};
+ const snap=d2({uldApplicable:true,bulkBalanceLimitsRequired:false,uldBalanceLimitsRequired:false,rows:[uld,bulk]});
+ const doors=d4({doors:[
+  {...d4().doors[0],holdId:"LOWER:FWD",holdType:"ULD",forwardArm:9,aftArm:10},
+  {...d4().doors[0],holdId:"LOWER:ALB",forwardArm:25,aftArm:26},
+ ]});
+ const positions:AircraftD3Snapshot={canView:true,canEdit:true,revision:"r",typeCode:"319",subtype:"100",uldHolds:[],uldOptions:[],uldTypes:[],configurations:[]};
+ const layout=buildHoldLayout(snap,doors,positions);
+ assert.deepEqual(layout.holds.map(item=>item.name),["FWD"]);
+ assert.deepEqual(layout.doors.map(item=>item.holdId),["LOWER:FWD","LOWER:ALB"]);
 });

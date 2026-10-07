@@ -1,4 +1,4 @@
-import { aircraftD2HoldId, type AircraftD2Snapshot, type AircraftD2HoldRow } from "./aircraft-d2";
+import { aircraftD2HoldId, bulkHoldIdentity, type AircraftD2Snapshot, type AircraftD2HoldRow } from "./aircraft-d2";
 import type { AircraftD4Snapshot } from "./aircraft-d4";
 import type { AircraftD3Position, AircraftD3Snapshot } from "./aircraft-d3";
 import { aircraftD2Status } from "./aircraft-d2-status";
@@ -14,6 +14,9 @@ export type AircraftLayoutCalibration = {
   leftDoorY: number; rightDoorY: number; labelCharWidth: number;
   armUnit?: "IN" | "M";
   stationOriginX?: number;
+  seatMapNoseArm?: number;
+  seatMapCaption?: string;
+  reviewDoorArmOffset?: number;
   diagramCaption?: string;
   combinedHoldProfile?: { points: {arm:number;halfWidth:number}[]; joinArm:number };
   holdProfiles?: Readonly<Record<string, { points: {arm:number;halfWidth:number}[] }>>;
@@ -40,6 +43,12 @@ export type AircraftLayoutCalibration = {
 export function holdLayoutX(arm: number, aircraft: AircraftLayoutCalibration) {
   return (aircraft.stationOriginX ?? aircraft.tailX) - (arm - (aircraft.stationOriginX === undefined ? aircraft.noseArm : 0)) * aircraft.span / aircraft.length;
 }
+export function holdLayoutMirrorsAircraftProfile(aircraft:Pick<AircraftLayoutCalibration,"typeCode"|"subtype">) {
+  return aircraft.typeCode==="763"&&aircraft.subtype==="300";
+}
+function holdLayoutArm(x:number,aircraft:AircraftLayoutCalibration){
+  return (aircraft.stationOriginX===undefined?aircraft.noseArm:0)+((aircraft.stationOriginX??aircraft.tailX)-x)*aircraft.length/aircraft.span;
+}
 export function applicableHolds(d2: AircraftD2Snapshot) {
   return d2.rows.filter(r => r.holdType === "BLK" ? d2.bulkApplicable === true : d2.uldApplicable === true);
 }
@@ -49,16 +58,70 @@ function selectedHoldConfiguration(row: AircraftD2HoldRow, d2: AircraftD2Snapsho
   return configurations.find(c => c.description?.trim().toUpperCase() === "DEFAULT")
     ?? configurations.find(c => c.code.trim().toUpperCase() === "DEFAULT") ?? configurations[0];
 }
+function inferredBulkHoldArms(row: AircraftD2HoldRow, d2?: AircraftD2Snapshot) {
+  if (row.holdType !== "BLK" || !validIndexPerWeightUnitFormula(d2?.balanceFormula)) return null;
+  const centroids = row.compartments
+    .flatMap(compartment => compartment.areas)
+    .map(area => area.indexPerWeightUnit === null ? null : balanceArmFromIndexPerWeightUnit(area.indexPerWeightUnit, d2!.balanceFormula!))
+    .filter((value): value is number => value !== null && Number.isFinite(value))
+    .sort((left, right) => left - right);
+  if (centroids.length < 2 || centroids.some((value, index) => index > 0 && value <= centroids[index - 1])) return null;
+  const firstHalfSpacing = (centroids[1] - centroids[0]) / 2;
+  const lastHalfSpacing = (centroids.at(-1)! - centroids.at(-2)!) / 2;
+  return {
+    from: centroids[0] - firstHalfSpacing,
+    to: centroids.at(-1)! + lastHalfSpacing,
+    source: "areas" as const,
+  };
+}
+function holdCalibrationValue<T>(values: Readonly<Record<string, T>> | undefined, row: AircraftD2HoldRow): T | undefined {
+  if (!values) return undefined;
+  const family = bulkHoldIdentity(row.name).holdId;
+  return values[aircraftD2HoldId(row)] ?? values[row.name] ?? values[family]
+    ?? (row.name === "ALB" ? values["5"] : undefined);
+}
+function holdArmOffset(aircraft:AircraftLayoutCalibration,row:AircraftD2HoldRow){
+  return holdCalibrationValue(aircraft.holdArmOffsets,row)??(row.name==="ALB"?aircraft.holdArmOffsets?.AFT:undefined)??0;
+}
+export function aircraftHoldProfile(aircraft: AircraftLayoutCalibration, row: AircraftD2HoldRow) {
+  return holdCalibrationValue(aircraft.holdProfiles, row);
+}
+function profiledHoldArms(row: AircraftD2HoldRow, aircraft: AircraftLayoutCalibration) {
+  const arms = aircraftHoldProfile(aircraft, row)?.points.map(point => point.arm).filter(Number.isFinite) ?? [];
+  if (arms.length < 2) return null;
+  const from = Math.min(...arms), to = Math.max(...arms);
+  return from < to ? { from, to, source: "global" as const } : null;
+}
+function selectedUldFootprint(row: AircraftD2HoldRow, d2?: AircraftD2Snapshot, d3?: AircraftD3Snapshot) {
+  if (row.holdType !== "ULD" || !d2) return null;
+  const selected = selectedHoldConfiguration(row, d2, d3);
+  const bays = selected?.atomicBays ?? [];
+  if (!bays.length || bays.some(bay => bay.balanceFrom === null || bay.balanceTo === null
+    || !Number.isFinite(bay.balanceFrom) || !Number.isFinite(bay.balanceTo) || bay.balanceFrom >= bay.balanceTo)) return null;
+  return {
+    from: Math.min(...bays.map(bay => bay.balanceFrom!)),
+    to: Math.max(...bays.map(bay => bay.balanceTo!)),
+  };
+}
 function effectiveHoldArms(row: AircraftD2HoldRow, aircraft: AircraftLayoutCalibration, d2?: AircraftD2Snapshot, d3?: AircraftD3Snapshot) {
   const from = row.balanceFrom, to = row.balanceTo;
   if (from !== null || to !== null) {
-    return typeof from === "number" && Number.isFinite(from) && typeof to === "number" && Number.isFinite(to) && from < to
-      ? { from, to } : null;
+    if (!(typeof from === "number" && Number.isFinite(from) && typeof to === "number" && Number.isFinite(to) && from < to)) return null;
+    const footprint = selectedUldFootprint(row, d2, d3);
+    // D2 describes the hold outline while D3 contains its physical bays. A
+    // stale or rounded D2 limit must never clip a configured bay from view.
+    return footprint ? { from: Math.min(from, footprint.from), to: Math.max(to, footprint.to),
+      source: footprint.from < from || footprint.to > to ? "expanded-positions" as const : undefined } : { from, to };
   }
-  const defaults = aircraft.holdArmDefaults?.[aircraftD2HoldId(row)] ?? aircraft.holdArmDefaults?.[row.name];
+  const defaults = holdCalibrationValue(aircraft.holdArmDefaults, row);
   if (defaults) return {...defaults, source: "global" as const};
+  const profileArms = profiledHoldArms(row, aircraft);
+  if (profileArms) return profileArms;
+  const bulkAreaArms = inferredBulkHoldArms(row, d2);
+  if (bulkAreaArms) return bulkAreaArms;
   // Saved D3 footprints describe the occupied range, not certified hold walls.
-  // Never infer bulk boundaries from a centroid alone.
+  const footprint = selectedUldFootprint(row, d2, d3);
+  if (footprint) return {...footprint, source: "positions" as const};
   const selected = row.holdType === "ULD" && d2 ? selectedHoldConfiguration(row, d2, d3) : undefined;
   const positions = selected?.rows.filter(p => p.rowType === "POSITION") ?? [];
   if (!positions.length || positions.some(p => p.balanceFrom === null || p.balanceTo === null || !Number.isFinite(p.balanceFrom) || !Number.isFinite(p.balanceTo) || p.balanceFrom >= p.balanceTo)) return null;
@@ -142,6 +205,39 @@ export type HoldLayout = {
   uldArrangementSelectors: LayoutUldArrangementSelector[];
   boundaryNotes?: string[];
 };
+function automaticUldArrangementSelectors(holds:LayoutHold[]):LayoutUldArrangementSelector[]{
+  return holds.flatMap(hold=>[...new Set(hold.uldPositions.map(position=>position.uldType))].flatMap(uldType=>{
+    const positions=hold.uldPositions.filter(position=>position.uldType===uldType);
+    const groups=new Map<string,LayoutUldPosition[]>();
+    for(const position of positions){
+      const id=position.id.replace(/[LR]$/i,"");
+      groups.set(id,[...(groups.get(id)??[]),position]);
+    }
+    const intervals=[...groups].map(([id,members])=>({id,members,
+      from:Math.min(...members.map(item=>item.sourceX??item.x)),
+      to:Math.max(...members.map(item=>(item.sourceX??item.x)+(item.sourceWidth??item.width))),
+    })).sort((left,right)=>left.from-right.from||left.id.localeCompare(right.id));
+    const conflicts=(left:typeof intervals[number],right:typeof intervals[number])=>left.from<right.to-1e-6&&right.from<left.to-1e-6;
+    const conflicted=intervals.filter((item,index)=>intervals.some((other,otherIndex)=>index!==otherIndex&&conflicts(item,other)));
+    if(!conflicted.length||conflicted.length>12)return[];
+    const fixed=intervals.filter(item=>!conflicted.includes(item));
+    const candidates=[] as (typeof intervals)[];
+    for(let mask=1;mask<(1<<conflicted.length);mask++){
+      const chosen=conflicted.filter((_,index)=>(mask&(1<<index))!==0);
+      if(chosen.some((item,index)=>chosen.slice(index+1).some(other=>conflicts(item,other))))continue;
+      if(conflicted.some(item=>!chosen.includes(item)&&chosen.every(other=>!conflicts(item,other))))continue;
+      candidates.push(chosen);
+    }
+    if(candidates.length<2||candidates.length>16)return[];
+    const options=candidates.map(chosen=>{
+      const included=[...fixed,...chosen].flatMap(item=>item.members.map(member=>member.id));
+      const ids=chosen.map(item=>item.id).sort((left,right)=>left.localeCompare(right,undefined,{numeric:true}));
+      return{id:ids.join("-"),label:ids.join(" + "),includedPositionIds:included,
+        excludedPositionIds:positions.map(item=>item.id).filter(id=>!included.includes(id)),uldCode:null,referencePosition:null};
+    }).sort((left,right)=>left.label.localeCompare(right.label,undefined,{numeric:true}));
+    return[{holdId:aircraftD2HoldId(hold),uldType,label:`HOLD ${hold.name} ARRANGEMENT`,options}];
+  }));
+}
 function fallbackSubdivisions(row: AircraftD2HoldRow, x: number, width: number, aircraft: AircraftLayoutCalibration, armOffset: number, savedDoorBreaks?: readonly number[]): LayoutSubdivision[] {
   if (!row.compartments.length) return [{ kind: "HOLD", id: row.name, compartmentId: "", uldType: null,
     maxWeight: row.maxWeight, maxVolume: row.maxVolume, x, width }];
@@ -154,11 +250,12 @@ function fallbackSubdivisions(row: AircraftD2HoldRow, x: number, width: number, 
   return compartments.map((compartment,index)=>({kind:"COMPARTMENT",id:compartment.id,compartmentId:compartment.id,
     uldType:null,maxWeight:null,maxVolume:null,x:edges[index],width:edges[index+1]-edges[index]}));
 }
-export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, d3: AircraftD3Snapshot | undefined, aircraft: AircraftLayoutCalibration): HoldLayout {
+export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, d3: AircraftD3Snapshot | undefined, aircraft: AircraftLayoutCalibration, sourceD2:AircraftD2Snapshot=d2): HoldLayout {
   const reason = holdLayoutUnavailable(d2, aircraft, d3);
   if (reason) throw new Error(reason);
   const applicable = applicableHolds(d2);
-  const usesGlobalHoldBoundaries = applicable.some(row => row.balanceFrom === null && row.balanceTo === null && !!aircraft.holdArmDefaults?.[row.name]);
+  const usesGlobalHoldBoundaries = applicable.some(row => row.balanceFrom === null && row.balanceTo === null
+    && (!!holdCalibrationValue(aircraft.holdArmDefaults, row) || !!profiledHoldArms(row, aircraft)));
   const boundaryNotes: string[] = [];
   const holds = applicable.flatMap(row => {
     const arms = effectiveHoldArms(row, aircraft, d2, d3);
@@ -168,29 +265,47 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
       return [];
     }
     if ("source" in arms && arms.source === "positions") boundaryNotes.push(`${label}: outline shows the occupied D3 position range; D2 hold limits have not been supplied.`);
-    const armOffset = aircraft.holdArmOffsets?.[row.name] ?? 0;
-    const x = holdLayoutX(arms.to + armOffset, aircraft);
-    const width = holdLayoutX(arms.from + armOffset, aircraft) - x;
+    if ("source" in arms && arms.source === "expanded-positions") boundaryNotes.push(`${label}: D2 limits were expanded to include every configured D3 physical bay.`);
+    if ("source" in arms && arms.source === "areas") boundaryNotes.push(`${label}: outline is derived from its saved Area centroids; D2 hold limits have not been supplied.`);
+    const armOffset = holdArmOffset(aircraft,row);
+    let plottedFrom=arms.from,plottedTo=arms.to;
+    let x = holdLayoutX(plottedTo + armOffset, aircraft);
+    let width = holdLayoutX(plottedFrom + armOffset, aircraft) - x;
     const doorStartIds=aircraft.holdSubdivisionDoorStarts?.[row.name];
     const savedDoorBreaks=doorStartIds?.map(id=>d4.doors.find(door=>door.holdId===id)?.forwardArm)
       .filter((arm):arm is number=>typeof arm==="number"&&Number.isFinite(arm));
     const doorBreaks=savedDoorBreaks?.length===doorStartIds?.length?savedDoorBreaks:undefined;
     let subdivisions: LayoutSubdivision[] = [],uldPositions:LayoutUldPosition[]=[];
     if (row.holdType === "BLK") {
-      const areas = row.compartments.flatMap(compartment => compartment.areas.map(area => {
-        const centroid = validIndexPerWeightUnitFormula(d2.balanceFormula) && area.indexPerWeightUnit !== null
-          ? balanceArmFromIndexPerWeightUnit(area.indexPerWeightUnit, d2.balanceFormula) : null;
-        return { compartmentId: compartment.id, area, centroid };
+      const sourceRow=sourceD2.rows.find(item=>aircraftD2HoldId(item)===aircraftD2HoldId(row))??row;
+      const areaKey=(compartmentId:string,areaId:string)=>`${compartmentId}\0${areaId}`;
+      const selectedAreas=new Map(row.compartments.flatMap(compartment=>compartment.areas.map(area=>[areaKey(compartment.id,area.id),{compartmentId:compartment.id,area}] as const)));
+      const areas = sourceRow.compartments.flatMap(compartment => compartment.areas.map(area => {
+        const centroid = validIndexPerWeightUnitFormula(sourceD2.balanceFormula) && area.indexPerWeightUnit !== null
+          ? balanceArmFromIndexPerWeightUnit(area.indexPerWeightUnit, sourceD2.balanceFormula) : null;
+        return { key:areaKey(compartment.id,area.id),compartmentId: compartment.id, area, centroid };
       })).sort((a, b) => (b.centroid ?? 0) - (a.centroid ?? 0));
+      const centroids=areas.map(item=>item.centroid);
+      const useCentroids=centroids.length>0&&centroids.every((value):value is number=>value!==null&&Number.isFinite(value))
+        &&centroids.every((value,index)=>index===0||(centroids[index-1] as number)>value)
+        &&(centroids[0] as number)<arms.to&&(centroids.at(-1) as number)>arms.from;
+      const armEdges=useCentroids?[arms.to,...(centroids as number[]).slice(0,-1).map((value,index)=>(value+(centroids[index+1] as number))/2),arms.from]:null;
       const totalWeight = areas.reduce((sum, item) => sum + (item.area.maxWeight ?? 0), 0);
       let cursor = x;
-      subdivisions = areas.map((item, index) => {
-        const segmentWidth = index === areas.length - 1 ? x + width - cursor : totalWeight > 0 ? width * (item.area.maxWeight ?? 0) / totalWeight : width / areas.length;
-        const result: LayoutSubdivision = { kind: "AREA", id: item.area.id, compartmentId: item.compartmentId, uldType: null,
-          maxWeight: item.area.maxWeight, maxVolume: item.area.maxVolume, x: cursor, width: segmentWidth };
-        cursor += segmentWidth;
-        return result;
+      subdivisions = areas.flatMap((item, index) => {
+        const selected=selectedAreas.get(item.key);
+        const segmentX=armEdges?holdLayoutX(armEdges[index]+armOffset,aircraft):cursor;
+        const segmentWidth=armEdges?holdLayoutX(armEdges[index+1]+armOffset,aircraft)-segmentX:index === areas.length - 1 ? x + width - cursor : totalWeight > 0 ? width * (item.area.maxWeight ?? 0) / totalWeight : width / areas.length;
+        cursor=segmentX+segmentWidth;
+        return selected?[{ kind: "AREA" as const, id: selected.area.id, compartmentId: selected.compartmentId, uldType: null,
+          maxWeight: selected.area.maxWeight, maxVolume: selected.area.maxVolume, x: segmentX, width: segmentWidth }]:[];
       });
+      if(subdivisions.length&&selectedAreas.size<areas.length){
+        const end=Math.max(...subdivisions.map(segment=>segment.x+segment.width));
+        x=Math.min(...subdivisions.map(segment=>segment.x));width=end-x;
+        plottedTo=Math.round((holdLayoutArm(x,aircraft)-armOffset)*1e6)/1e6;
+        plottedFrom=Math.round((holdLayoutArm(end,aircraft)-armOffset)*1e6)/1e6;
+      }
       if (!subdivisions.length) subdivisions = fallbackSubdivisions(row, x, width, aircraft, armOffset, doorBreaks);
     } else if (d3?.canView && d3.typeCode === d2.typeCode && d3.subtype === d2.subtype) {
       const selected = selectedHoldConfiguration(row, d2, d3);
@@ -246,17 +361,19 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
     } else {
       subdivisions = fallbackSubdivisions(row, x, width, aircraft, armOffset, doorBreaks);
     }
-    return [{ ...row, balanceFrom: arms.from, balanceTo: arms.to, x, width, subdivisions, uldPositions }];
+    return [{ ...row, balanceFrom: plottedFrom, balanceTo: plottedTo, x, width, subdivisions, uldPositions }];
   });
   const sameAircraft = d2.typeCode === d4.typeCode && d2.subtype === d4.subtype;
-  // D4 must be configured, and each applicable hold must have its own door.
-  const doorsIncluded = d4.canView && sameAircraft && aircraftD4Status(d4) === "configured" && holds.every(h => d4.doors.some(d => d.holdId === aircraftD2HoldId(h)));
+  // D4 must be configured, and each hold marked as having a door must have its own definition.
+  const doorHolds = applicable.filter(hold => hold.hasDoor !== false);
+  const doorsIncluded = d4.canView && sameAircraft && aircraftD4Status(d4) === "configured" && doorHolds.every(h => d4.doors.some(d => d.holdId === aircraftD2HoldId(h)));
   const doors: LayoutDoor[] = [];
-  if (doorsIncluded) for (const hold of holds) {
+  if (doorsIncluded) for (const hold of doorHolds) {
     const holdId = aircraftD2HoldId(hold);
     const door = d4.doors.find(d => d.holdId === holdId)!;
     if (!aircraftD4DoorComplete(door)) continue;
-    const from = door.forwardArm!, to = door.aftArm!;
+    const doorArmOffset=aircraft.reviewDoorArmOffset??0;
+    const from = door.forwardArm!+doorArmOffset, to = door.aftArm!+doorArmOffset;
     // A door provides access to its associated hold, but the opening does not
     // have to lie inside that hold's D2 balance-arm limits. Keep the geometric
     // checks to the calibrated aircraft outline and let D4 own range validity.
@@ -264,14 +381,14 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
       throw new Error(`Door ${hold.name}: its D4 Start/End values fall outside the calibrated aircraft view. Check D4 before viewing the layout.`);
     doors.push({ holdId, deckCode: hold.deckCode, x: holdLayoutX(to, aircraft), width: holdLayoutX(from, aircraft) - holdLayoutX(to, aircraft), orientation: door.orientation! });
   }
-  const uldArrangementSelectors:LayoutUldArrangementSelector[]=(aircraft.uldArrangementSelectors??[]).flatMap(selector=>{
+  const configuredArrangementSelectors:LayoutUldArrangementSelector[]=(aircraft.uldArrangementSelectors??[]).flatMap(selector=>{
     const hold=holds.find(item=>item.name===selector.holdId);
     if(!hold||!d3?.canView)return[];
     const holdId=aircraftD2HoldId(hold);
     const configurations=d3.configurations.filter(configuration=>configuration.holdId===holdId&&aircraftD3ConfigurationStatus(configuration)==="configured");
     const selected=configurations.find(configuration=>configuration.description?.trim().toUpperCase()==="DEFAULT")
       ??configurations.find(configuration=>configuration.code.trim().toUpperCase()==="DEFAULT")??configurations[0];
-    const armOffset=aircraft.holdArmOffsets?.[selector.holdId]??0;
+    const armOffset=holdArmOffset(aircraft,hold);
     const options=selector.options.flatMap(option=>{
       const row=option.referencePositionId&&option.referenceUldCode?selected?.rows.find(position=>position.rowType==="POSITION"&&position.positionId===option.referencePositionId
         &&position.uldCode===option.referenceUldCode&&position.balanceFrom!==null&&position.balanceTo!==null):undefined;
@@ -284,6 +401,8 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
     });
     return options.length?[{holdId,uldType:selector.uldType,label:selector.label,options}]:[];
   });
+  const automaticArrangementSelectors=automaticUldArrangementSelectors(holds).filter(automatic=>!configuredArrangementSelectors.some(configured=>configured.holdId===automatic.holdId&&configured.uldType===automatic.uldType));
+  const uldArrangementSelectors=[...configuredArrangementSelectors,...automaticArrangementSelectors];
   return { calibration: aircraft, typeCode: d2.typeCode, subtype: d2.subtype, holds, doors, doorsIncluded, usesGlobalHoldBoundaries,
     uldTypes:[...new Set(holds.flatMap(hold=>hold.uldPositions.map(position=>position.uldType)))].sort(),
     uldArrangementSelectors, boundaryNotes,

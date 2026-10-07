@@ -7,6 +7,7 @@ import {b2Statuses} from "@/domain/b2-status";
 import {b3Statuses} from "@/domain/b3-status";
 import {b4Statuses} from "@/domain/b4-status";
 import {carrierCarriesPassengers} from "@/domain/aircraft-c1";
+import {dashboardProgressFromStatuses} from "@/domain/dashboard-progress";
 
 const aircraftPages=["A5","B5","C1","C2","C3","C4","C5.1","C5.2","C7","C8","C11.1","C11.2","D2","D3","D4","D5","D6","D8","D9","D11","E1.1","E1.2","E2","E3","E4","E5","F1","G1","H1"] as const;
 
@@ -23,7 +24,7 @@ export async function GET(_request:Request,{params}:{params:Promise<{iata:string
   statuses.B3=passengerOperations?(passengers?b3Statuses(passengers).page:incomplete):"not_required";
   statuses.B4=passengerOperations?(baggage?b4Statuses(baggage).page:incomplete):"not_required";
   statuses.C1=aircraft?.rows.length?"configured":incomplete;
-  return NextResponse.json({carrier:iata.toUpperCase(),aircraft:null,statuses},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({carrier:iata.toUpperCase(),aircraft:null,statuses,progress:dashboardProgressFromStatuses(statuses)},{headers:{"Cache-Control":"no-store"}});
  }catch(error){
   if(error instanceof AuthenticationRequired)return NextResponse.json({error:"Authentication required."},{status:401});
   if(error instanceof CarrierUnavailable)return NextResponse.json({error:"Carrier unavailable."},{status:404});

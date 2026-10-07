@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {availableGalleyLocations,calculatePantry,pantryDraft} from '@/domain/e2-pantry-allocations';
 const galleys=[{id:'XFG',description:'Forward',maxWeight:857,centroid:200,index:-.01},{id:'XAG',description:'Aft',maxWeight:578,centroid:1000,index:.02}];
-const row={pantryCode:'L',galleyLocations:'XFG/857 XAG/546',totalWeight:1403,balanceArm:0,index:0};
+const row={pantryCode:'L',adjustmentMethod:'BY_GALLEY' as const,galleyLocations:'XFG/857 XAG/546',totalWeight:1403,balanceArm:0,index:0,isBase:false,weightAdjustment:null,indexAdjustment:null};
 test('D6 allocations calculate total, weighted arm and additive index and round-trip',()=>{
  const calculated=calculatePantry(pantryDraft(row),galleys);
  assert.equal(calculated.totalWeight,1403);assert.equal(calculated.balanceArm,(857*200+546*1000)/1403);assert.ok(Math.abs(calculated.index!-2.35)<1e-10);

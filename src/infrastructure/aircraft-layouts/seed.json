@@ -539,6 +539,76 @@
     }
   },
   {
+    "typeCode": "359",
+    "subtype": "900",
+    "version": 8,
+    "file": "a359-900-fuselage-v8.svg",
+    "sha256": "82f539486093c2fab3a0ffc93fe051a1c3b95ede76d80a9fc4f437ea35b9ef76",
+    "byteSize": 1129633,
+    "objectPath": "359/900/82f539486093c2fab3a0ffc93fe051a1c3b95ede76d80a9fc4f437ea35b9ef76.svg",
+    "noseArm": 1.84,
+    "datumDescription": "Station 0.0 is 1.84 m forward of the aircraft nose; balance arms increase aft.",
+    "datumSource": "Carrier-reviewed A350-900 drawing alignment: split forward and aft ULD hold families moved inward while retaining the confirmed 1.84 m datum, 1 October 2026.",
+    "sourceDrawing": "User-supplied Airbus_A350-900.dwg; original Airbus plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "359",
+      "subtype": "900",
+      "length": 66.8,
+      "noseArm": 1.84,
+      "armUnit": "M",
+      "tailX": 246.2,
+      "span": 239.8,
+      "centreY": 19.75,
+      "imageFrame": {
+        "x": 0,
+        "y": 0,
+        "width": 248,
+        "height": 50
+      },
+      "cropLeft": 0,
+      "cropRight": 248,
+      "holdY": 13.25,
+      "holdHeight": 13,
+      "leftDoorY": 12.75,
+      "rightDoorY": 26.75,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Airbus A350-900 outline derived from the supplied Airbus plan drawing. Split FWD and AFT hold families use inward drawing corrections; Hold 5 follows the taper of the aft fuselage.",
+      "holdArmOffsets": {
+        "FWD": 3.4,
+        "AFT": -3.4,
+        "ALB": -3.4
+      },
+      "holdSubdivisionBreaks": {
+        "AFT": [
+          51.71
+        ]
+      },
+      "holdSubdivisionDoorStarts": {
+        "AFT": [
+          "AFT"
+        ]
+      },
+      "holdProfiles": {
+        "5": {
+          "points": [
+            {
+              "arm": 54.09,
+              "halfWidth": 6.0
+            },
+            {
+              "arm": 55.0,
+              "halfWidth": 5.45
+            },
+            {
+              "arm": 56.59,
+              "halfWidth": 4.25
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
     "typeCode": "738",
     "subtype": "800",
     "version": 5,
@@ -684,6 +754,81 @@
       "rightDoorY": 35,
       "labelCharWidth": 0.58,
       "diagramCaption": "Airbus A321 general outline, shared by both decks. Fixed A320-family nose datum: 2.54 m. Hold widths are schematic. The source drawing does not define P2F cargo-door modifications."
+    }
+  },
+  {
+    "typeCode": "763",
+    "subtype": "300",
+    "version": 1,
+    "file": "b767-300-fuselage-v1.svg",
+    "sha256": "c1f1363b79fdf599be92754af5dc30c2f81ef20bb4a2fe1995993e38ce825e27",
+    "byteSize": 144353,
+    "objectPath": "763/300/c1f1363b79fdf599be92754af5dc30c2f81ef20bb4a2fe1995993e38ce825e27.svg",
+    "noseArm": 2.3495,
+    "datumDescription": "Station 0.0 is 92.5 inches (2.3495 m) forward of the airplane nose; body stations increase aft.",
+    "datumSource": "FAA Type Certificate Data Sheet A1NM, Revision 40, Boeing 767 datum statement.",
+    "sourceDrawing": "User-supplied Boeing 767-300 DXF; original plan-view vector geometry isolated for application overlays.",
+    "calibration": {
+      "typeCode": "763",
+      "subtype": "300",
+      "length": 2163,
+      "noseArm": 92.5,
+      "armUnit": "IN",
+      "tailX": 2231,
+      "span": 2139,
+      "centreY": 0,
+      "imageFrame": {
+        "x": 92,
+        "y": -150,
+        "width": 2189,
+        "height": 300
+      },
+      "cropLeft": 92,
+      "cropRight": 2281,
+      "holdY": -55,
+      "holdHeight": 110,
+      "leftDoorY": -62,
+      "rightDoorY": 62,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Boeing 767-300 master outline. Station 0.0 is fixed 92.5 inches forward of the airplane nose. Hold, door and cabin geometry will be added only from reviewed source data."
+    }
+  },
+  {
+    "typeCode": "763",
+    "subtype": "300",
+    "version": 2,
+    "file": "b767-300-fuselage-v2.svg",
+    "sha256": "bd59b18b65adb3891364e680158e11b027e319a7c9a9b59815edfbb06fe97db0",
+    "byteSize": 144311,
+    "objectPath": "763/300/bd59b18b65adb3891364e680158e11b027e319a7c9a9b59815edfbb06fe97db0.svg",
+    "noseArm": 2.3495,
+    "datumDescription": "Station 0.0 is 92.5 inches (2.3495 m) forward of the airplane nose; body stations increase aft.",
+    "datumSource": "FAA Type Certificate Data Sheet A1NM, Revision 40, Boeing 767 datum statement.",
+    "sourceDrawing": "User-supplied Boeing 767-300 DXF; original plan-view vector geometry isolated and oriented tail-left/nose-right. Cargo-door anchors reviewed against the PE ULD station schedule.",
+    "calibration": {
+      "typeCode": "763",
+      "subtype": "300",
+      "length": 2163,
+      "noseArm": 92.5,
+      "armUnit": "IN",
+      "tailX": 2213.077214,
+      "span": 2053.154428,
+      "centreY": 0,
+      "imageFrame": {
+        "x": 92,
+        "y": -150,
+        "width": 2189,
+        "height": 300
+      },
+      "cropLeft": 92,
+      "cropRight": 2281,
+      "holdY": -55,
+      "holdHeight": 110,
+      "leftDoorY": -62,
+      "rightDoorY": 62,
+      "labelCharWidth": 0.58,
+      "diagramCaption": "Boeing 767-300 master outline, tail left and nose right. Station 0.0 is 92.5 inches forward of the airplane nose. The station scale is anchored to the forward cargo-door start at the end of 11P and the aft cargo-door end at the end of bay 42; the forward opening lies across bays 12/13.",
+      "stationOriginX": 1939.213513
     }
   }
 ]

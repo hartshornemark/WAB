@@ -1,0 +1,6 @@
+import test from"node:test";import assert from"node:assert/strict";import{c11MatrixCsvTemplate,parseC11MatrixCsv}from"../src/domain/aircraft-c11-matrix-import";
+const heading="Aircraft Type IATA,Series/Sub-Type,Actual TOW,%MAC,Stabiliser Trim";
+test("C11 matrix CSV builds sorted axes and retains not-applicable cells",()=>{const result=parseC11MatrixCsv(`${heading}\n763,300,108862,25,1.3\n763,300,90718,7,3.6\n763,300,90718,12.3,2.7\n763,300,90718,25,-\n763,300,108862,7,4.6\n763,300,108862,12.3,3.6\n`,{typeCode:"763",subtype:"300"});assert.deepEqual(result.errors,[]);assert.deepEqual(result.macColumns,[7,12.3,25]);assert.deepEqual(result.rows,[{tow:90718,trimValues:[3.6,2.7,null]},{tow:108862,trimValues:[4.6,3.6,1.3]}]);assert.equal(result.valueCount,5)});
+test("C11 matrix CSV blocks another aircraft",()=>assert.match(parseC11MatrixCsv(`${heading}\n310,300,90718,7,3.6\n`,{typeCode:"763",subtype:"300"}).errors.join(" "),/does not match the open aircraft/));
+test("C11 matrix CSV blocks duplicate cells",()=>assert.match(parseC11MatrixCsv(`${heading}\n763,300,90718,7,3.6\n763,300,90718,7,3.7\n`,{typeCode:"763",subtype:"300"}).errors.join(" "),/duplicated/));
+test("C11 matrix template carries aircraft identity",()=>assert.match(c11MatrixCsvTemplate("763","300"),/763,300/));

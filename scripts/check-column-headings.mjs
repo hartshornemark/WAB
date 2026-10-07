@@ -12,7 +12,8 @@ function visit(path){
     if(!name.endsWith(".tsx")&&!name.endsWith(".py"))continue;
     const source=readFileSync(file,"utf8");
     for(const label of retired)if(source.includes(label))failures.push(`${relative(process.cwd(),file)}: retired label “${label}”`);
-    if(source.includes("H-Arm")&&!file.endsWith(join("src","components","aircraft-c8.tsx")))failures.push(`${relative(process.cwd(),file)}: H-Arm is reserved for C8 Fuel Standard`);
+    const approvedHArmFiles=[join("src","components","aircraft-c8.tsx"),join("src","components","csv-import-help.tsx")];
+    if(source.includes("H-Arm")&&!approvedHArmFiles.some(approved=>file.endsWith(approved)))failures.push(`${relative(process.cwd(),file)}: H-Arm is reserved for C8 Fuel Standard`);
   }
 }
 

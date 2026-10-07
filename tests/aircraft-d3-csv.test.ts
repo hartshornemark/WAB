@@ -9,9 +9,40 @@ const options = [
   { code: "PAG", type: "LD7", baseCode: "6", baseWidth: 125, baseLength: 88, adopted: true },
   { code: "PMC", type: "LD7", baseCode: "6", baseWidth: 125, baseLength: 96, adopted: true },
 ];
+const legacyTemplate = `Group ID / Config,Position Name,Max Weight,Centroid,FWD,AFT,Index per wt unit,Fore-Aft Dimension (in)
+AKE,11L,1587,14.026,13.259,14.793,-0.004476,
+AKE,11R,1587,14.026,13.259,14.793,-0.004476,
+PLA,11,3174,14.026,13.259,14.793,-0.004476,
+PMC,11P,5102,14.479,13.259,15.698,-0.004385,`;
+const geometry = { formula: { referenceArm: 20, constantC: 1000 }, lengthUnit: "M" };
+
+test("D3 download uses explicit aircraft identity and hold routing",()=>assert.equal(aircraftD3CsvTemplate("321","P2F"),"Aircraft Type IATA,Series/Sub-Type,Deck ID,Hold ID,Hold Sub Code,Compartment ID,Bay ID,ULD ID / Config,Max Weight,Centroid,FWD,AFT,Index per wt unit,Fore-Aft Dimension (in)\n321,P2F,,,,,,,,,,,,\n"));
+test("explicit routing assigns a Bay to its Deck, Hold Sub Code and Compartment",()=>{
+  const csv=`${aircraftD3CsvTemplate("321","P2F").split("\n")[0]}\n321,P2F,LOWER,FWD,FLF,A,11,PAG,4626,20,19,21,0,125`;
+  const result=parseAircraftD3Csv(csv,["A"],options,geometry,{holdId:"LOWER:FLF",deckName:"Lower Deck",typeCode:"321",subtype:"P2F"});
+  assert.deepEqual(result.errors,[]);
+  assert.equal(result.atomicBays[0].id,"11");
+  assert.equal(result.atomicBays[0].compartmentId,"A");
+});
+test("optional aft sub-codes do not discard bays in the same saved D2 compartment",()=>{
+  const header=aircraftD3CsvTemplate("310","300").split("\n")[0];
+  const csv=`${header}
+310,300,LOWER,AFT,ALF,4,41L,AKE,1588,30.171,29.404,30.938,0.00175,
+310,300,LOWER,AFT,ALF,4,41R,AKE,1588,30.171,29.404,30.938,0.00175,
+310,300,LOWER,AFT,ALM,4,42L,AKE,1588,31.753,30.986,32.520,0.00254,
+310,300,LOWER,AFT,ALM,4,42R,AKE,1588,31.753,30.986,32.520,0.00254,
+310,300,LOWER,AFT,ALA,4,43L,AKE,1588,33.334,32.567,34.101,0.00333,
+310,300,LOWER,AFT,ALA,4,43R,AKE,1588,33.334,32.567,34.101,0.00333,`;
+  const result=parseAircraftD3Csv(csv,["4"],options,geometry,{holdId:"LOWER:ALA",deckName:"Lower",typeCode:"310",subtype:"300"});
+  assert.deepEqual(result.errors,[]);
+  assert.deepEqual(result.atomicBays.map(bay=>bay.id),["41L","41R","42L","42R","43L","43R"]);
+  assert.equal(result.sourceRowCount,6);
+  assert.equal(result.matchedRowCount,6);
+});
+test("D3 blocks a CSV for another aircraft",()=>{const csv=`${aircraftD3CsvTemplate("310","300").split("\n")[0]}\n310,300,LOWER,FWD,FLF,A,11,PAG,4626,20,19,21,0,125`;assert.match(parseAircraftD3Csv(csv,["A"],options,geometry,{holdId:"LOWER:FLF",typeCode:"359",subtype:"900"}).errors.join(" "),/does not match the open aircraft/)});
 
 test("AHM565 CSV derives atomic bays and overlapping loading footprints", () => {
-  const result = parseAircraftD3Csv(aircraftD3CsvTemplate, ["1"], options);
+  const result = parseAircraftD3Csv(legacyTemplate, ["1"], options);
   assert.deepEqual(result.errors, []);
   assert.deepEqual(result.atomicBays.map(bay => bay.id), ["11L", "11R"]);
   assert.equal(result.rows.length, 4);
@@ -20,7 +51,7 @@ test("AHM565 CSV derives atomic bays and overlapping loading footprints", () => 
 });
 
 test("different ULD codes at the same position remain separate lock arrangements", () => {
-  const csv = `${aircraftD3CsvTemplate}\nPAG,11P,5102,14.326,13.106,15.545,-0.004412`;
+  const csv = `${legacyTemplate}\nPAG,11P,5102,14.326,13.106,15.545,-0.004412`;
   const result = parseAircraftD3Csv(csv, ["1"], options);
   assert.deepEqual(result.errors, []);
   const arrangements = result.rows.filter(row => row.positionId === "11P" && row.uldType === "LD7");
@@ -30,7 +61,7 @@ test("different ULD codes at the same position remain separate lock arrangements
 });
 
 test("AHM565 CSV expands combined position names and filters to the selected hold compartments", () => {
-  const csv = `${aircraftD3CsvTemplate}\nAKE,12L;12R,1587,15.609,14.842,16.376,-0.004159\nAKE,31L,1587,41.253,40.486,42.020,0.000969`;
+  const csv = `${legacyTemplate}\nAKE,12L;12R,1587,15.609,14.842,16.376,-0.004159\nAKE,31L,1587,41.253,40.486,42.020,0.000969`;
   const result = parseAircraftD3Csv(csv, ["1"], options);
   assert.deepEqual(result.errors, []);
   assert.ok(result.atomicBays.some(bay => bay.id === "12L"));
@@ -40,17 +71,16 @@ test("AHM565 CSV expands combined position names and filters to the selected hol
 
 test("AHM565 CSV reports a recognised ULD code not selected on B5", () => {
   const unavailable = options.map(option => ({ ...option, adopted: option.code !== "PMC" }));
-  const result = parseAircraftD3Csv(aircraftD3CsvTemplate, ["1"], unavailable);
+  const result = parseAircraftD3Csv(legacyTemplate, ["1"], unavailable);
   assert.ok(result.errors.some(error => error.includes("PMC") && error.includes("B5")));
 });
 
 test("the same ULD code cannot appear twice with different lock limits", () => {
-  const csv = `${aircraftD3CsvTemplate}\nPMC,11P,5102,14.000,13.000,15.000,-0.004500`;
+  const csv = `${legacyTemplate}\nPMC,11P,5102,14.000,13.000,15.000,-0.004500`;
   const result = parseAircraftD3Csv(csv, ["1"], options);
   assert.ok(result.errors.some(error => error.includes("11P / PMC") && error.includes("different limits")));
 });
 
-const geometry = { formula: { referenceArm: 20, constantC: 1000 }, lengthUnit: "M" };
 test("index-only single positions derive their geometry without L/R suffixes", () => {
   const csv = "Group ID / Config,Position Name,Max Weight,Index per wt unit\nAKE,11,1587,-0.01\nAKE,12,1587,-0.008";
   const result = parseAircraftD3Csv(csv, ["1"], options, geometry);

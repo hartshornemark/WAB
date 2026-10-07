@@ -20,6 +20,7 @@ export type AircraftC5Snapshot={canView:boolean;canEdit:boolean;revision:string;
 export class AircraftC5Invalid extends Error{}
 export class AircraftC5Denied extends Error{}
 export class AircraftC5Conflict extends Error{}
+export const AIRCRAFT_C5_ENVELOPE_CODE_MAX_LENGTH=24;
 
 export function withAircraftC5Maximum(values:AircraftC5Values,section:"tow"|"law"|"zfw",maximum:number):AircraftC5Values{
   const conditionalEnvelopes=structuredClone(values.conditionalEnvelopes??emptyConditionalEnvelopes());
@@ -58,7 +59,7 @@ function progressConditionalEnvelopes(value:unknown,phase:AircraftC5Phase,maximu
   const codes=new Set<string>();
   return value.map((entry,index)=>{
     const row=entry as Record<string,unknown>,code=String(row.code??"").trim().toUpperCase(),configurationCode=String(row.configurationCode??"").trim().toUpperCase()||null,basis=String(row.conditionBasis??"") as EnvelopeConditionBasis,description=String(row.conditionDescription??"").trim(),lower=nullableBound(row.lowerBound,`condition ${index+1} lower limit`),upper=nullableBound(row.upperBound,`condition ${index+1} upper limit`);
-    if(!code)throw new AircraftC5Invalid(`Enter a code for conditional envelope ${index+1}.`);if(codes.has(code))throw new AircraftC5Invalid(`Conditional envelope code ${code} is duplicated.`);codes.add(code);
+    if(!code)throw new AircraftC5Invalid(`Enter a code for conditional envelope ${index+1}.`);if(code.length>AIRCRAFT_C5_ENVELOPE_CODE_MAX_LENGTH)throw new AircraftC5Invalid(`Conditional envelope code ${code} must be ${AIRCRAFT_C5_ENVELOPE_CODE_MAX_LENGTH} characters or fewer.`);if(codes.has(code))throw new AircraftC5Invalid(`Conditional envelope code ${code} is duplicated.`);codes.add(code);
     if(!["TAKE_OFF_FUEL","LANDING_FUEL","OTHER"].includes(basis))throw new AircraftC5Invalid(`Select the condition for ${code}.`);
     if(basis==="OTHER"&&!description)throw new AircraftC5Invalid(`Describe the operational condition for ${code}.`);
     if(lower!==null&&upper!==null&&lower>=upper)throw new AircraftC5Invalid(`${code} lower condition limit must be below its upper limit.`);

@@ -20,8 +20,24 @@ test("seat map uses current C4 index conversion and excludes omitted rows",()=>{
 test("seat map uses carrier nose arm and no cargo offsets",()=>{
  const snapshot={...d8,typeCode:"320",subtype:"200"};
  const formula={...c4,typeCode:"320",subtype:"200",values:{...c4.values,datum:1}};
- const result=buildSeatMap(snapshot,formula,{...d5,typeCode:"320",subtype:"200"});
+ const result=build(snapshot,formula,{...d5,typeCode:"320",subtype:"200"},undefined,{...A320_LAYOUT,stationOriginX:99});
+ assert.equal(result.calibration.stationOriginX,undefined);
  assert.equal(result.decks[0].rows[0].x,holdLayoutX(10,{...A320_LAYOUT,noseArm:1}));
+});
+test("a saved seat-map calibration shifts the complete overlay without changing its arms",()=>{
+ const baseline=build(d8,c4,d5,undefined,A319_LAYOUT);
+ const shifted=build(d8,c4,d5,undefined,A319_LAYOUT,7.5);
+ assert.equal(shifted.longitudinalShift,7.5);
+ assert.equal(shifted.decks[0].rows[0].centroid,baseline.decks[0].rows[0].centroid);
+ assert.equal(shifted.decks[0].areas[0].centroid,baseline.decks[0].areas[0].centroid);
+ assert.equal(shifted.decks[0].rows[0].x-baseline.decks[0].rows[0].x,7.5);
+ assert.equal(shifted.decks[0].areas[0].x-baseline.decks[0].areas[0].x,7.5);
+});
+test("a review outline can retain its candidate nose origin without changing C4",()=>{
+ const calibration={...A319_LAYOUT,seatMapNoseArm:6.3825};
+ const result=build(d8,{...c4,values:{...c4.values,datum:0}},d5,undefined,calibration);
+ assert.equal(result.calibration.noseArm,6.3825);
+ assert.equal(result.decks[0].rows[0].x,holdLayoutX(10,{...calibration,noseArm:6.3825}));
 });
 test("seat grouping override controls the drawn row",()=>{
  const result=buildSeatMap({...d8,rows:d8.rows.map((r,i)=>i? r:{...r,seatGroupingOverride:"1-3"})},c4,d5);
@@ -78,19 +94,32 @@ test("D9 configurations share physical rows but apply blocked centres independen
 });
 
 test("empty groups preserve the opposite side of the aisle",async()=>{
- const {seatMapGroupSlots,seatMapGroupStarts}=await import("../src/domain/seat-map");
+ const {seatMapGroupSlots,seatMapGroupStarts,seatMapGroupContentStarts}=await import("../src/domain/seat-map");
  const full=seatMapGroupStarts([2,2],3);
  assert.deepEqual(seatMapGroupSlots([0,2],[[2,2]]),[2,2]);
  assert.deepEqual(seatMapGroupStarts(seatMapGroupSlots([0,2],[[2,2]]),3),full);
  assert.deepEqual(seatMapGroupSlots([2,0],[]),[2,2]);
  assert.ok(full[1]>0);assert.ok(full[0]+3<0);
+ assert.deepEqual(seatMapGroupSlots([2,3,2],[[2,4,2]]),[2,4,2]);
+ assert.deepEqual(seatMapGroupSlots([2,3,0],[[2,4,2]]),[2,4,2]);
+ const wideStarts=seatMapGroupStarts([2,4,2],3);
+ const reducedStarts=seatMapGroupContentStarts([2,3,2],[2,4,2],3);
+ assert.equal(reducedStarts[0],wideStarts[0]);
+ assert.equal(reducedStarts[1],wideStarts[1]+(3+.35)/2);
+ assert.equal(reducedStarts[2],wideStarts[2]);
 });
 
 test("one close row pair cannot collapse all seat glyphs",async()=>{
- const {seatMapSeatDepth,seatMapOverlaps}=await import("../src/domain/seat-map");
+ const {seatMapDrawingScale,seatMapLongitudinalShift,seatMapMirrorsAircraftProfile,seatMapSeatDepth,seatMapOverlaps}=await import("../src/domain/seat-map");
  const rows=[0,10,20,20.6,30,40].map((x,i)=>({x,rowNumber:i+1,areaId:"A",centroid:x,groups:[2,2],blockedCentres:false,seats:4}));
  assert.equal(seatMapSeatDepth(rows),2.7);
  assert.deepEqual(seatMapOverlaps(rows),[[3,4]]);
  assert.equal(seatMapSeatDepth([{x:0}]),2.7);
  assert.deepEqual(seatMapOverlaps(rows.filter(r=>r.rowNumber!==4)),[]);
+ assert.equal(seatMapDrawingScale({imageFrame:{x:92,y:-150,width:2189,height:300}}),6);
+ assert.ok(Math.abs(seatMapSeatDepth(rows.filter(r=>r.rowNumber!==4),6)-7.2)<1e-9);
+ assert.equal(seatMapMirrorsAircraftProfile({typeCode:"763",subtype:"300"}),true);
+ assert.equal(seatMapMirrorsAircraftProfile({typeCode:"319",subtype:"100"}),false);
+ assert.ok(Math.abs(seatMapLongitudinalShift({typeCode:"763",subtype:"300",span:2053.154428,length:2163})+96.82)<.001);
+ assert.equal(seatMapLongitudinalShift({typeCode:"319",subtype:"100",span:236,length:33.84}),0);
 });

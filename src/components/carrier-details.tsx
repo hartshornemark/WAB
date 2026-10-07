@@ -53,5 +53,5 @@ export function CarrierDetails({ iata, initial, children, commodityEditor, initi
     {!editing && !saved.canEdit && <p className="muted">These details are read-only for your account.</p>}
     <p role="status" aria-live="polite">{message}</p>
     {step === "general" && commodityEditor}
-  </section>{children}<nav className="section-navigation" aria-label="Carrier setup sections">{step === "contact" ? <Link className="section-link" href={`/carrier/${encodeURIComponent(iata)}/a5`}>NEXT: A5. AUTOMATIC DOCUMENTS →</Link> : <Link className="section-link secondary" href={`/carrier/${encodeURIComponent(iata)}/a5`}>← A5. AUTOMATIC DOCUMENTS</Link>}{step === "general" && !editing && <Link className="section-link" href={`/carrier/${encodeURIComponent(iata)}/crew-weights`}>NEXT: B2. CREW →</Link>}</nav></>}</SaveScope>;
+  </section>{children}<nav className="section-navigation" aria-label="Carrier setup sections">{step === "contact" ? <Link className="section-link" href={`/carrier/${encodeURIComponent(iata)}?sheet=B1`}>NEXT: B1. UNITS &amp; CODES →</Link> : <Link className="section-link secondary" href={`/carrier/${encodeURIComponent(iata)}`}>← A2. CARRIERS’ CONTACTS</Link>}{step === "general" && !editing && <Link className="section-link" href={`/carrier/${encodeURIComponent(iata)}/crew-weights`}>NEXT: B2. CREW →</Link>}</nav></>}</SaveScope>;
 }

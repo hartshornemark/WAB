@@ -23,6 +23,45 @@ export type Database = {
         Update: { Carrier_IATA?: string; logo_path?: string | null; updated_at?: string };
         Relationships: [];
       };
+      Aircraft_Dashboard_Status_Snapshots:{
+        Row:{Carrier_IATA:string;Aircraft_Type_IATA:string;Aircraft_Series_Subtype:string;Overall_Status:string;Attention_Pages:Json;Page_Statuses:Json;Page_Progress:Json;Calculation_Version:number;Updated_At:string};
+        Insert:{Carrier_IATA:string;Aircraft_Type_IATA:string;Aircraft_Series_Subtype:string;Overall_Status:string;Attention_Pages:Json;Page_Statuses:Json;Page_Progress:Json;Calculation_Version:number;Updated_At?:string};
+        Update:{Overall_Status?:string;Attention_Pages?:Json;Page_Statuses?:Json;Page_Progress?:Json;Calculation_Version?:number;Updated_At?:string};
+        Relationships:[];
+      };
+      Flight_Schedule_Imports:{
+        Row:{Import_ID:string;Carrier_IATA:string;Source_Carrier_IATA:string;Source_Format:string;Original_File_Name:string;File_SHA256:string;File_Size_Bytes:number;Source_Encoding:string;SSIM_Edition:string|null;Season_Code:string|null;Creator_Reference:string|null;Coverage_Start_Date:string|null;Coverage_End_Date:string|null;Status:string;Total_Record_Count:number;Accepted_Record_Count:number;Rejected_Record_Count:number;Normalized_Leg_Count:number;Validation_Summary:Json;Uploaded_By:string;Uploaded_At:string;Validated_At:string|null;Published_By:string|null;Published_At:string|null;Superseded_At:string|null};
+        Insert:{Import_ID?:string;Carrier_IATA:string;Source_Carrier_IATA:string;Source_Format?:string;Original_File_Name:string;File_SHA256:string;File_Size_Bytes:number;Source_Encoding?:string;SSIM_Edition?:string|null;Season_Code?:string|null;Creator_Reference?:string|null;Coverage_Start_Date?:string|null;Coverage_End_Date?:string|null;Status?:string;Total_Record_Count?:number;Accepted_Record_Count?:number;Rejected_Record_Count?:number;Normalized_Leg_Count?:number;Validation_Summary?:Json;Uploaded_By?:string;Uploaded_At?:string;Validated_At?:string|null;Published_By?:string|null;Published_At?:string|null;Superseded_At?:string|null};
+        Update:{SSIM_Edition?:string|null;Season_Code?:string|null;Creator_Reference?:string|null};
+        Relationships:[];
+      };
+      Flight_Schedule_Import_Records:{
+        Row:{Import_ID:string;Carrier_IATA:string;Line_Number:number;Record_Type:string;Raw_Record:string;Parse_Status:string;Validation_Messages:Json;Parsed_Data:Json};
+        Insert:{Import_ID:string;Carrier_IATA:string;Line_Number:number;Record_Type:string;Raw_Record:string;Parse_Status:string;Validation_Messages?:Json;Parsed_Data?:Json};
+        Update:Record<string,never>;
+        Relationships:[];
+      };
+      Scheduled_Flight_Legs:{
+        Row:{Schedule_Leg_ID:string;Import_ID:string;Carrier_IATA:string;Source_Line_Number:number;Airline_Designator:string;Flight_Number:string;Operational_Suffix:string;Itinerary_Variation_Identifier:string;Leg_Sequence_Number:number;Service_Type:string;Period_Start_Date:string;Period_End_Date:string;Operating_Days:string;Departure_Airport_IATA:string;Arrival_Airport_IATA:string;Departure_Time_Local:string;Arrival_Time_Local:string;Arrival_Day_Offset:number;Departure_UTC_Offset_Minutes:number|null;Arrival_UTC_Offset_Minutes:number|null;Departure_Terminal:string|null;Arrival_Terminal:string|null;Aircraft_Type_IATA:string|null;Aircraft_Series_Subtype:string|null;Aircraft_Configuration:string|null;Traffic_Restriction_Codes:string|null;Additional_Data:Json};
+        Insert:{Schedule_Leg_ID?:string;Import_ID:string;Carrier_IATA:string;Source_Line_Number:number;Airline_Designator:string;Flight_Number:string;Operational_Suffix?:string;Itinerary_Variation_Identifier?:string;Leg_Sequence_Number?:number;Service_Type:string;Period_Start_Date:string;Period_End_Date:string;Operating_Days:string;Departure_Airport_IATA:string;Arrival_Airport_IATA:string;Departure_Time_Local:string;Arrival_Time_Local:string;Arrival_Day_Offset?:number;Departure_UTC_Offset_Minutes?:number|null;Arrival_UTC_Offset_Minutes?:number|null;Departure_Terminal?:string|null;Arrival_Terminal?:string|null;Aircraft_Type_IATA?:string|null;Aircraft_Series_Subtype?:string|null;Aircraft_Configuration?:string|null;Traffic_Restriction_Codes?:string|null;Additional_Data?:Json};
+        Update:Record<string,never>;
+        Relationships:[];
+      };
+      MASTER_Flight_Service_Types:{
+        Row:{Service_Type_Code:string;Service_Type_Name:string;Application:string|null;Type_Of_Operation:string|null;Description:string|null;Source_Reference:string;Active:boolean;Updated_At:string};
+        Insert:{Service_Type_Code:string;Service_Type_Name:string;Application?:string|null;Type_Of_Operation?:string|null;Description?:string|null;Source_Reference?:string;Active?:boolean;Updated_At?:string};
+        Update:{Service_Type_Name?:string;Application?:string|null;Type_Of_Operation?:string|null;Description?:string|null;Source_Reference?:string;Active?:boolean;Updated_At?:string};Relationships:[];
+      };
+      MASTER_Airports:{
+        Row:{Airport_IATA:string;Airport_ICAO:string|null;Airport_Name:string;City_Name:string|null;Country_Code:string|null;IANA_Time_Zone:string;Active:boolean;Updated_At:string};
+        Insert:{Airport_IATA:string;Airport_ICAO?:string|null;Airport_Name:string;City_Name?:string|null;Country_Code?:string|null;IANA_Time_Zone:string;Active?:boolean;Updated_At?:string};
+        Update:{Airport_ICAO?:string|null;Airport_Name?:string;City_Name?:string|null;Country_Code?:string|null;IANA_Time_Zone?:string;Active?:boolean;Updated_At?:string};Relationships:[];
+      };
+      Scheduled_Flight_Load_Control_Parameters:{
+        Row:{Schedule_Leg_ID:string;Carrier_IATA:string;Aircraft_Series_Subtype:string;Crew_Code_ID:string;Pantry_Code_ID:string;Passenger_Weight_Basis:string;Passenger_Flight_Variation:string|null;Baggage_Weight_Basis:string;Baggage_Flight_Variation:string|null;Remarks:string|null;Updated_By:string;Updated_At:string};
+        Insert:{Schedule_Leg_ID:string;Carrier_IATA:string;Aircraft_Series_Subtype:string;Crew_Code_ID:string;Pantry_Code_ID:string;Passenger_Weight_Basis:string;Passenger_Flight_Variation?:string|null;Baggage_Weight_Basis:string;Baggage_Flight_Variation?:string|null;Remarks?:string|null};
+        Update:{Aircraft_Series_Subtype?:string;Crew_Code_ID?:string;Pantry_Code_ID?:string;Passenger_Weight_Basis?:string;Passenger_Flight_Variation?:string|null;Baggage_Weight_Basis?:string;Baggage_Flight_Variation?:string|null;Remarks?:string|null};Relationships:[];
+      };
       MASTER_Carrier_Contact: {
         Row: { Carrier_IATA: string; Carrier_Name: string; Carrier_ICAO: string };
         Insert: { Carrier_IATA: string; Carrier_Name: string; Carrier_ICAO: string };
@@ -34,6 +73,8 @@ export type Database = {
     Functions: {
       aircraft_layout_library:{Args:Record<string,never>;Returns:Json};
       get_aircraft_layout:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
+      get_aircraft_overlay_calibration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_overlay_kind:string};Returns:Json};
+      save_aircraft_overlay_calibration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_overlay_kind:string;p_offset_x:number};Returns:Json};
       activate_aircraft_layout:{Args:{p_id:string};Returns:undefined};
       get_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
       save_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
@@ -54,6 +95,22 @@ export type Database = {
       can_create_carrier:{Args:Record<string,never>;Returns:boolean};
       create_carrier:{Args:{p_iata:string;p_name:string;p_icao:string};Returns:Json};
       get_carrier_details: { Args: { p_iata: string }; Returns: Json };
+      create_ssim_schedule_import:{Args:{p_iata:string;p_source_carrier_iata:string;p_file_name:string;p_file_sha256:string;p_file_size_bytes:number;p_source_encoding?:string;p_ssim_edition?:string|null;p_season_code?:string|null;p_creator_reference?:string|null};Returns:string};
+      stage_ssim_schedule_import:{Args:{p_iata:string;p_import_id:string;p_records:Json;p_legs:Json};Returns:Json};
+      publish_ssim_schedule_import:{Args:{p_iata:string;p_import_id:string};Returns:Json};
+      get_daily_flight_schedule:{Args:{p_iata:string;p_service_date:string;p_airport_iata?:string|null};Returns:{Schedule_Leg_ID:string;Import_ID:string;Carrier_IATA:string;Service_Date:string;Airline_Designator:string;Flight_Number:string;Operational_Suffix:string;Itinerary_Variation_Identifier:string;Leg_Sequence_Number:number;Service_Type:string;Departure_Airport_IATA:string;Arrival_Airport_IATA:string;Departure_Local:string;Arrival_Local:string;Departure_UTC_Offset_Minutes:number|null;Arrival_UTC_Offset_Minutes:number|null;Departure_Terminal:string|null;Arrival_Terminal:string|null;Aircraft_Type_IATA:string|null;Aircraft_Configuration:string|null;Additional_Data:Json}[]};
+      get_flight_schedule_workspace:{Args:{p_iata:string};Returns:Json};
+      get_flight_schedule_service_types:{Args:Record<string,never>;Returns:Json};
+      save_flight_schedule_leg_parameters:{Args:{p_iata:string;p_schedule_leg_id:string;p_values:Json};Returns:Json};
+      create_manual_schedule_import:{Args:{p_iata:string;p_name:string;p_season_code?:string|null};Returns:string};
+      create_manual_schedule_revision:{Args:{p_iata:string;p_source_import_id:string};Returns:string};
+      save_manual_schedule_leg:{Args:{p_iata:string;p_import_id:string;p_schedule_leg_id:string|null;p_values:Json};Returns:Json};
+      save_manual_schedule_itinerary:{Args:{p_iata:string;p_import_id:string;p_values:Json};Returns:Json};
+      get_master_airport_configuration:{Args:Record<string,never>;Returns:Json};
+      save_master_airport:{Args:{p_original_iata:string|null;p_values:Json};Returns:Json};
+      get_flight_schedule_edition:{Args:{p_iata:string;p_import_id:string};Returns:Json};
+      delete_manual_schedule_leg:{Args:{p_iata:string;p_import_id:string;p_schedule_leg_id:string};Returns:Json};
+      delete_flight_schedule_edition:{Args:{p_iata:string;p_import_id:string};Returns:boolean};
       save_carrier_details: { Args: { p_iata: string; p_revision: string; p_values: Json }; Returns: Json };
       save_carrier_contacts: { Args: { p_iata: string; p_revision: string; p_values: Json }; Returns: Json };
       can_manage_carrier_logo: { Args: { p_iata: string }; Returns: boolean };
@@ -81,9 +138,11 @@ export type Database = {
       save_aircraft_c11:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_values:Json};Returns:Json};
       get_aircraft_d2:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d2:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_section:string;p_values:Json};Returns:Json};
+      import_aircraft_d2:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_source_type_code:string;p_source_subtype:string;p_bulk:Json|null;p_uld:Json|null};Returns:Json};
       get_aircraft_d3:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d3_configuration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_original_code:string|null;p_values:Json};Returns:Json};
-      import_aircraft_d3_configurations:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_values:Json};Returns:Json};
+      import_aircraft_d3_configurations:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_source_type_code:string;p_source_subtype:string;p_values:Json};Returns:Json};
+      import_aircraft_g1:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_source_type_code:string;p_source_subtype:string;p_rows:Json};Returns:Json};
       delete_aircraft_d3_configuration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_hold_id:string;p_code:string};Returns:Json};
       get_aircraft_d4:{Args:{p_iata:string;p_type_code:string;p_subtype:string};Returns:Json};
       save_aircraft_d4:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_revision:string;p_doors:Json};Returns:Json};

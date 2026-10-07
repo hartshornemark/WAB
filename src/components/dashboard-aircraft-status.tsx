@@ -3,13 +3,14 @@
 import {createContext,useContext,useEffect,useMemo,useState,type ReactNode} from "react";
 import type{DashboardSummaryStatus} from "@/domain/dashboard-summary";
 
-type DisplayStatus=DashboardSummaryStatus|"loading"|"unavailable";
+type DisplayStatus=DashboardSummaryStatus|"loading"|"refreshing"|"unavailable";
 type AircraftStatus={status:DisplayStatus;attention:string[]};
 const labels:Record<DisplayStatus,string>={
   configured:"CONFIGURED",
   partial:"PARTIALLY CONFIGURED",
   incomplete:"INCOMPLETE",
   loading:"LOADING STATUS",
+  refreshing:"UPDATING STATUS",
   unavailable:"STATUS UNAVAILABLE",
 };
 
@@ -22,13 +23,24 @@ export function DashboardAircraftStatusProvider({iata,aircraft,children}:{iata:s
   const statuses=resultState.scope===initial?resultState.values:initial;
   useEffect(()=>{
     const controller=new AbortController();
+    const timers:number[]=[];
     const setStatuses=(values:Record<string,AircraftStatus>)=>setResultState({scope:initial,values});
-    fetch(`/api/carrier/${encodeURIComponent(iata)}/aircraft-dashboard-statuses`,{cache:"no-store",credentials:"same-origin",signal:controller.signal})
-      .then(async response=>{if(!response.ok)throw new Error("Status unavailable");return response.json() as Promise<{statuses?:Record<string,{status:DashboardSummaryStatus|"unavailable";attention:string[]}>}>})
-      .then(result=>setStatuses(Object.fromEntries(Object.keys(initial).map(key=>[key,result.statuses?.[key]??{status:"unavailable",attention:[]}]))))
-      .catch(error=>{if((error as Error).name!=="AbortError")setStatuses(Object.fromEntries(Object.keys(initial).map(key=>[key,{status:"unavailable",attention:[]}])))});
-    return()=>controller.abort();
-  },[iata,initial]);
+    const unavailable=()=>Object.fromEntries(Object.keys(initial).map(key=>[key,{status:"unavailable" as const,attention:[]}])) as Record<string,AircraftStatus>;
+    async function load(attempt=0):Promise<void>{
+      try{
+        const query=new URLSearchParams();
+        aircraft.forEach(row=>query.append("aircraft",aircraftKey(row.typeCode,row.subtype)));
+        const response=await fetch(`/api/carrier/${encodeURIComponent(iata)}/aircraft-dashboard-statuses?${query}`,{cache:"no-store",credentials:"same-origin",signal:controller.signal});
+        if(!response.ok)throw new Error("Status unavailable");
+        const result=await response.json() as {statuses?:Record<string,{status:DashboardSummaryStatus|"unavailable";attention:string[]}>;refreshing?:string[]};
+        const refreshing=new Set(result.refreshing??[]);
+        setStatuses(Object.fromEntries(Object.keys(initial).map(key=>[key,refreshing.has(key)?{status:"refreshing",attention:[]}:result.statuses?.[key]??{status:"unavailable",attention:[]}])));
+        if(refreshing.size&&attempt<5)timers.push(window.setTimeout(()=>void load(attempt+1),2_000));
+      }catch(error){if((error as Error).name!=="AbortError")setStatuses(unavailable())}
+    }
+    void load();
+    return()=>{timers.forEach(timer=>window.clearTimeout(timer));controller.abort();};
+  },[iata,aircraft,initial]);
   return <DashboardStatusesContext.Provider value={statuses}>{children}</DashboardStatusesContext.Provider>;
 }
 
