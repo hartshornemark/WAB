@@ -16,6 +16,8 @@ erDiagram
     Flight_Schedule_Imports ||--o{ Flight_Schedule_Import_Records : contains
     Flight_Schedule_Imports ||--o{ Scheduled_Flight_Legs : normalizes
     Flight_Schedule_Import_Records ||--o{ Scheduled_Flight_Legs : sources
+    MASTER_Carrier_Contact ||--o{ Schedule_Segment_Load_Control_Defaults : owns
+    Schedule_Segment_Load_Control_Defaults ||--o{ Scheduled_Flight_Legs : supplies
 
     Flight_Schedule_Imports {
         uuid Import_ID PK
@@ -52,6 +54,18 @@ erDiagram
         time Departure_Time_Local
         time Arrival_Time_Local
         varchar Aircraft_Type_IATA
+    }
+
+    Schedule_Segment_Load_Control_Defaults {
+        varchar Carrier_IATA PK
+        char Departure_Airport_IATA PK
+        char Arrival_Airport_IATA PK
+        varchar Aircraft_Type_IATA PK
+        varchar Aircraft_Series_Subtype
+        varchar Crew_Code_ID
+        varchar Pantry_Code_ID
+        text Passenger_Weight_Basis
+        text Baggage_Weight_Basis
     }
 ```
 
@@ -143,7 +157,19 @@ The application can use this result to create a flight work item and then resolv
 - the selected passenger and baggage variation codes where applicable;
 - operational remarks.
 
-The schedule screen shows every published recurring leg and its readiness. Values are validated against the carrier's configured aircraft, crew codes, pantry codes and B3 flight variations. When a replacement schedule is published, parameters are copied to matching flight legs using flight identity, itinerary variation, leg sequence, route and aircraft type.
+The schedule screen shows every published recurring leg and its readiness. Values are validated against the carrier's configured aircraft, crew codes, pantry codes and B3 flight variations.
+
+### Reusable segment defaults
+
+`Schedule_Segment_Load_Control_Defaults` stores the normal Load Control setup for a directional segment and aircraft type. For example, `MLE → RSI / 319` is separate from `RSI → MLE / 319`, and either route can have a different default from the same route operated by another aircraft type. One saved row supplies the subtype, crew code, pantry code, passenger-weight method, baggage-weight method and optional flight-variation codes to all matching published legs.
+
+Saving a segment default applies it immediately to matching legs in the current published schedule unless a leg has been deliberately configured as a flight-level override. Publishing a later schedule resolves its parameters in this order:
+
+1. carry forward a matching flight-level override using flight identity, itinerary variation, leg sequence, route and aircraft type;
+2. apply the latest directional segment default to every remaining matching leg;
+3. leave unmatched legs for administrator review.
+
+This keeps exceptional flights intact while allowing ordinary schedules and manual revisions to use the latest reusable defaults. Removing a segment default removes only inherited values from current matching legs; explicit flight overrides remain unchanged.
 
 ## Manual schedules
 

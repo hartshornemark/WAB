@@ -35,6 +35,16 @@ export async function saveScheduleParameters(iata:string,scheduleLegId:string,va
   catch(error){console.error("[Schedule parameters]",error);return{ok:false,message:message(error)}}
 }
 
+export async function saveScheduleSegmentDefault(iata:string,departureAirport:string,arrivalAirport:string,aircraftType:string,values:unknown):Promise<ScheduleActionState>{
+  try{await(await flightScheduleServices()).saveSegmentDefault(iata,departureAirport,arrivalAirport,aircraftType,values);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:`Defaults saved for ${departureAirport}–${arrivalAirport}. Matching schedule legs have been updated.`}}
+  catch(error){console.error("[Schedule segment defaults]",error);return{ok:false,message:message(error)}}
+}
+
+export async function deleteScheduleSegmentDefault(iata:string,departureAirport:string,arrivalAirport:string,aircraftType:string):Promise<ScheduleActionState>{
+  try{await(await flightScheduleServices()).deleteSegmentDefault(iata,departureAirport,arrivalAirport,aircraftType);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:`Defaults removed for ${departureAirport}–${arrivalAirport}.`}}
+  catch(error){console.error("[Schedule segment default deletion]",error);return{ok:false,message:message(error)}}
+}
+
 export async function createManualSchedule(iata:string,name:string,seasonCode:string):Promise<ScheduleActionState>{
   try{const importId=await(await flightScheduleServices()).createManual(iata,name,seasonCode);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"Manual schedule created. Add its first flight leg.",importId,status:"DRAFT"}}
   catch(error){console.error("[Manual schedule create]",error);return{ok:false,message:message(error)}}

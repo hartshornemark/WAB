@@ -100,8 +100,11 @@ export type Database = {
       publish_ssim_schedule_import:{Args:{p_iata:string;p_import_id:string};Returns:Json};
       get_daily_flight_schedule:{Args:{p_iata:string;p_service_date:string;p_airport_iata?:string|null};Returns:{Schedule_Leg_ID:string;Import_ID:string;Carrier_IATA:string;Service_Date:string;Airline_Designator:string;Flight_Number:string;Operational_Suffix:string;Itinerary_Variation_Identifier:string;Leg_Sequence_Number:number;Service_Type:string;Departure_Airport_IATA:string;Arrival_Airport_IATA:string;Departure_Local:string;Arrival_Local:string;Departure_UTC_Offset_Minutes:number|null;Arrival_UTC_Offset_Minutes:number|null;Departure_Terminal:string|null;Arrival_Terminal:string|null;Aircraft_Type_IATA:string|null;Aircraft_Configuration:string|null;Additional_Data:Json}[]};
       get_flight_schedule_workspace:{Args:{p_iata:string};Returns:Json};
+      get_flight_schedule_segment_defaults:{Args:{p_iata:string};Returns:Json};
       get_flight_schedule_service_types:{Args:Record<string,never>;Returns:Json};
       save_flight_schedule_leg_parameters:{Args:{p_iata:string;p_schedule_leg_id:string;p_values:Json};Returns:Json};
+      save_flight_schedule_segment_default:{Args:{p_iata:string;p_departure_airport:string;p_arrival_airport:string;p_aircraft_type:string;p_values:Json};Returns:undefined};
+      delete_flight_schedule_segment_default:{Args:{p_iata:string;p_departure_airport:string;p_arrival_airport:string;p_aircraft_type:string};Returns:undefined};
       create_manual_schedule_import:{Args:{p_iata:string;p_name:string;p_season_code?:string|null};Returns:string};
       create_manual_schedule_revision:{Args:{p_iata:string;p_source_import_id:string};Returns:string};
       save_manual_schedule_leg:{Args:{p_iata:string;p_import_id:string;p_schedule_leg_id:string|null;p_values:Json};Returns:Json};
