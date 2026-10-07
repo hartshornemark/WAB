@@ -152,7 +152,7 @@ The application can use this result to create a flight work item and then resolv
 
 - the configured aircraft subtype;
 - crew and pantry codes from that aircraft's E2 data;
-- Standard, Flight Variation or Actual passenger weights;
+- Standard or Flight Variation passenger weights;
 - Standard, Flight Variation or Actual baggage weights;
 - the selected passenger and baggage variation codes where applicable;
 - operational remarks.
@@ -167,9 +167,10 @@ Saving a segment default applies it immediately to matching legs in the current 
 
 1. carry forward a matching flight-level override using flight identity, itinerary variation, leg sequence, route and aircraft type;
 2. apply the latest directional segment default to every remaining matching leg;
-3. leave unmatched legs for administrator review.
+3. automatically apply an aircraft subtype, crew code, pantry code and weight method when each has exactly one configured outcome;
+4. leave only legs with a genuine choice for administrator review.
 
-This keeps exceptional flights intact while allowing ordinary schedules and manual revisions to use the latest reusable defaults. Removing a segment default removes only inherited values from current matching legs; explicit flight overrides remain unchanged.
+Standard-only passenger or baggage data therefore creates no review task. The same applies when an aircraft subtype has only one crew code or one pantry code. If another valid table or code is added later, the automatic value is withdrawn and the segment returns for review. This keeps exceptional flights intact while allowing ordinary schedules and manual revisions to use the latest reusable defaults. Removing a segment default removes only inherited values from current matching legs; explicit flight overrides remain unchanged.
 
 ## Manual schedules
 
