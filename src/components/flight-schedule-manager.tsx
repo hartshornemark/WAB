@@ -2,7 +2,7 @@
 import Link from"next/link";
 import{useActionState,useState,useTransition}from"react";
 import{useRouter}from"next/navigation";
-import{createScheduleRevision,importSsimSchedule,publishSsimSchedule}from"@/app/flight-schedule-actions";
+import{cancelScheduleEdition,createScheduleRevision,importSsimSchedule,publishSsimSchedule}from"@/app/flight-schedule-actions";
 import{initialScheduleActionState}from"@/domain/flight-schedule-action-state";
 import type{FlightScheduleImport}from"@/ports/flight-schedule-repository";
 
@@ -11,10 +11,11 @@ const timestamp=(value:string)=>new Intl.DateTimeFormat("en-GB",{dateStyle:"medi
 
 export function FlightScheduleManager({iata,imports}:{iata:string;imports:FlightScheduleImport[]}){
   const[actionState,action,pending]=useActionState(importSsimSchedule.bind(null,iata),initialScheduleActionState);
-  const[publishState,setPublishState]=useState(initialScheduleActionState),[publishing,startPublishing]=useTransition(),[revisionState,setRevisionState]=useState(initialScheduleActionState),[creatingRevision,startRevision]=useTransition(),router=useRouter();
+  const[publishState,setPublishState]=useState(initialScheduleActionState),[publishing,startPublishing]=useTransition(),[revisionState,setRevisionState]=useState(initialScheduleActionState),[creatingRevision,startRevision]=useTransition(),[cancelState,setCancelState]=useState(initialScheduleActionState),[cancelling,startCancelling]=useTransition(),router=useRouter();
   const publish=(importId:string)=>startPublishing(async()=>{const result=await publishSsimSchedule(iata,importId);setPublishState(result);if(result.ok)router.refresh()});
   const revise=(importId:string)=>startRevision(async()=>{const result=await createScheduleRevision(iata,importId);setRevisionState(result);if(result.ok&&result.importId)router.push(`/carrier/${encodeURIComponent(iata)}/flight-schedules?edition=${encodeURIComponent(result.importId)}`)});
-  const feedback=revisionState.message?revisionState:publishState.message?publishState:actionState;
+  const cancel=(importId:string)=>{if(!window.confirm("Cancel this published schedule? Its flights will be removed from Load Control. Other published schedules will remain active."))return;startCancelling(async()=>{const result=await cancelScheduleEdition(iata,importId);setCancelState(result);if(result.ok)router.refresh()})};
+  const feedback=cancelState.message?cancelState:revisionState.message?revisionState:publishState.message?publishState:actionState;
   return <div className="flight-schedule-manager">
     <section className="configuration-card schedule-upload-card">
       <div><h2>UPLOAD IATA SSIM CHAPTER 7</h2><p className="muted">Select the carrier&apos;s fixed-width TXT schedule. The carrier code, record lengths, dates, routes, times and equipment are checked before an edition can be published.</p></div>
@@ -25,7 +26,7 @@ export function FlightScheduleManager({iata,imports}:{iata:string;imports:Flight
       {imports.length===0?<p className="muted">No schedule edition has been created or uploaded for {iata}.</p>:<div className="schedule-editions">
         {imports.map(item=><article className="schedule-edition" key={item.importId}>
           <div className="schedule-edition-main"><strong>{item.fileName}</strong><span>{item.sourceFormat==="MANUAL"?"Manual entry":"SSIM Chapter 7"} · {date(item.coverageStart)} – {date(item.coverageEnd)}</span><span>{item.legCount.toLocaleString()} flight legs · {item.recordCount.toLocaleString()} source records</span><small>Created {timestamp(item.uploadedAt)}</small></div>
-          <div className="schedule-edition-action"><span className={`schedule-status ${item.status.toLowerCase()}`}>{item.status}</span><Link className="button-link secondary" href={`/carrier/${encodeURIComponent(iata)}/flight-schedules?edition=${encodeURIComponent(item.importId)}`}>VIEW / REVIEW</Link>{item.status==="PUBLISHED"&&<button type="button" disabled={creatingRevision} onClick={()=>revise(item.importId)}>{creatingRevision?"CREATING…":"CREATE REVISION"}</button>}{item.status==="VALIDATED"&&<button type="button" disabled={publishing} onClick={()=>publish(item.importId)}>{publishing?"PUBLISHING…":"PUBLISH"}</button>}</div>
+          <div className="schedule-edition-action"><span className={`schedule-status ${item.status.toLowerCase()}`}>{item.status}</span><Link className="button-link secondary" href={`/carrier/${encodeURIComponent(iata)}/flight-schedules?edition=${encodeURIComponent(item.importId)}`}>VIEW / REVIEW</Link>{item.status==="PUBLISHED"&&<><button type="button" disabled={creatingRevision||cancelling} onClick={()=>revise(item.importId)}>{creatingRevision?"CREATING…":"CREATE REVISION"}</button><button type="button" className="danger" disabled={creatingRevision||cancelling} onClick={()=>cancel(item.importId)}>{cancelling?"CANCELLING…":"CANCEL SCHEDULE"}</button></>}{item.status==="VALIDATED"&&<button type="button" disabled={publishing} onClick={()=>publish(item.importId)}>{publishing?"PUBLISHING…":"PUBLISH"}</button>}</div>
         </article>)}
       </div>}
     </section>

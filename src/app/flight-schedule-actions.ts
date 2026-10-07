@@ -25,6 +25,11 @@ export async function publishSsimSchedule(iata:string,importId:string):Promise<S
   catch(error){console.error("[SSIM publish]",error);return{ok:false,message:message(error)}}
 }
 
+export async function cancelScheduleEdition(iata:string,importId:string):Promise<ScheduleActionState>{
+  try{await(await flightScheduleServices()).cancel(iata,importId);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"Schedule cancelled. Its flights have been removed from Load Control; other published schedules remain active."}}
+  catch(error){console.error("[Schedule cancellation]",error);return{ok:false,message:message(error)}}
+}
+
 export async function createScheduleRevision(iata:string,importId:string):Promise<ScheduleActionState>{
   try{const revisionId=await(await flightScheduleServices()).createRevision(iata,importId);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"Editable schedule revision created.",importId:revisionId,status:"VALIDATED"}}
   catch(error){console.error("[Schedule revision]",error);return{ok:false,message:message(error)}}
