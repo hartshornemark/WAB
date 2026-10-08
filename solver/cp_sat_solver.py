@@ -23,6 +23,11 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
         for position_index, position in enumerate(positions):
             fits = load["loadType"] == position["loadType"] and load["weightKg"] <= position["maximumWeightKg"] and (
                 load["loadType"] == "BULK" or load["uldCode"] in position["acceptedUldCodes"]
+            ) and (
+                load["loadType"] != "BULK"
+                or load.get("volumeLitres") is None
+                or position.get("maximumVolumeLitres") is None
+                or load["volumeLitres"] <= position["maximumVolumeLitres"]
             )
             if not fits:
                 continue
@@ -55,6 +60,15 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
             )
             <= position["maximumWeightKg"]
         )
+        if position.get("maximumVolumeLitres") is not None:
+            model.add(
+                sum(
+                    (loads[load_index].get("volumeLitres") or 0) * variable
+                    for (load_index, candidate_position), variable in assignment.items()
+                    if candidate_position == position_index
+                )
+                <= position["maximumVolumeLitres"]
+            )
 
     def load_tokens(load: dict[str, Any]) -> set[str]:
         return {f"CODE:{code}" for code in load.get("specialLoadCodes", [])} | {

@@ -50,6 +50,17 @@ class CpSatSolverTest(unittest.TestCase):
         self.assertIn(solution["status"], ("OPTIMAL", "FEASIBLE"))
         self.assertEqual(len(solution["assignments"]), 2)
 
+    def test_rejects_bulk_consignments_over_the_volume_limit(self):
+        problem = self.problem()
+        problem["loads"] = [
+            {"id": "B1", "description": "Bulk 1", "loadType": "BULK", "weightKg": 120, "volumeLitres": 600, "uldCode": None, "unloadOrder": 0, "lockedPositionId": None},
+            {"id": "B2", "description": "Bulk 2", "loadType": "BULK", "weightKg": 130, "volumeLitres": 600, "uldCode": None, "unloadOrder": 0, "lockedPositionId": None},
+        ]
+        problem["positions"] = [
+            {"id": "BULK", "description": "Bulk area", "loadType": "BULK", "acceptedUldCodes": [], "maximumWeightKg": 300, "maximumVolumeLitres": 1000, "occupiedBayIds": ["BULK"], "handlingRank": 0, "simplicityGroup": "BULK", "indexPerKgScaled": 0}
+        ]
+        self.assertEqual(solve(problem)["status"], "INFEASIBLE")
+
     def test_separates_incompatible_dangerous_goods_by_compartment(self):
         problem = self.problem()
         problem["loads"][0]["dangerousGoodsClasses"] = ["3"]
