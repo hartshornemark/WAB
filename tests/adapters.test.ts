@@ -5,6 +5,8 @@ import { createCarrierAdapter } from "../src/infrastructure/supabase/carrier-ada
 import {createCarrierAdministrationAdapter}from"../src/infrastructure/supabase/carrier-administration-adapter";
 import type { RequestClient } from "../src/infrastructure/supabase/server";
 import { DataUnavailable, SignInFailed } from "../src/domain/models";
+import {operationalLoadPlan} from "../src/infrastructure/supabase/operational-flight-adapter";
+import type{LoadPlanningSolution}from"../src/domain/load-planning-solver";
 const client = (value: unknown) => value as RequestClient;
 test("auth adapter rejects anonymous identities and distinguishes outages", async () => {
   const authClient = (data: unknown, error: unknown = null) => client({ auth: { getUser: async () => ({ data, error }) }, schema: () => ({ rpc: async () => ({ data: null, error: null }) }) });
@@ -63,4 +65,12 @@ test("display name uses own-profile result and falls back safely on missing data
     } }));
     assert.equal((await adapter.currentUser())?.displayName, expected);
   }
+});
+
+test("saved load-plan response retains the submitted solution",()=>{
+  const solution:LoadPlanningSolution={status:"FEASIBLE",engine:"MANUAL",solveMilliseconds:0,assignments:[{loadId:"PAJ1",positionId:"A12"}],sequencePenalty:0,usedSimplicityGroups:0,trimDeviationScaled:0,messages:[]};
+  const plan=operationalLoadPlan({edition:5,source:"MANUAL",assignments:solution.assignments,createdAt:"2026-10-08T12:00:00Z"},solution);
+  assert.equal(plan.edition,5);
+  assert.equal(plan.solution,solution);
+  assert.deepEqual(plan.solution?.assignments,[{loadId:"PAJ1",positionId:"A12"}]);
 });
