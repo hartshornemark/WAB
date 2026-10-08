@@ -843,13 +843,6 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
  .load-plan-print-decks .aircraft-load-overlay{border:1px solid #ccd7e7;border-radius:2mm;background:#f3f6fb}
  .load-plan-print-decks .load-plan-card{appearance:none;-webkit-appearance:none}
  .load-plan-print-decks .aircraft-overlay-place{display:none!important}
- .load-plan-print-sheet table{width:100%;border-collapse:collapse;table-layout:fixed;break-before:auto;font-variant-numeric:tabular-nums}
- .load-plan-print-sheet thead{display:table-header-group}
- .load-plan-print-sheet tr{break-inside:avoid}
- .load-plan-print-sheet th,.load-plan-print-sheet td{padding:1.5mm 2mm;border:1px solid #d7e0ee;text-align:left;vertical-align:top}
- .load-plan-print-sheet th{background:#edf2fa;color:#3d5274;font-size:7pt}
- .load-plan-print-sheet td{font-size:7.5pt;font-weight:700}
- .load-plan-print-sheet th:nth-child(1){width:22%}.load-plan-print-sheet th:nth-child(2){width:12%}.load-plan-print-sheet th:nth-child(3){width:14%}.load-plan-print-sheet th:nth-child(4){width:22%}
  .load-plan-print-sheet>footer{display:flex;justify-content:space-between;gap:10mm;margin-top:4mm;padding-top:2.5mm;border-top:1px solid #aebed5;color:#435878;font-size:7pt}
  .load-plan-print-sheet>footer strong{color:#172b4d}
 }
