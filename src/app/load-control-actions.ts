@@ -1,0 +1,8 @@
+"use server";
+import{revalidatePath}from"next/cache";
+import{operationalFlightServices}from"@/composition/services";
+import{OperationalFlightConflict,OperationalFlightDenied,OperationalFlightInvalid}from"@/domain/operational-flights";
+export type LoadControlActionState={ok:boolean;message:string;operationalFlightId?:string};
+const message=(error:unknown)=>error instanceof OperationalFlightInvalid||error instanceof OperationalFlightConflict||error instanceof OperationalFlightDenied?error.message:"The Load Control operation was not completed. Please try again.";
+export async function startOperationalFlight(iata:string,scheduleLegId:string,date:string):Promise<LoadControlActionState>{try{const operationalFlightId=await(await operationalFlightServices()).start(iata,scheduleLegId,date);revalidatePath(`/carrier/${iata}/load-control`);return{ok:true,message:"Operational flight started.",operationalFlightId}}catch(error){console.error("[Operational flight start]",error);return{ok:false,message:message(error)}}}
+export async function createAdHocOperationalFlight(iata:string,input:unknown):Promise<LoadControlActionState>{try{const operationalFlightId=await(await operationalFlightServices()).createAdHoc(iata,input);revalidatePath(`/carrier/${iata}/load-control`);return{ok:true,message:"Ad-hoc operational flight created.",operationalFlightId}}catch(error){console.error("[Ad-hoc operational flight]",error);return{ok:false,message:message(error)}}}

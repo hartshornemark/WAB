@@ -211,3 +211,7 @@ export async function masterAirportServices(){const client=await createRequestCl
 import{createAircraftOverlayCalibrations}from"@/application/aircraft-overlay-calibrations";
 import{createAircraftOverlayCalibrationAdapter}from"@/infrastructure/supabase/aircraft-overlay-calibration-adapter";
 export async function aircraftOverlayCalibrationServices(){const client=await createRequestClient();return createAircraftOverlayCalibrations(createAuthAdapter(client),createCarrierAdapter(client),createAircraftOverlayCalibrationAdapter(client));}
+
+import{createOperationalFlights}from"@/application/operational-flights";
+import{createOperationalFlightAdapter}from"@/infrastructure/supabase/operational-flight-adapter";
+export async function operationalFlightServices(){const client=await createRequestClient();return createOperationalFlights(createAuthAdapter(client),createCarrierAdapter(client),createOperationalFlightAdapter(client));}

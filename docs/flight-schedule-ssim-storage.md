@@ -231,6 +231,8 @@ Continue verifying the parser against representative files from every airline pr
 - unsupported optional records;
 - malformed lines and carrier/file mismatches.
 
-## Future operational layer
+## Operational flight layer
 
-This schema supplies planned schedule legs. A later operational flight table should reference `Schedule_Leg_ID` and service date, then hold mutable operational data such as registration, revised times, cancellation, crew/pantry codes, load status and loadsheet workflow state. That keeps the published SSIM edition immutable while allowing real-world changes to an individual flight.
+`Operational_Flights` now turns one published schedule leg on one service date into an independently managed Load Control record. It retains the immutable `Schedule_Leg_ID`, copies the complete itinerary into a snapshot, and stores mutable operational fields such as registration, revised times, crew and pantry codes, weight methods and workflow status. The partial unique index on schedule leg and service date makes starting a flight idempotent.
+
+Ad-hoc flights use the same operational model with `Source_Type = AD_HOC`, but do not reference or alter a schedule edition. `Operational_Flight_Events` supplies the append-only audit trail. The Daily Load Control board combines unstarted published sectors with existing operational records for the selected date and optional airport.

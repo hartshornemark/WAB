@@ -100,6 +100,10 @@ export type Database = {
       publish_ssim_schedule_import:{Args:{p_iata:string;p_import_id:string};Returns:Json};
       cancel_flight_schedule_edition:{Args:{p_iata:string;p_import_id:string};Returns:undefined};
       get_daily_flight_schedule:{Args:{p_iata:string;p_service_date:string;p_airport_iata?:string|null};Returns:{Schedule_Leg_ID:string;Import_ID:string;Carrier_IATA:string;Service_Date:string;Airline_Designator:string;Flight_Number:string;Operational_Suffix:string;Itinerary_Variation_Identifier:string;Leg_Sequence_Number:number;Service_Type:string;Departure_Airport_IATA:string;Arrival_Airport_IATA:string;Departure_Local:string;Arrival_Local:string;Departure_UTC_Offset_Minutes:number|null;Arrival_UTC_Offset_Minutes:number|null;Departure_Terminal:string|null;Arrival_Terminal:string|null;Aircraft_Type_IATA:string|null;Aircraft_Configuration:string|null;Additional_Data:Json}[]};
+      get_daily_load_control_board:{Args:{p_iata:string;p_service_date:string;p_airport_iata?:string|null};Returns:Json};
+      start_operational_flight:{Args:{p_iata:string;p_schedule_leg_id:string;p_service_date:string};Returns:string};
+      create_ad_hoc_operational_flight:{Args:{p_iata:string;p_values:Json};Returns:string};
+      get_operational_flight:{Args:{p_iata:string;p_operational_flight_id:string};Returns:Json};
       get_flight_schedule_workspace:{Args:{p_iata:string};Returns:Json};
       get_flight_schedule_segment_defaults:{Args:{p_iata:string};Returns:Json};
       get_flight_schedule_parameter_options:{Args:{p_iata:string};Returns:Json};
