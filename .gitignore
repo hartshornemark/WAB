@@ -11,3 +11,5 @@ output/aircraft-calibration/**/*.dxf
 tmp/pdfs/
 
 supabase/.temp/
+solver/.venv/
+solver/__pycache__/
