@@ -56,6 +56,53 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
             <= position["maximumWeightKg"]
         )
 
+    def load_tokens(load: dict[str, Any]) -> set[str]:
+        return {f"CODE:{code}" for code in load.get("specialLoadCodes", [])} | {
+            f"DGR:{hazard_class}" for hazard_class in load.get("dangerousGoodsClasses", [])
+        }
+
+    # The current aircraft model identifies a configured cargo compartment as
+    # the conservative segregation boundary. Incompatible loads may therefore
+    # be assigned to different compartments, but never to the same one.
+    tokens = [load_tokens(load) for load in loads]
+    groups = sorted({position.get("segregationGroup", position["id"]) for position in positions})
+    for pair in problem.get("incompatiblePairs", []):
+        for left_index in range(len(loads)):
+            for right_index in range(left_index + 1, len(loads)):
+                conflicts = (pair["left"] in tokens[left_index] and pair["right"] in tokens[right_index]) or (
+                    pair["right"] in tokens[left_index] and pair["left"] in tokens[right_index]
+                )
+                if not conflicts:
+                    continue
+                for group in groups:
+                    left_in_group = [
+                        assignment[left_index, position_index]
+                        for position_index in compatible[left_index]
+                        if positions[position_index].get("segregationGroup", positions[position_index]["id"]) == group
+                    ]
+                    right_in_group = [
+                        assignment[right_index, position_index]
+                        for position_index in compatible[right_index]
+                        if positions[position_index].get("segregationGroup", positions[position_index]["id"]) == group
+                    ]
+                    if left_in_group and right_in_group:
+                        model.add(sum(left_in_group) + sum(right_in_group) <= 1)
+
+    for limit in problem.get("specialLoadLimits", []):
+        variables = []
+        for load_index, load in enumerate(loads):
+            if limit["code"] not in load.get("specialLoadCodes", []):
+                continue
+            for position_index in compatible[load_index]:
+                position = positions[position_index]
+                in_scope = position.get("holdId") == limit["holdId"] and (
+                    limit["locationRef"] is None or position.get("locationRef") == limit["locationRef"]
+                )
+                if in_scope:
+                    variables.append(assignment[load_index, position_index])
+        if variables:
+            model.add(sum(variables) <= limit["maximumQuantity"])
+
     maximum_rank = max(position["handlingRank"] for position in positions)
     load_ranks: list[cp_model.IntVar] = []
     for load_index in range(len(loads)):
@@ -147,7 +194,7 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
         best["sequence"],
         best["groups"],
         best["trim"],
-        ["Every released load was assigned without overlapping a physical bay."],
+        ["Every released load was assigned within position, overlap, segregation and special-load quantity constraints."],
     )
 
 

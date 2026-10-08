@@ -62,6 +62,14 @@ export type Database = {
         Insert:{Airport_IATA:string;Airport_ICAO?:string|null;Airport_Name:string;City_Name?:string|null;Country_Code?:string|null;IANA_Time_Zone:string;Active?:boolean;Updated_At?:string};
         Update:{Airport_ICAO?:string|null;Airport_Name?:string;City_Name?:string|null;Country_Code?:string|null;IANA_Time_Zone?:string;Active?:boolean;Updated_At?:string};Relationships:[];
       };
+      MASTER_IATA_Special_Load_Codes:{
+        Row:{Special_Load_Code:string;Special_Load_Code_Description:string;Special_Load_Is_DGR:boolean;Special_Load_Code_Class:string|null;Cargo_Aircraft_Only:boolean};
+        Insert:Record<string,never>;Update:Record<string,never>;Relationships:[];
+      };
+      MASTER_Special_Load_Incompatibility:{
+        Row:{Special_Load_Code:string;Incompatible_With:string};
+        Insert:Record<string,never>;Update:Record<string,never>;Relationships:[];
+      };
       Scheduled_Flight_Load_Control_Parameters:{
         Row:{Schedule_Leg_ID:string;Carrier_IATA:string;Aircraft_Series_Subtype:string;Crew_Code_ID:string;Pantry_Code_ID:string;Passenger_Weight_Basis:string;Passenger_Flight_Variation:string|null;Baggage_Weight_Basis:string;Baggage_Flight_Variation:string|null;Remarks:string|null;Updated_By:string;Updated_At:string};
         Insert:{Schedule_Leg_ID:string;Carrier_IATA:string;Aircraft_Series_Subtype:string;Crew_Code_ID:string;Pantry_Code_ID:string;Passenger_Weight_Basis:string;Passenger_Flight_Variation?:string|null;Baggage_Weight_Basis:string;Baggage_Flight_Variation?:string|null;Remarks?:string|null};

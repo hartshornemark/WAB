@@ -3,8 +3,9 @@ export type H1HoldOption={id:string;name:string;holdType:"BULK"|"ULD"};
 export type H1LocationOption={holdId:string;id:string;locationType:"COMPARTMENT"|"POSITION"};
 export type H1ExceptionRow={code:string;incompatibleWith:string;remarks:string|null};
 export type H1SpecialLoadRow={holdId:string;code:string;locationRef:string|null;maximumQuantity:number|null;remarks:string|null};
+export type H1MasterIncompatibility={code:string;incompatibleWith:string};
 export const H1_BULK_ZERO_REMARK="Not Permitted This Hold";
-export type AircraftH1Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;applicabilityReviewed:boolean;dgrActive:boolean;iataActive:boolean;specialLoadsActive:boolean;isUldAircraft:boolean;dgrRows:H1ExceptionRow[];iataRows:H1ExceptionRow[];specialLoadRows:H1SpecialLoadRow[];codeOptions:H1CodeOption[];holdOptions:H1HoldOption[];locationOptions:H1LocationOption[]};
+export type AircraftH1Snapshot={canView:boolean;canEdit:boolean;revision:string;typeCode:string;subtype:string;applicabilityReviewed:boolean;dgrActive:boolean;iataActive:boolean;specialLoadsActive:boolean;isUldAircraft:boolean;dgrRows:H1ExceptionRow[];iataRows:H1ExceptionRow[];specialLoadRows:H1SpecialLoadRow[];codeOptions:H1CodeOption[];holdOptions:H1HoldOption[];locationOptions:H1LocationOption[];masterIncompatibilities:H1MasterIncompatibility[];codeClasses:Record<string,string[]>};
 export class AircraftH1Invalid extends Error{} export class AircraftH1Denied extends Error{} export class AircraftH1Conflict extends Error{}
 const optional=(v:unknown,label:string)=>{const s=String(v??"").trim();if(s.length>500)throw new AircraftH1Invalid(`${label} must not exceed 500 characters.`);return s||null};
 export function validateH1Applicability(v:unknown){const x=v as Record<string,unknown>;if(typeof x?.dgrActive!=="boolean"||typeof x?.iataActive!=="boolean"||typeof x?.specialLoadsActive!=="boolean")throw new AircraftH1Invalid("Select the H1 section applicability.");return{dgrActive:x.dgrActive,iataActive:x.iataActive,specialLoadsActive:x.specialLoadsActive}}

@@ -50,6 +50,36 @@ class CpSatSolverTest(unittest.TestCase):
         self.assertIn(solution["status"], ("OPTIMAL", "FEASIBLE"))
         self.assertEqual(len(solution["assignments"]), 2)
 
+    def test_separates_incompatible_dangerous_goods_by_compartment(self):
+        problem = self.problem()
+        problem["loads"][0]["dangerousGoodsClasses"] = ["3"]
+        problem["loads"][1]["dangerousGoodsClasses"] = ["5.1"]
+        problem["positions"][0]["segregationGroup"] = "FWD"
+        problem["positions"][1]["segregationGroup"] = "AFT"
+        problem["incompatiblePairs"] = [{"left": "DGR:3", "right": "DGR:5.1", "reason": "IATA DGR Table 9.3.A"}]
+        solution = solve(problem)
+        self.assertIn(solution["status"], ("OPTIMAL", "FEASIBLE"))
+        assigned = {row["loadId"]: row["positionId"] for row in solution["assignments"]}
+        self.assertNotEqual(assigned["EARLY"], assigned["LATE"])
+
+    def test_rejects_incompatible_dangerous_goods_when_only_one_compartment_exists(self):
+        problem = self.problem()
+        problem["loads"][0]["dangerousGoodsClasses"] = ["3"]
+        problem["loads"][1]["dangerousGoodsClasses"] = ["5.1"]
+        for position in problem["positions"]:
+            position["segregationGroup"] = "ONE-COMPARTMENT"
+        problem["incompatiblePairs"] = [{"left": "DGR:3", "right": "DGR:5.1", "reason": "IATA DGR Table 9.3.A"}]
+        self.assertEqual(solve(problem)["status"], "INFEASIBLE")
+
+    def test_applies_h1_special_load_quantity_limit(self):
+        problem = self.problem()
+        problem["loads"][0]["specialLoadCodes"] = ["AVI"]
+        for position in problem["positions"]:
+            position["holdId"] = "LOWER"
+            position["locationRef"] = position["id"]
+        problem["specialLoadLimits"] = [{"code": "AVI", "holdId": "LOWER", "locationRef": None, "maximumQuantity": 0}]
+        self.assertEqual(solve(problem)["status"], "INFEASIBLE")
+
 
 if __name__ == "__main__":
     unittest.main()
