@@ -834,9 +834,15 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
  .load-plan-print-sheet>header>div:last-child{display:grid;grid-template-columns:auto auto;gap:.8mm 3mm;text-align:right}
  .load-plan-print-sheet>header span,.load-plan-print-sheet small{color:#586b8b;font-size:6.5pt;font-weight:800}
  .load-plan-print-sheet>header strong{font-size:9.5pt}
- .load-plan-print-facts{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.6fr;gap:2mm;margin-bottom:2mm}
+ .load-plan-print-facts{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 2.25fr;gap:2mm;margin-bottom:2mm}
  .load-plan-print-facts>span{display:grid;gap:.7mm;padding:2mm 2.5mm;border:1px solid #d7e0ee;border-radius:1.5mm;background:#f5f8fc}
  .load-plan-print-facts strong{font-size:8pt;overflow-wrap:anywhere}
+ .load-plan-print-facts>.load-plan-print-balance{position:relative;grid-template-columns:repeat(3,minmax(0,1fr));gap:2mm}
+ .load-plan-print-facts>.load-plan-print-balance.has-limit{padding-right:9mm}
+ .load-plan-print-balance>span{display:grid;align-content:center;gap:.7mm;min-width:0;padding:1mm 1.2mm;border-radius:1mm}
+ .load-plan-print-balance>span.rag-green{background:#e0f3e6;color:#17663a}
+ .load-plan-print-balance>span.rag-amber{background:#fff0cc;color:#765414}
+ .load-plan-limit-indicator{position:absolute;top:50%;right:2mm;display:grid;width:5.5mm;height:5.5mm;place-items:center;transform:translateY(-50%);border:1.2px solid #765414;border-radius:50%;background:#fff;color:#765414;font-size:7.5pt;font-style:normal;font-weight:900}
  .load-plan-print-decks{display:grid;gap:2mm;margin-bottom:2mm}
  .load-plan-print-decks>section{break-inside:avoid}
  .load-plan-print-decks h3{margin:0 0 1mm;font-size:9pt}
