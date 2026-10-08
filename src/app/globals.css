@@ -786,9 +786,9 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 @media(max-width:650px){.cargo-offer-section{padding:18px}.cargo-offer-section>.cargo-offer-heading{padding-right:38px}}
 
 .freight-acceptance-collapsed{display:block}
-.freight-acceptance-collapsed>.freight-entry-modes{margin:20px 0 0}
+.freight-acceptance-collapsed-actions{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-top:20px}.freight-acceptance-collapsed-actions>.freight-entry-modes{margin:0}.freight-collapsed-release{height:var(--control-height);min-height:var(--control-height);padding:9px 14px;white-space:nowrap}
 .freight-acceptance-collapsed>.freight-acceptance-heading{cursor:inherit;padding-right:0}
-.freight-acceptance-details[open]>.freight-acceptance-collapsed>.freight-entry-modes{margin-bottom:0}
+.freight-acceptance-details[open]>.freight-acceptance-collapsed .freight-entry-modes{margin-bottom:0}
 
 .freight-statement-details{margin-top:28px}
 .freight-statement-details>.freight-statement-heading{position:relative;list-style:none;cursor:pointer;margin:0;padding:0 42px 14px 0;border-bottom:1px solid var(--line)}
@@ -796,3 +796,5 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .freight-statement-details>.freight-statement-heading::after{content:"+";position:absolute;right:4px;top:50%;display:grid;place-items:center;width:28px;height:28px;border:1px solid #b8c8e2;border-radius:50%;color:var(--ink);font-size:22px;font-weight:500;line-height:1;transform:translateY(-50%)}
 .freight-statement-details[open]>.freight-statement-heading::after{content:"−"}
 .freight-statement-details[open]>.freight-statement-heading{margin-bottom:12px}
+
+@media(max-width:900px){.freight-acceptance-collapsed-actions{align-items:stretch;flex-direction:column}.freight-acceptance-collapsed-actions>.freight-entry-modes{flex-wrap:wrap}.freight-collapsed-release{align-self:stretch}}
