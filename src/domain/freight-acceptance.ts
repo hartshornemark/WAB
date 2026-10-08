@@ -13,6 +13,8 @@ export type FreightAcceptanceInput={source:FreightLoadSource|"MIXED";sourceRefer
 export type FreightAcceptanceCsvContext={iata:string;flightNumber:string;serviceDate:string;unloadingStations?:string[];specialLoadOptions?:FreightSpecialLoadOption[];uldLimits?:FreightUldLimit[];planningDensities?:FreightPlanningDensities};
 export type FreightAcceptanceParseResult={items:FreightLoadItem[];errors:string[];sourceReference:string|null};
 
+export function freightUnderloadTone(predictedUnderload:number|null,cargoOffer:number|null):"green"|"amber"|"red"|"neutral"{if(predictedUnderload===null||cargoOffer===null||cargoOffer<=0)return"neutral";if(predictedUnderload<=0)return"red";return predictedUnderload<=cargoOffer*.05?"amber":"green"}
+
 const id=()=>globalThis.crypto?.randomUUID?.()??`line-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const clean=(value:unknown)=>String(value??"").trim();
 const upper=(value:unknown)=>clean(value).toUpperCase();
