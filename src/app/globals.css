@@ -840,10 +840,17 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
  .load-plan-print-decks{display:grid;gap:2mm;margin-bottom:2mm}
  .load-plan-print-decks>section{break-inside:avoid}
  .load-plan-print-decks h3{margin:0 0 1mm;font-size:9pt}
- .load-plan-print-decks .aircraft-load-overlay{height:57mm;border:1px solid #ccd7e7;border-radius:2mm;background:#f3f6fb}
- .load-plan-print-decks .aircraft-load-overlay .hold-layout-svg{height:57mm}
+ .load-plan-print-decks .aircraft-load-overlay{height:48mm;border:1px solid #ccd7e7;border-radius:2mm;background:#f3f6fb}
+ .load-plan-print-decks .aircraft-load-overlay .hold-layout-svg{height:48mm}
  .load-plan-print-decks .load-plan-card{appearance:none;-webkit-appearance:none}
  .load-plan-print-decks .aircraft-overlay-place{display:none!important}
+ .load-plan-print-signoff{break-inside:avoid;margin-top:2mm}
+ .load-plan-print-signoff p{margin:0 0 2.5mm;font-size:7.5pt;line-height:1.35}
+ .load-plan-print-signoff>div{display:grid;grid-template-columns:1.5fr 1fr;gap:2.5mm 8mm}
+ .load-plan-print-signoff span{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:2mm;white-space:nowrap}
+ .load-plan-print-signoff .load-plan-signoff-role{display:block}
+ .load-plan-print-signoff strong{font-size:7.5pt}
+ .load-plan-print-signoff i{display:block;min-width:25mm;height:3.5mm;border-bottom:1px solid #172b4d}
  .load-plan-print-sheet>footer{display:flex;justify-content:space-between;gap:10mm;margin-top:2mm;padding-top:1.5mm;border-top:1px solid #aebed5;color:#435878;font-size:7pt}
  .load-plan-print-sheet>footer strong{color:#172b4d}
 }
