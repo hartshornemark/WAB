@@ -1,6 +1,7 @@
 "use client";
 import{useState,useTransition}from"react";
 import{saveOperationalFreightPlanning}from"@/app/load-control-actions";
+import{cargoOfferLimitingLabel}from"@/domain/freight-acceptance";
 import type{OperationalFreightPlanning}from"@/ports/operational-flight-repository";
 
 const kg=(value:number|null|undefined)=>value===null||value===undefined?"—":`${Math.round(value).toLocaleString()} KG`;
@@ -42,7 +43,7 @@ export function FreightCargoOffer({iata,flightId,initial}:{iata:string;flightId:
   <details className="cargo-offer-section operational-collapsible">
    <summary className="cargo-offer-heading">
     <div><p className="eyebrow">PLANNING CAPACITY</p><h2>Cargo Offer</h2><p>Gross capacity available for cargo, mail and special loads before fuel restrictions are known.</p></div>
-    <div className={saved.ready?"cargo-offer-total ready":"cargo-offer-total incomplete"}><small>CARGO OFFER</small><strong>{saved.ready?kg(saved.cargoOfferWeight):"INCOMPLETE"}</strong><span>{saved.ready?`${saved.limitingFactor==="MZFW"?"MZFW":"HOLD CAPACITY"} LIMITING`:"Complete the missing aircraft data"}</span></div>
+    <div className={saved.ready?"cargo-offer-total ready":"cargo-offer-total incomplete"}><small>CARGO OFFER</small><strong>{saved.ready?kg(saved.cargoOfferWeight):"INCOMPLETE"}</strong><span>{saved.ready?cargoOfferLimitingLabel(saved.limitingFactor):"Complete the missing aircraft data"}</span></div>
    </summary>
    <div className="operational-collapsible-body">
     <div className="cargo-offer-capacity"><div><small>MZFW</small><strong>{kg(saved.mzfw)}</strong></div><div><small>PLANNING AIRCRAFT WEIGHT</small><strong>{kg(saved.planningAircraftWeight)}</strong></div><div><small>STRUCTURAL PAYLOAD CAPACITY</small><strong>{kg(saved.structuralCapacity)}</strong></div><div><small>SPACE WEIGHT CAPACITY</small><strong>{kg(saved.spaceWeightCapacity)}</strong></div></div>

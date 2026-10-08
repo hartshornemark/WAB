@@ -14,6 +14,7 @@ export type FreightAcceptanceCsvContext={iata:string;flightNumber:string;service
 export type FreightAcceptanceParseResult={items:FreightLoadItem[];errors:string[];sourceReference:string|null};
 
 export function freightUnderloadTone(predictedUnderload:number|null,cargoOffer:number|null):"green"|"amber"|"red"|"neutral"{if(predictedUnderload===null||cargoOffer===null||cargoOffer<=0)return"neutral";if(predictedUnderload<=0)return"red";return predictedUnderload<=cargoOffer*.05?"amber":"green"}
+export function cargoOfferLimitingLabel(limitingFactor:"MZFW"|"HOLD_CAPACITY"):"WEIGHT LIMITING"|"VOLUME LIMITING"{return limitingFactor==="MZFW"?"WEIGHT LIMITING":"VOLUME LIMITING"}
 
 const id=()=>globalThis.crypto?.randomUUID?.()??`line-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const clean=(value:unknown)=>String(value??"").trim();
