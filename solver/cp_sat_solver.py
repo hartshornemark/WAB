@@ -195,11 +195,6 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
     if trim_deviation is not None and optimise(trim_deviation, total_seconds * 0.25) not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return retained_result(best, started, "The time limit was reached during Ideal Trim optimisation.")
 
-    tie_break = model.new_int_var(0, len(loads) * len(positions) * len(positions), "tie_break")
-    model.add(tie_break == sum((load_index * len(positions) + position_index) * variable for (load_index, position_index), variable in assignment.items()))
-    status = optimise(tie_break, max(0.05, deadline - time.perf_counter()))
-    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        return retained_result(best, started, "The time limit was reached during deterministic tie-breaking.")
     assert best is not None
     return result(
         "OPTIMAL" if all_optimal else "FEASIBLE",
@@ -208,7 +203,7 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
         best["sequence"],
         best["groups"],
         best["trim"],
-        ["Every released load was assigned within position, overlap, segregation and special-load quantity constraints."],
+        ["Every released load was assigned within position, overlap, segregation and special-load quantity constraints. Equivalent placements are returned without an additional tie-breaking pass."],
     )
 
 

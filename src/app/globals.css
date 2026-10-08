@@ -807,3 +807,5 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 @media(max-width:900px){.autoload-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.autoload-row.head{display:none}.autoload-row{grid-template-columns:repeat(2,minmax(0,1fr))}.autoload-row>span{position:relative;padding-top:18px}.autoload-row>span::before{content:attr(data-label);position:absolute;top:0;left:0;color:var(--muted);font-size:10px;font-weight:850;text-transform:uppercase}}
 @media(max-width:650px){.load-planning-workspace{padding:18px}.load-planning-intro{align-items:stretch;flex-direction:column}.load-planning-intro button{width:100%}.autoload-metrics,.autoload-row{grid-template-columns:1fr}}
 .aircraft-load-overlay .hold-layout-airframe-fill{fill:#d9e5f4;fill-opacity:.76;stroke:none}.aircraft-load-overlay .hold-layout-airframe{filter:brightness(.38) contrast(2.2) drop-shadow(0 0 .16px #1b2f50)}
+.aircraft-load-overlay .aircraft-overlay-slot.empty{border-color:#9fb0c8;background:#ffffff73}
+.aircraft-overlay-nofit{align-self:center;color:#71829b;font-size:7px;font-weight:900;letter-spacing:.06em}

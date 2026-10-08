@@ -71,7 +71,7 @@ function LayoutDialog({iata,layout,calibration,fuelConfigurations,selectedConfig
     <p className="hold-layout-caption">Tail Left · Nose Right. {selectedConfiguration&&`Showing the ${selectedConfiguration} fitted configuration. `}{layout.decks.length===1&&selectedUldType&&`Showing ${selectedUldType} loading positions only. `}{selectedArrangementLabels.length>0&&`Selected arrangement: ${selectedArrangementLabels.join("; ")}. `}{layout.usesGlobalHoldBoundaries?"Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent.":"Positions use saved carrier Balance Arms."} {layout.calibration.diagramCaption??"Aircraft doors are shown in the official plan. Hold widths are schematic."}</p>
   </dialog>;
 }
-export function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements, offsetX, loads, fillAirframe=false }: { layout: HoldLayout; deckCode: string; selectedUldType:string|null; selectedArrangements:Record<string,string>; offsetX:number; loads:HoldLoadOverlay[]; fillAirframe?:boolean }) {
+export function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements, offsetX, loads, fillAirframe=false, hidePositionDetails=false, viewport }: { layout: HoldLayout; deckCode: string; selectedUldType:string|null; selectedArrangements:Record<string,string>; offsetX:number; loads:HoldLoadOverlay[]; fillAirframe?:boolean; hidePositionDetails?:boolean; viewport?:{x:number;y:number;width:number;height:number} }) {
   const [imageFailed,setImageFailed]=useState(false);
   if(imageFailed)return <p role="alert" className="field-error">The aircraft outline could not be loaded. Close this view and open it again to retry.</p>;
   const aircraft = layout.calibration;
@@ -83,7 +83,8 @@ export function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrange
   const profileTransform=holdLayoutMirrorsAircraftProfile(aircraft)?`translate(${2*image.x+image.width} 0) scale(-1 1)`:undefined;
   const bodyTop=aircraft.centreY-image.height*.115,bodyBottom=aircraft.centreY+image.height*.115;
   const px=(fraction:number)=>image.x+image.width*fraction,py=(fraction:number)=>image.y+image.height*fraction;
-  return <svg className="hold-layout-svg" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
+  const visible=viewport??{x:viewX,y:viewY,width:viewWidth,height:viewHeight};
+  return <svg className="hold-layout-svg" viewBox={`${visible.x} ${visible.y} ${visible.width} ${visible.height}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
     {fillAirframe&&<g className="hold-layout-airframe-fill" aria-hidden="true">
       <path d={`M ${px(.012)} ${aircraft.centreY} C ${px(.035)} ${bodyTop}, ${px(.12)} ${bodyTop}, ${px(.25)} ${bodyTop} L ${px(.88)} ${bodyTop} C ${px(.945)} ${bodyTop}, ${px(.982)} ${py(.42)}, ${px(.992)} ${aircraft.centreY} C ${px(.982)} ${py(.58)}, ${px(.945)} ${bodyBottom}, ${px(.88)} ${bodyBottom} L ${px(.25)} ${bodyBottom} C ${px(.12)} ${bodyBottom}, ${px(.035)} ${bodyBottom}, ${px(.012)} ${aircraft.centreY} Z`}/>
       <path d={`M ${px(.43)} ${bodyTop} L ${px(.385)} ${py(.025)} L ${px(.485)} ${py(.025)} L ${px(.575)} ${bodyTop} Z`}/><path d={`M ${px(.43)} ${bodyBottom} L ${px(.385)} ${py(.975)} L ${px(.485)} ${py(.975)} L ${px(.575)} ${bodyBottom} Z`}/>
@@ -126,12 +127,12 @@ export function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrange
       return <g key={hold.name}><title>Hold {hold.name}; Balance Arm {hold.balanceFrom!.toFixed(3)}–{hold.balanceTo!.toFixed(3)} {aircraft.armUnit??"M"}{completeHoldLoad?`; ${completeHoldLoad.kind} ${completeHoldLoad.weight}`:""}</title>
         <rect x={hold.x} y={aircraft.holdY} width={hold.width} height={aircraft.holdHeight} rx={Math.min(6.2, aircraft.holdHeight/4)} fill={completeHoldLoad?"#747b86":"none"} fillOpacity={completeHoldLoad ? .82 : undefined} stroke={completeHoldLoad?"#424852":"#939393"} strokeWidth={completeHoldLoad ? .4 : .32}/>
         {completeHoldLoad&&<><text x={hold.x+hold.width/2} y={aircraft.holdY+aircraft.holdHeight*.43} textAnchor="middle" fontSize={Math.max(1.25,Math.min(3,aircraft.holdHeight*.34))} fontWeight="800" fill="#fff">{completeHoldCommodity}</text><text x={hold.x+hold.width/2} y={aircraft.holdY+aircraft.holdHeight*.76} textAnchor="middle" fontSize={Math.max(1,Math.min(2.2,aircraft.holdHeight*.25))} fontWeight="700" fill="#fff">{Math.round(completeHoldLoad.weight)}</text></>}
-        {selectedOption?.referencePosition&&<g><title>{selectedOption.label}; {selectedOption.referencePosition.uldCodes.join(", ")} at {selectedOption.referencePosition.id}</title>
+        {!hidePositionDetails&&selectedOption?.referencePosition&&<g><title>{selectedOption.label}; {selectedOption.referencePosition.uldCodes.join(", ")} at {selectedOption.referencePosition.id}</title>
           <rect x={selectedOption.referencePosition.x+.35} y={aircraft.holdY+.35} width={Math.max(0,selectedOption.referencePosition.width-.7)} height={aircraft.holdHeight-.7}
             rx={Math.min(2.5,aircraft.holdHeight/4)} fill="#f2d7a1" fillOpacity=".38" stroke="#a47724" strokeWidth=".32"/>
           <text x={selectedOption.referencePosition.x+selectedOption.referencePosition.width/2} y={aircraft.holdY+aircraft.holdHeight/2+.8} textAnchor="middle" fontSize="2.15" fontWeight="700" fill="#71501d">{selectedOption.referencePosition.id}</text>
         </g>}
-        {(selectedUldType&&hold.holdType==="ULD"?selectedPositions:hold.subdivisions).map(segment => {
+        {!hidePositionDetails&&(selectedUldType&&hold.holdType==="ULD"?selectedPositions:hold.subdivisions).map(segment => {
           const isArrangement=!("kind" in segment);
           const label=isArrangement?`${segment.uldType} position`:(segment.kind === "BAY" ? "Bay" : segment.kind === "AREA" ? "Area" : segment.kind === "COMPARTMENT" ? "Compartment" : "Hold");
           const holdId=aircraftD2HoldId(hold);
