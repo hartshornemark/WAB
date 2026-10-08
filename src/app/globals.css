@@ -863,3 +863,4 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
  .load-plan-print-sheet>footer{display:flex;justify-content:space-between;gap:10mm;margin-top:2mm;padding-top:1.5mm;border-top:1px solid #aebed5;color:#435878;font-size:7pt}
  .load-plan-print-sheet>footer strong{color:#172b4d}
 }
+.load-plan-card.empty-uld{flex-direction:column;align-items:stretch;border-style:solid;background:#f8f8f8}.load-plan-card.empty-uld .empty-uld-mark{display:grid;flex:1;place-items:center;color:#9b9b9b;font-size:42px;font-weight:300;line-height:.7}.load-plan-card.empty-uld .load-plan-card-identity{margin-top:auto;text-align:center}.aircraft-overlay-slot .load-plan-card.empty-uld{justify-content:flex-start}.aircraft-overlay-slot .load-plan-card.empty-uld .empty-uld-mark{font-size:26px;line-height:.65}.aircraft-overlay-slot .load-plan-card.empty-uld .load-plan-card-identity{margin-top:auto}
