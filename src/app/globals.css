@@ -811,3 +811,45 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .aircraft-load-overlay .hold-layout-airframe-fill{fill:#d9e5f4;fill-opacity:.76;stroke:none}.aircraft-load-overlay .hold-layout-airframe{filter:brightness(.38) contrast(2.2) drop-shadow(0 0 .16px #1b2f50)}
 .aircraft-load-overlay .aircraft-overlay-slot.unused{align-items:center;margin:0;border:1px dashed #6f86a8;background:#eef3fad9}
 .aircraft-overlay-nofit{display:grid;width:100%;height:100%;place-items:center;color:#415a7d;font-size:7px;font-weight:900;letter-spacing:.06em;line-height:1}
+
+.load-plan-header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.load-plan-print-sheet{display:none}
+
+@page load-plan-instruction{size:A4 landscape;margin:8mm}
+@media print{
+ body:has(.load-plan-print-sheet) .topbar,
+ body:has(.load-plan-print-sheet) .workspace-footer,
+ body:has(.load-plan-print-sheet) .workspace-main>*:not(.load-planning-workspace),
+ body:has(.load-plan-print-sheet) .load-planning-workspace>summary,
+ body:has(.load-plan-print-sheet) .operational-collapsible-body>*:not(.load-plan-graphic),
+ body:has(.load-plan-print-sheet) .load-plan-graphic>*:not(.load-plan-print-sheet){display:none!important}
+ body:has(.load-plan-print-sheet) .workspace-main{max-width:none!important;padding:0!important}
+ body:has(.load-plan-print-sheet) .load-planning-workspace,
+ body:has(.load-plan-print-sheet) .load-planning-workspace>.operational-collapsible-body,
+ body:has(.load-plan-print-sheet) .load-plan-graphic{display:block!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important}
+ body:has(.load-plan-print-sheet) .load-plan-print-sheet{display:block!important;page:load-plan-instruction;color:#172b4d;font-size:8.5pt;line-height:1.25}
+ .load-plan-print-sheet>header{display:flex;align-items:flex-end;justify-content:space-between;gap:10mm;margin-bottom:5mm;padding-bottom:3mm;border-bottom:2px solid #3e6bc0}
+ .load-plan-print-sheet>header p{margin:0 0 1mm;color:#3e6bc0;font-size:7pt;font-weight:900;letter-spacing:1.4px}
+ .load-plan-print-sheet>header h2{margin:0;font-size:20pt;line-height:1}
+ .load-plan-print-sheet>header>div:last-child{display:grid;grid-template-columns:auto auto;gap:.8mm 3mm;text-align:right}
+ .load-plan-print-sheet>header span,.load-plan-print-sheet small{color:#586b8b;font-size:6.5pt;font-weight:800}
+ .load-plan-print-sheet>header strong{font-size:9.5pt}
+ .load-plan-print-facts{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.6fr;gap:2mm;margin-bottom:4mm}
+ .load-plan-print-facts>span{display:grid;gap:.7mm;padding:2mm 2.5mm;border:1px solid #d7e0ee;border-radius:1.5mm;background:#f5f8fc}
+ .load-plan-print-facts strong{font-size:8pt;overflow-wrap:anywhere}
+ .load-plan-print-decks{display:grid;gap:3mm;margin-bottom:4mm}
+ .load-plan-print-decks>section{break-inside:avoid}
+ .load-plan-print-decks h3{margin:0 0 1mm;font-size:9pt}
+ .load-plan-print-decks .aircraft-load-overlay{border:1px solid #ccd7e7;border-radius:2mm;background:#f3f6fb}
+ .load-plan-print-decks .load-plan-card{appearance:none;-webkit-appearance:none}
+ .load-plan-print-decks .aircraft-overlay-place{display:none!important}
+ .load-plan-print-sheet table{width:100%;border-collapse:collapse;table-layout:fixed;break-before:auto;font-variant-numeric:tabular-nums}
+ .load-plan-print-sheet thead{display:table-header-group}
+ .load-plan-print-sheet tr{break-inside:avoid}
+ .load-plan-print-sheet th,.load-plan-print-sheet td{padding:1.5mm 2mm;border:1px solid #d7e0ee;text-align:left;vertical-align:top}
+ .load-plan-print-sheet th{background:#edf2fa;color:#3d5274;font-size:7pt}
+ .load-plan-print-sheet td{font-size:7.5pt;font-weight:700}
+ .load-plan-print-sheet th:nth-child(1){width:22%}.load-plan-print-sheet th:nth-child(2){width:12%}.load-plan-print-sheet th:nth-child(3){width:14%}.load-plan-print-sheet th:nth-child(4){width:22%}
+ .load-plan-print-sheet>footer{display:flex;justify-content:space-between;gap:10mm;margin-top:4mm;padding-top:2.5mm;border-top:1px solid #aebed5;color:#435878;font-size:7pt}
+ .load-plan-print-sheet>footer strong{color:#172b4d}
+}

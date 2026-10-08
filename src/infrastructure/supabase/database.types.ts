@@ -120,6 +120,8 @@ export type Database = {
       get_operational_freight_planning:{Args:{p_iata:string;p_operational_flight_id:string};Returns:Json};
       save_operational_freight_planning:{Args:{p_iata:string;p_operational_flight_id:string;p_version:number;p_values:Json};Returns:Json};
       get_operational_freight_acceptance:{Args:{p_iata:string;p_operational_flight_id:string};Returns:Json};
+      get_operational_load_plan:{Args:{p_iata:string;p_operational_flight_id:string};Returns:Json};
+      save_operational_load_plan:{Args:{p_iata:string;p_operational_flight_id:string;p_expected_edition:number;p_source:string;p_solution:Json};Returns:Json};
       save_operational_freight_acceptance:{Args:{p_iata:string;p_operational_flight_id:string;p_version:number;p_values:Json};Returns:Json};
       get_flight_schedule_workspace:{Args:{p_iata:string};Returns:Json};
       get_flight_schedule_segment_defaults:{Args:{p_iata:string};Returns:Json};
