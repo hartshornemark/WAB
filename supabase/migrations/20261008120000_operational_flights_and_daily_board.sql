@@ -496,7 +496,7 @@ begin
     where i."Carrier_IATA"=p_iata and i."Status"='PUBLISHED'
       and p_service_date between l."Period_Start_Date" and l."Period_End_Date"
       and get_bit(l."Operating_Days",extract(isodow from p_service_date)::integer-1)=1
-      and (airport is null or airport in(l."Departure_Airport_IATA",l."Arrival_Airport_IATA"))
+      and (airport is null or airport=l."Departure_Airport_IATA")
   ), board_rows as(
     select
       s."Operational_Flight_ID",s."Schedule_Leg_ID",'SCHEDULED'::text source_type,
@@ -520,7 +520,7 @@ begin
       f."Crew_Code_ID" is not null and f."Pantry_Code_ID" is not null,'Ad-hoc flight'::text,f."Updated_At"
     from "Basic_Carrier_Record"."Operational_Flights" f
     where f."Carrier_IATA"=p_iata and f."Service_Date"=p_service_date and f."Source_Type"='AD_HOC'
-      and (airport is null or airport in(f."Departure_Airport_IATA",f."Arrival_Airport_IATA"))
+      and (airport is null or airport=f."Departure_Airport_IATA")
   )
   select coalesce(jsonb_agg(jsonb_build_object(
     'operationalFlightId',r."Operational_Flight_ID",'scheduleLegId',r."Schedule_Leg_ID",'sourceType',r.source_type,
