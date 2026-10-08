@@ -2,12 +2,13 @@ import"server-only";
 import{DataUnavailable}from"@/domain/models";
 import{OperationalFlightConflict,OperationalFlightDenied,OperationalFlightInvalid}from"@/domain/operational-flights";
 import{departureStationCodes,operationalWeightBasis}from"@/domain/operational-flights";
-import type{DailyLoadControlBoard,OperationalFlightDetail,OperationalFlightRepository}from"@/ports/operational-flight-repository";
+import type{DailyLoadControlBoard,OperationalFlightDetail,OperationalFlightRepository,OperationalFreightPlanning}from"@/ports/operational-flight-repository";
 import type{RequestClient}from"./server";
 import type{Json}from"./database.types";
 function fail(error:{code?:string;message?:string}|null){if(!error)return;if(error.code==="42501")throw new OperationalFlightDenied("You do not have permission to operate Load Control.");if(error.code==="23505")throw new OperationalFlightConflict(error.message||"This operational flight already exists.");if(["23514","23503","22023","23502","22P02","55000","P0002"].includes(error.code??""))throw new OperationalFlightInvalid(error.message||"The operational flight data is invalid.");throw new DataUnavailable("Operational flight data is temporarily unavailable.")}
 function board(value:unknown){const row=value as DailyLoadControlBoard;if(!row||typeof row.serviceDate!=="string"||typeof row.canOperate!=="boolean"||!Array.isArray(row.flights)||!Array.isArray(row.airports)||!Array.isArray(row.aircraft)||!Array.isArray(row.serviceTypes))throw new DataUnavailable("The Daily Load Control board was incomplete.");return row}
 function detail(value:unknown){const row=value as OperationalFlightDetail;if(!row||typeof row.operationalFlightId!=="string"||typeof row.status!=="string"||!Array.isArray(row.itinerary?.legs)||!Array.isArray(row.events))throw new DataUnavailable("The operational flight record was incomplete.");return row}
+function freight(value:unknown){const row=value as OperationalFreightPlanning;if(!row||typeof row.applicable!=="boolean"||typeof row.canEdit!=="boolean")throw new DataUnavailable("The freight planning record was incomplete.");if(row.applicable&&(!Array.isArray(row.uldPositionGroups)||!Array.isArray(row.bulkHolds)||!Array.isArray(row.registrationOptions)||!Array.isArray(row.crewOptions)||!Array.isArray(row.pantryOptions)||!Array.isArray(row.missing)))throw new DataUnavailable("The Cargo Offer configuration was incomplete.");return row}
 export function createOperationalFlightAdapter(client:RequestClient):OperationalFlightRepository{return{
   async board(iata,date,airport){
     const[result,aircraftResult]=await Promise.all([
@@ -20,5 +21,6 @@ export function createOperationalFlightAdapter(client:RequestClient):Operational
   },
   async start(iata,scheduleLegId,date){const result=await client.schema("Basic_Carrier_Record").rpc("start_operational_flight",{p_iata:iata,p_schedule_leg_id:scheduleLegId,p_service_date:date});fail(result.error);if(typeof result.data!=="string")throw new DataUnavailable("The operational flight was not created.");return result.data},
   async createAdHoc(iata,input){const result=await client.schema("Basic_Carrier_Record").rpc("create_ad_hoc_operational_flight",{p_iata:iata,p_values:input as unknown as Json});fail(result.error);if(typeof result.data!=="string")throw new DataUnavailable("The ad-hoc flight was not created.");return result.data},
-  async get(iata,id){const result=await client.schema("Basic_Carrier_Record").rpc("get_operational_flight",{p_iata:iata,p_operational_flight_id:id});fail(result.error);return detail(result.data)},
+  async get(iata,id){const[result,planning]=await Promise.all([client.schema("Basic_Carrier_Record").rpc("get_operational_flight",{p_iata:iata,p_operational_flight_id:id}),client.schema("Basic_Carrier_Record").rpc("get_operational_freight_planning",{p_iata:iata,p_operational_flight_id:id})]);fail(result.error);fail(planning.error);return{...detail(result.data),freightPlanning:freight(planning.data)}},
+  async saveFreightPlanning(iata,id,version,input){const result=await client.schema("Basic_Carrier_Record").rpc("save_operational_freight_planning",{p_iata:iata,p_operational_flight_id:id,p_version:version,p_values:input as unknown as Json});fail(result.error);return freight(result.data)},
 }}

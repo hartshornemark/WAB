@@ -109,6 +109,8 @@ export type Database = {
       start_operational_flight:{Args:{p_iata:string;p_schedule_leg_id:string;p_service_date:string};Returns:string};
       create_ad_hoc_operational_flight:{Args:{p_iata:string;p_values:Json};Returns:string};
       get_operational_flight:{Args:{p_iata:string;p_operational_flight_id:string};Returns:Json};
+      get_operational_freight_planning:{Args:{p_iata:string;p_operational_flight_id:string};Returns:Json};
+      save_operational_freight_planning:{Args:{p_iata:string;p_operational_flight_id:string;p_version:number;p_values:Json};Returns:Json};
       get_flight_schedule_workspace:{Args:{p_iata:string};Returns:Json};
       get_flight_schedule_segment_defaults:{Args:{p_iata:string};Returns:Json};
       get_flight_schedule_parameter_options:{Args:{p_iata:string};Returns:Json};
