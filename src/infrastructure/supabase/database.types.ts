@@ -5,6 +5,11 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   Basic_Carrier_Record: {
     Tables: BaggageTables & {
+      Basic_Aircraft_Data:{
+        Row:{Carrier_IATA:string;Aircraft_Type_IATA:string;Aircraft_Series_Subtype:string;Aircraft_Type:string;Aircraft_Operating_Role:string};
+        Insert:{Carrier_IATA:string;Aircraft_Type_IATA:string;Aircraft_Series_Subtype:string;Aircraft_Type:string;Aircraft_Operating_Role:string};
+        Update:{Aircraft_Type?:string;Aircraft_Operating_Role?:string};Relationships:[];
+      };
       Carrier_Units_of_Measure: {
         Row: {Carrier_IATA:string;Density_Checked_Baggage:number|null;Density_General_Cargo:number|null;Density_General_Mail:number|null};
         Insert: {Carrier_IATA:string;Density_Checked_Baggage:number|null;Density_General_Cargo:number|null;Density_General_Mail:number|null};
