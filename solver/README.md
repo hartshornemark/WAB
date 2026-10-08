@@ -18,4 +18,4 @@ solver/.venv/bin/python -m unittest discover -s solver -p 'test_*.py' -v
 solver/.venv/bin/python solver/benchmark_b747.py
 ```
 
-The objectives are solved in operational priority order: unloading sequence, simplicity groups, then Ideal Trim deviation. Position compatibility, maximum weights, locked assignments and physical-bay overlap are hard constraints.
+The objectives are solved in operational priority order: minimise unloading-sequence inversions within each separately accessed cargo hold, approach Ideal Trim, then simplify the loading pattern. A correctly ordered block may slide within its hold to improve trim without incurring an unloading penalty. Position compatibility, maximum weights, locked assignments and physical-bay overlap are hard constraints.

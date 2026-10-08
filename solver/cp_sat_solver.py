@@ -124,15 +124,37 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
         model.add(rank == sum(positions[position_index]["handlingRank"] * assignment[load_index, position_index] for position_index in compatible[load_index]))
         load_ranks.append(rank)
 
+    # Score only actual offload-order inversions. Distance from a door is not
+    # itself a penalty when both loads remain in the correct relative order.
+    # Each configured hold has its own access path; separate holds must never
+    # be compared merely because they are on the same aircraft deck.
+    access_areas = sorted({position.get("holdId", position.get("deckCode", "UNSPECIFIED")) for position in positions})
+    load_in_access_area: dict[tuple[int, str], cp_model.IntVar] = {}
+    for load_index in range(len(loads)):
+        for area_index, area in enumerate(access_areas):
+            selected = model.new_bool_var(f"load_{load_index}_area_{area_index}")
+            candidates = [
+                assignment[load_index, position_index]
+                for position_index in compatible[load_index]
+                if positions[position_index].get("holdId", positions[position_index].get("deckCode", "UNSPECIFIED")) == area
+            ]
+            model.add(selected == sum(candidates)) if candidates else model.add(selected == 0)
+            load_in_access_area[load_index, area] = selected
+
     sequence_terms: list[cp_model.IntVar] = []
     for earlier in range(len(loads)):
         for later in range(len(loads)):
             if loads[earlier]["unloadOrder"] >= loads[later]["unloadOrder"]:
                 continue
-            penalty = model.new_int_var(0, maximum_rank, f"sequence_{earlier}_{later}")
-            model.add(penalty >= load_ranks[earlier] - load_ranks[later])
-            sequence_terms.append(penalty)
-    sequence_penalty = model.new_int_var(0, maximum_rank * max(1, len(sequence_terms)), "sequence_penalty")
+            for area_index, area in enumerate(access_areas):
+                inversion = model.new_bool_var(f"sequence_{earlier}_{later}_{area_index}")
+                earlier_in_area, later_in_area = load_in_access_area[earlier, area], load_in_access_area[later, area]
+                model.add(inversion <= earlier_in_area)
+                model.add(inversion <= later_in_area)
+                model.add(load_ranks[earlier] > load_ranks[later]).only_enforce_if([earlier_in_area, later_in_area, inversion])
+                model.add(load_ranks[earlier] <= load_ranks[later]).only_enforce_if([earlier_in_area, later_in_area, inversion.Not()])
+                sequence_terms.append(inversion)
+    sequence_penalty = model.new_int_var(0, max(1, len(sequence_terms)), "sequence_penalty")
     model.add(sequence_penalty == sum(sequence_terms))
 
     group_names = sorted({position["simplicityGroup"] for position in positions})
@@ -190,10 +212,10 @@ def solve(problem: dict[str, Any]) -> dict[str, Any]:
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         label = "INFEASIBLE" if status == cp_model.INFEASIBLE else "UNKNOWN"
         return result(label, started, [], None, None, None, ["No assignment was found within the configured loading constraints and time limit."])
-    if optimise(used_groups, total_seconds * 0.20) not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        return retained_result(best, started, "The time limit was reached while simplifying the loading pattern.")
-    if trim_deviation is not None and optimise(trim_deviation, total_seconds * 0.25) not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+    if trim_deviation is not None and optimise(trim_deviation, total_seconds * 0.30) not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return retained_result(best, started, "The time limit was reached during Ideal Trim optimisation.")
+    if optimise(used_groups, total_seconds * 0.15) not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return retained_result(best, started, "The time limit was reached while simplifying the loading pattern.")
 
     assert best is not None
     return result(

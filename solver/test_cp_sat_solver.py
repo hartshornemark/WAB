@@ -31,6 +31,33 @@ class CpSatSolverTest(unittest.TestCase):
         solution = solve(problem)
         self.assertEqual(dict((row["loadId"], row["positionId"]) for row in solution["assignments"])["EARLY"], "AFT")
 
+    def test_slides_an_ordered_block_aft_to_improve_trim(self):
+        problem = self.problem()
+        problem["loads"][0]["weightKg"] = 1000
+        problem["loads"][1]["weightKg"] = 1000
+        problem["idealTrimIndexScaled"] = 50_000
+        problem["positions"] = [
+            {"id": f"P{rank}", "description": f"Position {rank}", "loadType": "ULD", "acceptedUldCodes": ["AKH"], "maximumWeightKg": 1588, "occupiedBayIds": [str(rank)], "handlingRank": rank, "simplicityGroup": "MAIN", "indexPerKgScaled": rank * 10, "deckCode": "MAIN"}
+            for rank in range(4)
+        ]
+        solution = solve(problem)
+        assigned = {row["loadId"]: row["positionId"] for row in solution["assignments"]}
+        self.assertEqual(assigned, {"EARLY": "P2", "LATE": "P3"})
+        self.assertEqual(solution["sequencePenalty"], 0)
+        self.assertEqual(solution["trimDeviationScaled"], 0)
+
+    def test_does_not_compare_unloading_order_across_separately_accessed_holds(self):
+        problem = self.problem()
+        problem["positions"][0]["deckCode"] = "LOWER"
+        problem["positions"][0]["holdId"] = "FWD"
+        problem["positions"][0]["handlingRank"] = 10
+        problem["positions"][1]["deckCode"] = "LOWER"
+        problem["positions"][1]["holdId"] = "AFT"
+        problem["positions"][1]["handlingRank"] = 0
+        problem["loads"][0]["lockedPositionId"] = "FWD"
+        problem["loads"][1]["lockedPositionId"] = "AFT"
+        self.assertEqual(solve(problem)["sequencePenalty"], 0)
+
     def test_rejects_overlapping_footprints(self):
         problem = self.problem()
         problem["positions"][1]["occupiedBayIds"] = ["1"]
