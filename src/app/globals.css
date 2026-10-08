@@ -819,15 +819,15 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 @media print{
  body:has(.load-plan-print-sheet) .topbar,
  body:has(.load-plan-print-sheet) .workspace-footer,
- body:has(.load-plan-print-sheet) .workspace-main>*:not(.load-planning-workspace),
+ body:has(.load-plan-print-sheet) .workspace>*:not(.load-planning-workspace),
  body:has(.load-plan-print-sheet) .load-planning-workspace>summary,
  body:has(.load-plan-print-sheet) .operational-collapsible-body>*:not(.load-plan-graphic),
  body:has(.load-plan-print-sheet) .load-plan-graphic>*:not(.load-plan-print-sheet){display:none!important}
- body:has(.load-plan-print-sheet) .workspace-main{max-width:none!important;padding:0!important}
+ body:has(.load-plan-print-sheet) .workspace{max-width:none!important;min-height:0!important;margin:0!important;padding:0!important}
  body:has(.load-plan-print-sheet) .load-planning-workspace,
  body:has(.load-plan-print-sheet) .load-planning-workspace>.operational-collapsible-body,
  body:has(.load-plan-print-sheet) .load-plan-graphic{display:block!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important}
- body:has(.load-plan-print-sheet) .load-plan-print-sheet{display:block!important;page:load-plan-instruction;color:#172b4d;font-size:8.5pt;line-height:1.25}
+ body:has(.load-plan-print-sheet) .load-plan-print-sheet{display:block!important;page:load-plan-instruction;break-inside:avoid-page;color:#172b4d;font-size:8.5pt;line-height:1.25}
  .load-plan-print-sheet>header{display:flex;align-items:flex-end;justify-content:space-between;gap:10mm;margin-bottom:5mm;padding-bottom:3mm;border-bottom:2px solid #3e6bc0}
  .load-plan-print-sheet>header p{margin:0 0 1mm;color:#3e6bc0;font-size:7pt;font-weight:900;letter-spacing:1.4px}
  .load-plan-print-sheet>header h2{margin:0;font-size:20pt;line-height:1}
