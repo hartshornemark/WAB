@@ -1,56 +1,10 @@
 begin;
 
-create table "Basic_Carrier_Record"."Operational_Freight_Acceptance"(
-  "Operational_Flight_ID" uuid primary key references "Basic_Carrier_Record"."Operational_Flights"("Operational_Flight_ID") on update cascade on delete cascade,
-  "Carrier_IATA" varchar(3) not null references "Basic_Carrier_Record"."MASTER_Carrier_Contact"("Carrier_IATA") on update cascade on delete restrict,
-  "Status" text not null default 'ACCEPTED' check("Status" in('ACCEPTED')),
-  "Source" text not null check("Source" in('MANUAL','CSV','AHM581','MIXED')),
-  "Source_Reference" text check("Source_Reference" is null or char_length("Source_Reference")<=200),
-  "Raw_Message" text check("Raw_Message" is null or char_length("Raw_Message")<=100000),
-  "Version" integer not null default 1 check("Version">0),
-  "Created_At" timestamptz not null default now(),
-  "Created_By" uuid not null default auth.uid(),
-  "Updated_At" timestamptz not null default now(),
-  "Updated_By" uuid not null default auth.uid()
-);
-
-create table "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items"(
-  "Line_ID" uuid primary key default gen_random_uuid(),
-  "Operational_Flight_ID" uuid not null references "Basic_Carrier_Record"."Operational_Freight_Acceptance"("Operational_Flight_ID") on update cascade on delete cascade,
-  "Carrier_IATA" varchar(3) not null references "Basic_Carrier_Record"."MASTER_Carrier_Contact"("Carrier_IATA") on update cascade on delete restrict,
-  "Sequence_Number" integer not null check("Sequence_Number" between 1 and 250),
-  "Load_Type" text not null check("Load_Type" in('ULD','BULK')),
-  "ULD_ID" varchar(12),
-  "Gross_Weight" numeric(10,2) not null check("Gross_Weight">0),
-  "Net_Weight" numeric(10,2) check("Net_Weight">=0 and "Net_Weight"<="Gross_Weight"),
-  "Station_Of_Unloading" char(3) not null check("Station_Of_Unloading"~'^[A-Z]{3}$'),
-  "Destination" char(3) not null check("Destination"~'^[A-Z]{3}$'),
-  "Commodity" text not null check("Commodity" in('CARGO','MAIL','OTHER')),
-  "Pieces" integer check("Pieces">=0),
-  "Volume_M3" numeric(10,3) check("Volume_M3">=0),
-  "Special_Handling_Codes" text[] not null default '{}',
-  "Included_Loads" jsonb not null default '[]'::jsonb check(jsonb_typeof("Included_Loads")='array'),
-  "Dangerous_Goods" boolean not null default false,
-  "Remarks" text check("Remarks" is null or char_length("Remarks")<=1000),
-  "Source" text not null check("Source" in('MANUAL','CSV','AHM581')),
-  "Source_Reference" text check("Source_Reference" is null or char_length("Source_Reference")<=200),
-  constraint "operational_freight_acceptance_item_shape" check(
-    ("Load_Type"='ULD' and "ULD_ID"~'^[A-Z]{3}[A-Z0-9]{4,8}$' and "Volume_M3" is null)
-    or ("Load_Type"='BULK' and "ULD_ID" is null)
-  ),
-  unique("Operational_Flight_ID","Sequence_Number"),
-  unique("Operational_Flight_ID","ULD_ID")
-);
-
-create index "operational_freight_acceptance_carrier_idx" on "Basic_Carrier_Record"."Operational_Freight_Acceptance"("Carrier_IATA","Updated_At" desc);
-create index "operational_freight_acceptance_items_flight_idx" on "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items"("Operational_Flight_ID","Sequence_Number");
-
-alter table "Basic_Carrier_Record"."Operational_Freight_Acceptance" enable row level security;
-alter table "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" enable row level security;
-grant select on "Basic_Carrier_Record"."Operational_Freight_Acceptance" to authenticated;
-grant select on "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" to authenticated;
-create policy "operational_freight_acceptance_select" on "Basic_Carrier_Record"."Operational_Freight_Acceptance" for select to authenticated using((select private.has_carrier_permission("Carrier_IATA",'LOAD_CONTROL_VIEW'))or(select private.has_global_permission('LOAD_CONTROL_VIEW')));
-create policy "operational_freight_acceptance_items_select" on "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" for select to authenticated using((select private.has_carrier_permission("Carrier_IATA",'LOAD_CONTROL_VIEW'))or(select private.has_global_permission('LOAD_CONTROL_VIEW')));
+alter table "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" add column if not exists "Included_Loads" jsonb not null default '[]'::jsonb;
+update "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" set "Commodity"='OTHER' where "Commodity" not in('CARGO','MAIL','OTHER');
+do $$declare r record;begin for r in select c.conname from pg_constraint c join pg_class t on t.oid=c.conrelid join pg_namespace n on n.oid=t.relnamespace where n.nspname='Basic_Carrier_Record' and t.relname='Operational_Freight_Acceptance_Items' and c.contype='c' and pg_get_constraintdef(c.oid) like '%Commodity%' loop execute format('alter table "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" drop constraint %I',r.conname);end loop;end$$;
+alter table "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" add constraint "operational_freight_acceptance_commodity_check" check("Commodity" in('CARGO','MAIL','OTHER'));
+alter table "Basic_Carrier_Record"."Operational_Freight_Acceptance_Items" add constraint "operational_freight_acceptance_included_loads_check" check(jsonb_typeof("Included_Loads")='array');
 
 create or replace function "Basic_Carrier_Record".get_operational_freight_acceptance(p_iata text,p_operational_flight_id uuid)
 returns jsonb language plpgsql stable security definer set search_path='' as $$
