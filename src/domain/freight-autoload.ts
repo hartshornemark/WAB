@@ -9,7 +9,7 @@ import{balanceArmFromIndexPerWeightUnit}from"@/domain/index-per-weight-unit";
 import type{OperationalFlightDetail}from"@/ports/operational-flight-repository";
 import{LoadPlanningProblemInvalid,validateLoadPlanningProblem,type LoadPlanningProblem,type SolverIncompatibility,type SolverPosition}from"@/domain/load-planning-solver";
 
-export type FreightAutoloadContext={problem:LoadPlanningProblem;warnings:string[];unloadingAccessibilityComplete:boolean};
+export type FreightAutoloadContext={problem:LoadPlanningProblem;warnings:string[];unloadingAccessibilityComplete:boolean;estimatedZfwWeight:number;operationalBaseIndex:number|null;fuelConfigurationCode:string|null};
 
 const scaled=(value:number)=>Math.round(value*100_000);
 export const freightAutoloadTimeLimitSeconds=(loadCount:number)=>Math.max(2,Math.min(10,Math.ceil(loadCount/10)));
@@ -46,5 +46,5 @@ export function buildFreightAutoloadProblem(input:{flight:OperationalFlightDetai
  if(idealTrimIndexScaled===null)warnings.push("Ideal Trim cannot be scored until C7 and the applicable aircraft starting index are available.");
  const positions=rawPositions.map(({arm,...position})=>({...position,balanceArm:arm})),incompatiblePairs=buildPairs(h1),specialLoadLimits=h1.specialLoadsActive?h1.specialLoadRows.map(row=>({code:row.code,holdId:row.holdId,locationRef:row.locationRef,maximumQuantity:row.maximumQuantity??0})):[],problem=validateLoadPlanningProblem({version:1,timeLimitSeconds:freightAutoloadTimeLimitSeconds(loads.length),idealTrimIndexScaled,loads,positions,incompatiblePairs,specialLoadLimits});
  if(incompatiblePairs.length)warnings.push("AUTOLOAD applied master, IATA DGR and aircraft H1 incompatibility rules. Incompatible loads are kept in separate configured cargo compartments.");
- return{problem,warnings,unloadingAccessibilityComplete:missingUldDoorHolds.length===0};
+ return{problem,warnings,unloadingAccessibilityComplete:missingUldDoorHolds.length===0,estimatedZfwWeight:zfw,operationalBaseIndex:startIndex===null?null:startIndex+crewIndex+pantryIndex,fuelConfigurationCode:fuelConfiguration};
 }
