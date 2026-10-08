@@ -71,7 +71,7 @@ function LayoutDialog({iata,layout,calibration,fuelConfigurations,selectedConfig
     <p className="hold-layout-caption">Tail Left · Nose Right. {selectedConfiguration&&`Showing the ${selectedConfiguration} fitted configuration. `}{layout.decks.length===1&&selectedUldType&&`Showing ${selectedUldType} loading positions only. `}{selectedArrangementLabels.length>0&&`Selected arrangement: ${selectedArrangementLabels.join("; ")}. `}{layout.usesGlobalHoldBoundaries?"Hold lengths use the global aircraft-type boundaries where optional carrier boundaries are absent.":"Positions use saved carrier Balance Arms."} {layout.calibration.diagramCaption??"Aircraft doors are shown in the official plan. Hold widths are schematic."}</p>
   </dialog>;
 }
-function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements, offsetX, loads }: { layout: HoldLayout; deckCode: string; selectedUldType:string|null; selectedArrangements:Record<string,string>; offsetX:number; loads:HoldLoadOverlay[] }) {
+export function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements, offsetX, loads, fillAirframe=false }: { layout: HoldLayout; deckCode: string; selectedUldType:string|null; selectedArrangements:Record<string,string>; offsetX:number; loads:HoldLoadOverlay[]; fillAirframe?:boolean }) {
   const [imageFailed,setImageFailed]=useState(false);
   if(imageFailed)return <p role="alert" className="field-error">The aircraft outline could not be loaded. Close this view and open it again to retry.</p>;
   const aircraft = layout.calibration;
@@ -81,8 +81,15 @@ function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrangements, 
   const viewY = aircraft.centreY - viewHeight / 2;
   const image = aircraft.imageFrame;
   const profileTransform=holdLayoutMirrorsAircraftProfile(aircraft)?`translate(${2*image.x+image.width} 0) scale(-1 1)`:undefined;
+  const bodyTop=aircraft.centreY-image.height*.115,bodyBottom=aircraft.centreY+image.height*.115;
+  const px=(fraction:number)=>image.x+image.width*fraction,py=(fraction:number)=>image.y+image.height*fraction;
   return <svg className="hold-layout-svg" viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
-    <image transform={profileTransform} onError={()=>setImageFailed(true)} href={aircraft.asset} x={image.x} y={image.y} width={image.width} height={image.height}/>
+    {fillAirframe&&<g className="hold-layout-airframe-fill" aria-hidden="true">
+      <path d={`M ${px(.012)} ${aircraft.centreY} C ${px(.035)} ${bodyTop}, ${px(.12)} ${bodyTop}, ${px(.25)} ${bodyTop} L ${px(.88)} ${bodyTop} C ${px(.945)} ${bodyTop}, ${px(.982)} ${py(.42)}, ${px(.992)} ${aircraft.centreY} C ${px(.982)} ${py(.58)}, ${px(.945)} ${bodyBottom}, ${px(.88)} ${bodyBottom} L ${px(.25)} ${bodyBottom} C ${px(.12)} ${bodyBottom}, ${px(.035)} ${bodyBottom}, ${px(.012)} ${aircraft.centreY} Z`}/>
+      <path d={`M ${px(.43)} ${bodyTop} L ${px(.385)} ${py(.025)} L ${px(.485)} ${py(.025)} L ${px(.575)} ${bodyTop} Z`}/><path d={`M ${px(.43)} ${bodyBottom} L ${px(.385)} ${py(.975)} L ${px(.485)} ${py(.975)} L ${px(.575)} ${bodyBottom} Z`}/>
+      <path d={`M ${px(.105)} ${bodyTop} L ${px(.045)} ${py(.08)} L ${px(.105)} ${py(.08)} L ${px(.185)} ${bodyTop} Z`}/><path d={`M ${px(.105)} ${bodyBottom} L ${px(.045)} ${py(.92)} L ${px(.105)} ${py(.92)} L ${px(.185)} ${bodyBottom} Z`}/>
+    </g>}
+    <image className="hold-layout-airframe" transform={profileTransform} onError={()=>setImageFailed(true)} href={aircraft.asset} x={image.x} y={image.y} width={image.width} height={image.height}/>
     <g transform={`translate(${offsetX} 0)`}>{holds.map(hold => {
       const individualProfile=aircraftHoldProfile(aircraft,hold);
       const profile=individualProfile??aircraft.combinedHoldProfile;
