@@ -84,7 +84,7 @@ export function HoldDiagram({ layout, deckCode, selectedUldType, selectedArrange
   const bodyTop=aircraft.centreY-image.height*.115,bodyBottom=aircraft.centreY+image.height*.115;
   const px=(fraction:number)=>image.x+image.width*fraction,py=(fraction:number)=>image.y+image.height*fraction;
   const visible=viewport??{x:viewX,y:viewY,width:viewWidth,height:viewHeight};
-  return <svg className="hold-layout-svg" viewBox={`${visible.x} ${visible.y} ${visible.width} ${visible.height}`} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
+  return <svg className="hold-layout-svg" viewBox={`${visible.x} ${visible.y} ${visible.width} ${visible.height}`} preserveAspectRatio={viewport?"none":undefined} role="img" aria-label={`${deckCode}: ${holds.map(h => `Hold ${h.name}`).join("; ")}`}>
     {fillAirframe&&<g className="hold-layout-airframe-fill" transform={profileTransform} aria-hidden="true">
       <path d={`M ${px(.012)} ${aircraft.centreY} C ${px(.035)} ${bodyTop}, ${px(.12)} ${bodyTop}, ${px(.25)} ${bodyTop} L ${px(.88)} ${bodyTop} C ${px(.945)} ${bodyTop}, ${px(.982)} ${py(.42)}, ${px(.992)} ${aircraft.centreY} C ${px(.982)} ${py(.58)}, ${px(.945)} ${bodyBottom}, ${px(.88)} ${bodyBottom} L ${px(.25)} ${bodyBottom} C ${px(.12)} ${bodyBottom}, ${px(.035)} ${bodyBottom}, ${px(.012)} ${aircraft.centreY} Z`}/>
     </g>}
