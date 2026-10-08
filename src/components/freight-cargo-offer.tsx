@@ -5,7 +5,7 @@ import type{OperationalFreightPlanning}from"@/ports/operational-flight-repositor
 
 const kg=(value:number|null|undefined)=>value===null||value===undefined?"—":`${Math.round(value).toLocaleString()} KG`;
 const number=(value:number|null|undefined,places=1)=>value===null||value===undefined?"—":value.toLocaleString(undefined,{minimumFractionDigits:places,maximumFractionDigits:places});
-const volume=(value:number)=>value.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:2});
+const volume=(value:number)=>value.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const bulkDetail=(volumeValue:number,density:number|null,planningWeight:number)=>{const densityWeight=Math.round(volumeValue*Number(density??0)),formula=`${volume(volumeValue)} × B1 cargo density ${number(density,0)} = ${kg(densityWeight)}`;return densityWeight>planningWeight?`${formula} · limited to ${kg(planningWeight)} by the hold maximum`:formula};
 type Draft={weightBasis:"FLEET_WEIGHT"|"REGISTRATION";registration:string;crewCode:string;pantryCode:string};
 const draftOf=(p:OperationalFreightPlanning):Draft=>({weightBasis:p.weightBasis,registration:p.registration??"",crewCode:p.crewCode??"",pantryCode:p.pantryCode??""});
