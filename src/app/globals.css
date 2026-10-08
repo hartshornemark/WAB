@@ -828,21 +828,22 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
  body:has(.load-plan-print-sheet) .load-planning-workspace>.operational-collapsible-body,
  body:has(.load-plan-print-sheet) .load-plan-graphic{display:block!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important}
  body:has(.load-plan-print-sheet) .load-plan-print-sheet{display:block!important;page:load-plan-instruction;break-inside:avoid-page;color:#172b4d;font-size:8.5pt;line-height:1.25}
- .load-plan-print-sheet>header{display:flex;align-items:flex-end;justify-content:space-between;gap:10mm;margin-bottom:5mm;padding-bottom:3mm;border-bottom:2px solid #3e6bc0}
+ .load-plan-print-sheet>header{display:flex;align-items:flex-end;justify-content:space-between;gap:10mm;margin-bottom:3mm;padding-bottom:2mm;border-bottom:2px solid #3e6bc0}
  .load-plan-print-sheet>header p{margin:0 0 1mm;color:#3e6bc0;font-size:7pt;font-weight:900;letter-spacing:1.4px}
  .load-plan-print-sheet>header h2{margin:0;font-size:20pt;line-height:1}
  .load-plan-print-sheet>header>div:last-child{display:grid;grid-template-columns:auto auto;gap:.8mm 3mm;text-align:right}
  .load-plan-print-sheet>header span,.load-plan-print-sheet small{color:#586b8b;font-size:6.5pt;font-weight:800}
  .load-plan-print-sheet>header strong{font-size:9.5pt}
- .load-plan-print-facts{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.6fr;gap:2mm;margin-bottom:4mm}
+ .load-plan-print-facts{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.6fr;gap:2mm;margin-bottom:2mm}
  .load-plan-print-facts>span{display:grid;gap:.7mm;padding:2mm 2.5mm;border:1px solid #d7e0ee;border-radius:1.5mm;background:#f5f8fc}
  .load-plan-print-facts strong{font-size:8pt;overflow-wrap:anywhere}
- .load-plan-print-decks{display:grid;gap:3mm;margin-bottom:4mm}
+ .load-plan-print-decks{display:grid;gap:2mm;margin-bottom:2mm}
  .load-plan-print-decks>section{break-inside:avoid}
  .load-plan-print-decks h3{margin:0 0 1mm;font-size:9pt}
- .load-plan-print-decks .aircraft-load-overlay{border:1px solid #ccd7e7;border-radius:2mm;background:#f3f6fb}
+ .load-plan-print-decks .aircraft-load-overlay{height:57mm;border:1px solid #ccd7e7;border-radius:2mm;background:#f3f6fb}
+ .load-plan-print-decks .aircraft-load-overlay .hold-layout-svg{height:57mm}
  .load-plan-print-decks .load-plan-card{appearance:none;-webkit-appearance:none}
  .load-plan-print-decks .aircraft-overlay-place{display:none!important}
- .load-plan-print-sheet>footer{display:flex;justify-content:space-between;gap:10mm;margin-top:4mm;padding-top:2.5mm;border-top:1px solid #aebed5;color:#435878;font-size:7pt}
+ .load-plan-print-sheet>footer{display:flex;justify-content:space-between;gap:10mm;margin-top:2mm;padding-top:1.5mm;border-top:1px solid #aebed5;color:#435878;font-size:7pt}
  .load-plan-print-sheet>footer strong{color:#172b4d}
 }
