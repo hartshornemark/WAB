@@ -9,6 +9,7 @@ export type OperationalBaggageContent={loadId:string;kind:"ULD"|"BULK";uldCode:s
 export type OperationalFinalTraffic={applicable:boolean;canEdit:boolean;version:number;status:"EMPTY"|"TRAFFIC_FINAL"|"BAGGAGE_FINAL";classes:OperationalFinalPassengerClass[];areas:OperationalFinalPassengerArea[];totalPassengers:number;passengerWeight:number;baggagePieces:number;baggageNetWeight:number;contents:OperationalBaggageContent[];updatedAt:string|null;finalisedAt:string|null};
 export type OperationalFinalTrafficInput={classes:Array<{code:string}&OperationalPassengerCounts>;areas:OperationalFinalPassengerArea[];baggagePieces:number;baggageNetWeight:number;contents:OperationalBaggageContent[]};
 export class OperationalFinalTrafficInvalid extends Error{}
+export function passengerCountWithInfants(counts:OperationalPassengerCounts){const seated=counts.male+counts.female+counts.child;return counts.infant?`${seated.toLocaleString()}+${counts.infant.toLocaleString()}`:seated.toLocaleString()}
 
 export const baggageWeightFromPieces=(pieces:unknown,weightPerPiece:number)=>{
  const count=Number(pieces);return Number.isFinite(count)&&count>=0&&Number.isFinite(weightPerPiece)&&weightPerPiece>=0?Math.round(count*weightPerPiece):0;
