@@ -9,12 +9,14 @@ test("D4 applies door completion rules when Doors are selected",()=>assert.equal
 test("D4 rejects reversed door arms",()=>assert.throws(()=>validateAircraftD4Doors([{...row,forwardArm:12}], [row]),AircraftD4Invalid));
 test("D4 restricts orientation to L R or C",()=>assert.throws(()=>validateAircraftD4Doors([{...row,orientation:"X"}], [row]),AircraftD4Invalid));
 test("D4 accepts a missing optional door height",()=>assert.equal(validateAircraftD4Doors([{...row,height:null}],[row])[0]?.height,null));
+test("D4 accepts a saved area anchor when Start and End are unknown",()=>assert.deepEqual(validateAircraftD4Doors([{...row,forwardArm:null,aftArm:null,anchorType:"AREA",anchorRef:"1B"}],[row])[0],{...row,forwardArm:null,aftArm:null,anchorType:"AREA",anchorRef:"1B"}));
+test("D4 requires Start and End as a pair",()=>assert.throws(()=>validateAircraftD4Doors([{...row,aftArm:null}],[row]),AircraftD4Invalid));
 test("D4 rejects a non-positive supplied door height",()=>assert.throws(()=>validateAircraftD4Doors([{...row,height:0}],[row]),AircraftD4Invalid));
 
 test("D4 saves unknown doors as blank alongside known doors without reducing completion of known doors",()=>{
  const unknown={...row,holdId:"MDECK:MDA",forwardArm:null,aftArm:null,height:null,orientation:null};
  const saved=validateAircraftD4Doors([row,unknown],[row,unknown]);
- assert.deepEqual(saved[1],unknown);
+ assert.deepEqual(saved[1],{...unknown,anchorType:null,anchorRef:null});
  assert.equal(aircraftD4DoorsStatus(saved),"configured");
  assert.equal(aircraftD4DoorsStatus([unknown]),"incomplete");
  assert.throws(()=>validateAircraftD4Doors([row,{...unknown,forwardArm:9}],[row,unknown]),AircraftD4Invalid);
@@ -22,5 +24,5 @@ test("D4 saves unknown doors as blank alongside known doors without reducing com
 test("D4 accepts a completely blank form row as a NULL door",()=>{
  const blankFormRow={...row,forwardArm:"",aftArm:"",height:"",orientation:""};
  const saved=validateAircraftD4Doors([blankFormRow],[row]);
- assert.deepEqual(saved[0],{...row,forwardArm:null,aftArm:null,height:null,orientation:null});
+ assert.deepEqual(saved[0],{...row,forwardArm:null,aftArm:null,height:null,orientation:null,anchorType:null,anchorRef:null});
 });
