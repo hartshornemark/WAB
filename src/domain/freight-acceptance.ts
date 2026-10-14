@@ -13,7 +13,8 @@ export type FreightAcceptanceInput={source:FreightLoadSource|"MIXED";sourceRefer
 export type FreightAcceptanceCsvContext={iata:string;flightNumber:string;serviceDate:string;unloadingStations?:string[];specialLoadOptions?:FreightSpecialLoadOption[];uldLimits?:FreightUldLimit[];planningDensities?:FreightPlanningDensities;uldAllowed?:boolean};
 export type FreightAcceptanceParseResult={items:FreightLoadItem[];errors:string[];sourceReference:string|null};
 
-export function freightUnderloadTone(predictedUnderload:number|null,cargoOffer:number|null):"green"|"amber"|"red"|"neutral"{if(predictedUnderload===null||cargoOffer===null||cargoOffer<=0)return"neutral";if(predictedUnderload<=0)return"red";return predictedUnderload<=cargoOffer*.05?"amber":"green"}
+export function freightPredictedUnderload(mzfwAvailablePayload:number|null,acceptedUplift:number):number|null{return mzfwAvailablePayload===null?null:mzfwAvailablePayload-acceptedUplift}
+export function freightUnderloadTone(predictedUnderload:number|null,mzfwAvailablePayload:number|null):"green"|"amber"|"red"|"neutral"{if(predictedUnderload===null||mzfwAvailablePayload===null||mzfwAvailablePayload<=0)return"neutral";if(predictedUnderload<=0)return"red";return predictedUnderload<=mzfwAvailablePayload*.05?"amber":"green"}
 export function cargoOfferLimitingLabel(limitingFactor:"MZFW"|"HOLD_CAPACITY"):"WEIGHT LIMITING"|"VOLUME LIMITING"{return limitingFactor==="MZFW"?"WEIGHT LIMITING":"VOLUME LIMITING"}
 export function freightLoadPlanningWeight(item:Pick<FreightLoadItem,"grossWeight"|"planningWeight">):number{return Number.isFinite(item.planningWeight)?item.planningWeight:item.grossWeight}
 
