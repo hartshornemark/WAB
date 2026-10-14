@@ -78,7 +78,6 @@ const loadsheetHoldOrder = (value: string) => /^[1-5]$/.test(value)?Number(value
 export function operationalLoadsheetDistribution(problem: LoadPlanningProblem, solution: LoadPlanningSolution) {
   const loads = new Map(problem.loads.map(row => [row.id, row])), positions = new Map(problem.positions.map(row => [row.id, row])), totals = new Map<string, number>();
   const configuredHolds=[...new Set(problem.positions.map(loadsheetHold))];
-  if(configuredHolds.some(hold=>/^[1-5]$/.test(hold)))for(let hold=1;hold<=5;hold++)totals.set(String(hold),0);
   for(const hold of configuredHolds)totals.set(hold,0);
   for (const assignment of solution.assignments) {
     const load = loads.get(assignment.loadId), position = positions.get(assignment.positionId);
