@@ -24,6 +24,10 @@ test('B4 planning accepts precise decimal averages and preserves unknown volume'
  input.values.volume='0.045';assert.equal(validateBaggage('planning',input,snapshot).values.volume,'0.045');
  for(const value of ['-1','1.12345','Infinity','100000000']){input.values.volume=value;assert.throws(()=>validateBaggage('planning',input,snapshot));}
 });
+test('B4 planning permits Economy baggage to use either BY or B',()=>{
+ const economy={...snapshot,classes:[{code:'Y',description:'Economy'}]};
+ for(const commodity of ['BY','B']){const input=newBaggageRecord('planning');Object.assign(input.values,{classCode:'Y',commodity,bags:'1',weight:'15'});assert.equal(validateBaggage('planning',input,economy).values.commodity,commodity);}
+});
 test('B4 permission and stale revision checks prevent repository writes',async()=>{
  let writes=0;let current=snapshot;
  const service=createBaggageWeights({currentUser:async()=>({id:'user'})} as AuthService,{findAuthorised:async()=>({iata:'ZZ'})} as unknown as CarrierRepository,{get:async()=>current,save:async()=>{writes++;},saveOperationMode:async()=>{writes++;},saveApplicability:async()=>{writes++;},saveVariationMethod:async()=>{writes++;}});

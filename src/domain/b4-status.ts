@@ -1,5 +1,6 @@
 import{aggregateConfigurationStatuses,type ConfigurationStatus}from"@/domain/configuration-status";
 import{categories,pieceFields,type BaggageRecord,type BaggageSnapshot}from"@/domain/baggage-weights";
+import{baggageCommodityCodes}from"@/domain/baggage-commodities";
 
 type B4SectionStatus=ConfigurationStatus|"skipped";
 const whole=(value:string,positive=false)=>/^\d+$/.test(value)&&Number.isSafeInteger(Number(value))&&(positive?Number(value)>0:Number(value)>=0);
@@ -19,7 +20,7 @@ function validWeight(row:BaggageRecord,snapshot:BaggageSnapshot):boolean{
 }
 function validPlanning(row:BaggageRecord,snapshot:BaggageSnapshot):boolean{
  const v=row.values;
- return(!v.classCode||snapshot.classes.some(item=>item.code===v.classCode))&&(!v.variation||snapshot.variations.some(item=>item.code===v.variation))&&decimal(v.bags)&&decimal(v.weight)&&decimal(v.volume,false)&&(!!v.volume||Number(snapshot.checkedBaggageDensity)>0);
+ return(!v.classCode||snapshot.classes.some(item=>item.code===v.classCode))&&(!v.variation||snapshot.variations.some(item=>item.code===v.variation))&&baggageCommodityCodes.includes(v.commodity as typeof baggageCommodityCodes[number])&&decimal(v.bags)&&decimal(v.weight)&&decimal(v.volume,false)&&(!!v.volume||Number(snapshot.checkedBaggageDensity)>0);
 }
 function unique(rows:BaggageRecord[],planning=false):boolean{
  const keys=rows.map(row=>`${row.values.classCode}:${row.values.variation}:${planning?"":row.values.category}`);

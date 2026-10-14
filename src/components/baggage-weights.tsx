@@ -10,6 +10,7 @@ import { saveBaggage,saveBaggageOperationMode,saveBaggageVariationMethod } from 
 import { categories,defaultPlanningRecord,newBaggageRecord,pieceFields,validateBaggage,type BaggageRecord,type BaggageSection,type BaggageSnapshot,type BaggageVariationMethod } from "@/domain/baggage-weights";
 import { b4Statuses } from "@/domain/b4-status";
 import {displayUnit} from "@/domain/display-standards";
+import{baggageCommodityCodes,defaultBaggageCommodityCode}from"@/domain/baggage-commodities";
 const pieceLabels={male:"Adult Male",female:"Adult Female",child:"Child",all:"All Passengers (optional)",summer:"Summer (optional)",winter:"Winter (optional)"};
 export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;initial:BaggageSnapshot;passengerOperations:boolean}){
  const [saved,setSaved]=useState(initial);
@@ -25,6 +26,7 @@ export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;i
  function beginVariation(code:string){const row=newBaggageRecord("weights");row.values.variation=code;setOpenVariation(code);begin("weights",row);}
  function change(key:string,value:string){setEditing(e=>{
  if(!e)return e;const values={...e.row.values,[key]:value};
+ if(e.section==="planning"&&key==="classCode")values.commodity=value?defaultBaggageCommodityCode(value,saved.classes.find(item=>item.code===value)?.description):"B";
  if(e.section==="weights"){values.pieceMethod="STANDARD";values.passengerMethod="UNSET";values.passenger="";}
  return {...e,row:{...e.row,values}};
  });}
@@ -61,6 +63,7 @@ export function BaggageWeights({iata,initial,passengerOperations}:{iata:string;i
     {field(row,"variation","Flight Variation",active,[{value:"",label:section==="weights"?"All Other Flights":"All Flights"},...saved.variations.map(v=>({value:v.code,label:`${v.code} — ${v.description}`}))],row.baseline)}
     {field(row,"classCode","Class",active,[{value:"",label:"All Classes"},...saved.classes.map(c=>({value:c.code,label:`${c.code} — ${c.description}`}))],row.baseline)}
     {section==="weights"&&field(row,"category","Passenger Category",active,categories.map(c=>({value:c,label:c==="ALL"?"All Passengers":c[0]+c.slice(1).toLowerCase()})),row.baseline)}
+    {section==="planning"&&field(row,"commodity","Baggage Commodity",active,baggageCommodityCodes.map(code=>({value:code,label:code==="B"?"B — Mixed / general baggage":code==="BF"?"BF — First Class baggage":code==="BJ"?"BJ — Business Class baggage":code==="BP"?"BP — Premium Economy baggage":"BY — Economy Class baggage"})))}
    </div>}
    {section==="defaults"?<>
     <div className="passenger-weight-grid">{pieceFields.map(k=>field(row,k,`${pieceLabels[k]} — Weight per Bag (${weightUnit})`,active))}</div>

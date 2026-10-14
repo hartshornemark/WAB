@@ -6,12 +6,13 @@ import type { BaggageRepository } from "@/ports/baggage-repository";
 import type { RequestClient } from "./server";
 import { createPassengerAdapter } from "./passenger-adapter";
 import { createDetailsAdapter } from "./details-adapter";
+import{defaultBaggageCommodityCode}from"@/domain/baggage-commodities";
 const tables={defaults:"Carrier_Baggage_Weights_ALLFLIGHTS",weights:"Carrier_Baggage_Weights_BYCLASS",planning:"Carrier_Planning_Assumptions"} as const;
 const ids={defaults:"Carrier_IATA",weights:"Baggage_Weight_Set_ID",planning:"Planning_Assumption_UUID"};
-const maps:Record<BaggageSection,Record<string,string>>={defaults:{male:"Bag_Adult_Male",female:"Bag_Adult_Female",child:"Bag_Adult_Child",all:"Bag_Standard_All",summer:"Bag_Standard_Summer",winter:"Bag_Standard_Winter",method:"Per_Piece_Method",remarks:"Remarks"},weights:{classCode:"Class_Code",variation:"Flight_Type_Variation",category:"Passenger_Category",pieceMethod:"Per_Piece_Method",passengerMethod:"Per_Passenger_Method",piece:"Baggage_Weight_Per_Piece",passenger:"Baggage_Weight_Per_Passenger",remarks:"Remarks"},planning:{classCode:"Class_Code",variation:"Flight_Type_Variation",bags:"Average_Bags_Per_Passenger",weight:"Average_Bag_Weight_Per_Passenger",volume:"Average_Bag_Volume",remarks:"Remarks"}};
+const maps:Record<BaggageSection,Record<string,string>>={defaults:{male:"Bag_Adult_Male",female:"Bag_Adult_Female",child:"Bag_Adult_Child",all:"Bag_Standard_All",summer:"Bag_Standard_Summer",winter:"Bag_Standard_Winter",method:"Per_Piece_Method",remarks:"Remarks"},weights:{classCode:"Class_Code",variation:"Flight_Type_Variation",category:"Passenger_Category",pieceMethod:"Per_Piece_Method",passengerMethod:"Per_Passenger_Method",piece:"Baggage_Weight_Per_Piece",passenger:"Baggage_Weight_Per_Passenger",remarks:"Remarks"},planning:{classCode:"Class_Code",variation:"Flight_Type_Variation",commodity:"Baggage_Commodity_Code",bags:"Average_Bags_Per_Passenger",weight:"Average_Bag_Weight_Per_Passenger",volume:"Average_Bag_Volume",remarks:"Remarks"}};
 const numeric=new Set(["male","female","child","all","summer","winter","piece","passenger","bags","weight","volume"]);
 type Raw=Record<string,string|number|boolean|null>;
-function record(section:BaggageSection,row:Raw):BaggageRecord{return {id:String(row[ids[section]]),baseline:row.Is_Baseline===true,values:Object.fromEntries(Object.entries(maps[section]).map(([key,col])=>[key,row[col]?.toString()??""]))};}
+function record(section:BaggageSection,row:Raw):BaggageRecord{const values=Object.fromEntries(Object.entries(maps[section]).map(([key,col])=>[key,row[col]?.toString()??""]));if(section==="planning"&&!values.commodity)values.commodity=defaultBaggageCommodityCode(String(row.Class_Code??""));return {id:String(row[ids[section]]),baseline:row.Is_Baseline===true,values};}
 function fail(error:{code?:string}|null){
  if(!error)return;
  if(error.code==="42501")throw new BaggageDenied();

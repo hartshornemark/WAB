@@ -1,3 +1,5 @@
+import{baggageCommodityCodes}from"@/domain/baggage-commodities";
+
 export type BaggageSection = "defaults" | "weights" | "planning";
 export type BaggageOperationMode = "STANDARD" | "ACTUAL";
 export type BaggageVariationMethod = "INHERIT" | "STANDARD" | "ACTUAL";
@@ -9,7 +11,7 @@ export class BaggageConflict extends Error {}
 export const pieceFields = ["male","female","child","all","summer","winter"] as const;
 export const categories = ["ALL","ADULT","MALE","FEMALE","CHILD","INFANT"];
 export function newBaggageRecord(section:BaggageSection):BaggageRecord {
- return {id:null,baseline:false,values:section==="defaults"?{method:"STANDARD",male:"",female:"",child:"",all:"",summer:"",winter:"",remarks:""}:section==="weights"?{classCode:"",variation:"",category:"ALL",pieceMethod:"STANDARD",piece:"",passengerMethod:"UNSET",passenger:"",remarks:""}:{classCode:"",variation:"",bags:"",weight:"",volume:"",remarks:""}};
+ return {id:null,baseline:false,values:section==="defaults"?{method:"STANDARD",male:"",female:"",child:"",all:"",summer:"",winter:"",remarks:""}:section==="weights"?{classCode:"",variation:"",category:"ALL",pieceMethod:"STANDARD",piece:"",passengerMethod:"UNSET",passenger:"",remarks:""}:{classCode:"",variation:"",commodity:"B",bags:"",weight:"",volume:"",remarks:""}};
 }
 export function defaultPlanningRecord(snapshot:BaggageSnapshot):BaggageRecord{
  const standard=snapshot.defaults?.values.all??"";
@@ -36,6 +38,7 @@ export function validateBaggage(section:BaggageSection,input:unknown,current:Bag
   if(values.classCode&&!current.classes.some(c=>c.code===values.classCode))throw new BaggageInvalid("Choose a class saved on B1.");
   if(values.variation&&!current.variations.some(v=>v.code===values.variation))throw new BaggageInvalid("Choose a Flight Variation saved on B3.");
   if(section==="planning"){
+   if(!baggageCommodityCodes.includes(values.commodity as typeof baggageCommodityCodes[number]))throw new BaggageInvalid("Choose a valid baggage commodity code.");
    number("bags",true,true);number("weight",true,true);number("volume",false,true);
    if(values.volume&&!current.volumeUnit)throw new BaggageInvalid("Save a Volume Unit on B1 before entering volume.");
   }else{
