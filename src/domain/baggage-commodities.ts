@@ -55,6 +55,8 @@ export function baggageCommoditySummary(row:{classCode?:string|null;commodityCod
  return baggageCommodityAllocations(row).filter(item=>item.pieces>0||item.netWeight>0).map(item=>`${item.commodityCode} ${item.pieces} PCS`).join(" · ")||"B 0 PCS";
 }
 
+export const baggageBulkLoadId=(commodityCode:BaggageCommodityCode)=>`PLANNED_BAGGAGE:${commodityCode}:BULK`;
+
 const split=(total:number,count:number)=>count?Array.from({length:count},(_,index)=>Math.floor(total/count)+(index<total%count?1:0)):[];
 
 export function mixedBaggageContents(classes:OperationalBaggageClass[],uldPieceTotals:number[],uldCode:string|null,uldNetWeightTotals?:number[]):MixedBaggageContent[]{
@@ -67,9 +69,9 @@ export function mixedBaggageContents(classes:OperationalBaggageClass[],uldPieceT
   if(uldNetWeightTotals?.[index]!==undefined&&commodities.length){let delta=Math.max(0,Math.round(uldNetWeightTotals[index]))-commodities.reduce((sum,item)=>sum+item.netWeight,0);for(let commodityIndex=commodities.length-1;commodityIndex>=0&&delta!==0;commodityIndex--){const commodity=commodities[commodityIndex],change=delta<0?-Math.min(commodity.netWeight,-delta):delta;commodity.netWeight+=change;delta-=change;const state=states.find(item=>(item.classCode||null)===commodity.classCode&&item.commodityCode===commodity.commodityCode);if(state)state.allocatedWeight+=change}}
   contents.push({loadId:`PLANNED_BAGGAGE:${index+1}`,kind:"ULD",uldCode,uldNumber:null,classCode:commodities.length===1?commodities[0].classCode:null,commodityCode:commodities.length===1?commodities[0].commodityCode:"B",commodities,pieces:commodities.reduce((sum,item)=>sum+item.pieces,0),netWeight:commodities.reduce((sum,item)=>sum+item.netWeight,0)});
  }
- const bulkCommodities:BaggageCommodityAllocation[]=[];
- for(const state of states){const pieces=Math.max(0,state.plannedPieces-state.allocatedPieces),netWeight=Math.max(0,state.plannedWeight-state.allocatedWeight);if(pieces>0||netWeight>0)bulkCommodities.push({classCode:state.classCode||null,commodityCode:state.commodityCode,pieces,netWeight})}
- if(bulkCommodities.length)contents.push({loadId:"PLANNED_BAGGAGE:BULK",kind:"BULK",uldCode:null,uldNumber:null,classCode:bulkCommodities.length===1?bulkCommodities[0].classCode:null,commodityCode:bulkCommodities.length===1?bulkCommodities[0].commodityCode:"B",commodities:bulkCommodities,pieces:bulkCommodities.reduce((sum,item)=>sum+item.pieces,0),netWeight:bulkCommodities.reduce((sum,item)=>sum+item.netWeight,0)});
+ const bulkByCommodity=new Map<BaggageCommodityCode,BaggageCommodityAllocation[]>();
+ for(const state of states){const pieces=Math.max(0,state.plannedPieces-state.allocatedPieces),netWeight=Math.max(0,state.plannedWeight-state.allocatedWeight);if(pieces>0||netWeight>0){const allocation={classCode:state.classCode||null,commodityCode:state.commodityCode,pieces,netWeight},rows=bulkByCommodity.get(state.commodityCode)??[];rows.push(allocation);bulkByCommodity.set(state.commodityCode,rows)}}
+ for(const[commodityCode,commodities]of bulkByCommodity){contents.push({loadId:baggageBulkLoadId(commodityCode),kind:"BULK",uldCode:null,uldNumber:null,classCode:commodities.length===1?commodities[0].classCode:null,commodityCode,commodities,pieces:commodities.reduce((sum,item)=>sum+item.pieces,0),netWeight:commodities.reduce((sum,item)=>sum+item.netWeight,0)})}
  return contents;
 }
 

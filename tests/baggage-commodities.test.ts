@@ -37,3 +37,11 @@ test("manual ULD totals redistribute class baggage and leave one mixed Bulk bala
  ]);
  assert.equal(rows.reduce((sum,row)=>sum+row.netWeight,0),1800);
 });
+
+test("Bulk-only baggage remains one load item per baggage category",()=>{
+ const rows=baggageContentsForUldCount([{...classes[0],plannedPieces:12,plannedWeight:180},{...classes[1],plannedPieces:90,plannedWeight:1350}],0,null,null);
+ assert.deepEqual(rows.map(row=>[row.loadId,row.commodityCode,row.pieces,row.netWeight]),[
+  ["PLANNED_BAGGAGE:BJ:BULK","BJ",12,180],
+  ["PLANNED_BAGGAGE:BY:BULK","BY",90,1350],
+ ]);
+});
