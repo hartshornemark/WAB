@@ -18,7 +18,7 @@ export type D9AreaRow = {
   to:number|null;
   index:number|null;
 };
-export type D9Configuration = { code:string; description:string; rows:D9AreaRow[] };
+export type D9Configuration = { code:string; description:string; isDefault?:boolean; rows:D9AreaRow[] };
 export type D9PhysicalRow = {areaId:string;rowNumber:number;maximumSeats:number|null;grouping:string|null};
 export type D9SeatDraftValue = number|string|null;
 export type AircraftD9Snapshot = {
@@ -139,7 +139,7 @@ export function validateD9Configuration(value:unknown, areas:D9CabinArea[], clas
   const suggestedDescription = suggestD9Description(rows, classes);
   const description = String(configuration.description ?? "").trim() || suggestedDescription;
   if (!description || description.length > 20) throw new AircraftD9Invalid("Enter a Configuration Description of up to 20 characters.");
-  return { code, description, rows };
+  return { code, description, isDefault:Boolean(configuration.isDefault), rows };
 }
 
 export function deriveD9ClassSummaries(configuration:D9Configuration, areas:D9CabinArea[], classes:D9Class[], formula:D9IndexFormula={referenceArm:0,constantC:1}, excludedRows:number[]=[]):D9ClassSummary[] {

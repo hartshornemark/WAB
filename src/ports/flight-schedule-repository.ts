@@ -4,6 +4,7 @@ import type{SsimImportRecord,SsimNormalizedLeg}from"@/domain/ssim-chapter7";
 export type FlightScheduleImport={
   importId:string;fileName:string;sourceCarrierIata:string;sourceFormat:string;status:string;uploadedAt:string;
   coverageStart:string|null;coverageEnd:string|null;recordCount:number;legCount:number;rejectedCount:number;
+  equipmentReviewComplete:boolean;
 };
 
 export type FlightWeightBasis="STANDARD"|"VARIATION"|"ACTUAL";
@@ -12,10 +13,11 @@ export type FlightScheduleWeightOptions={passenger:{available:boolean;defaultBas
 export type FlightScheduleParameters={aircraftSubtype:string;crewCode:string;pantryCode:string;passengerWeightBasis:FlightWeightBasis;passengerVariation:string|null;baggageWeightBasis:FlightWeightBasis;baggageVariation:string|null;remarks:string};
 export type FlightScheduleSegmentDefault=FlightScheduleParameters&{departureAirport:string;arrivalAirport:string;aircraftType:string;updatedAt:string};
 export type PublishedScheduleLeg={scheduleImportId:string;scheduleFamilyId:string;scheduleName:string;scheduleLegId:string;flightNumber:string;operationalSuffix:string;itineraryVariation:string;legSequence:number;serviceType:string;periodStart:string;periodEnd:string;operatingDays:string;departureAirport:string;arrivalAirport:string;departureTime:string;arrivalTime:string;arrivalDayOffset:number;aircraftType:string|null;aircraftSubtype:string|null;aircraftConfiguration:string|null;parameters:FlightScheduleParameters|null};
-export type FlightScheduleWorkspace={canView:boolean;canConfigure:boolean;publishedImportIds:string[];legs:PublishedScheduleLeg[];segmentDefaults:FlightScheduleSegmentDefault[];weightOptions:FlightScheduleWeightOptions;serviceTypes:{code:string;name:string;application:string;typeOfOperation:string;description:string;sourceReference:string}[];airports:{iata:string;icao:string|null;name:string;city:string;countryCode:string|null;timeZone:string}[];aircraft:{typeCode:string;subtype:string;name:string;operatingRole:AircraftOperatingRole}[];aircraftConfigurations:{typeCode:string;subtype:string;code:string;description:string}[];crewCodes:{typeCode:string;subtype:string;code:string}[];pantryCodes:{typeCode:string;subtype:string;code:string}[];variations:{code:string;description:string}[]};
+export type FlightScheduleWorkspace={canView:boolean;canConfigure:boolean;publishedImportIds:string[];legs:PublishedScheduleLeg[];segmentDefaults:FlightScheduleSegmentDefault[];weightOptions:FlightScheduleWeightOptions;serviceTypes:{code:string;name:string;application:string;typeOfOperation:string;description:string;sourceReference:string}[];airports:{iata:string;icao:string|null;name:string;city:string;countryCode:string|null;timeZone:string}[];aircraft:{typeCode:string;subtype:string;name:string;operatingRole:AircraftOperatingRole}[];aircraftConfigurations:{typeCode:string;subtype:string;code:string;description:string;isDefault:boolean}[];crewCodes:{typeCode:string;subtype:string;code:string}[];pantryCodes:{typeCode:string;subtype:string;code:string}[];variations:{code:string;description:string}[]};
 export type ManualScheduleLegInput={airlineDesignator:string;flightNumber:string;operationalSuffix:string;itineraryVariation:string;legSequence:number;serviceType:string;periodStart:string;periodEnd:string;operatingDays:string;departureAirport:string;arrivalAirport:string;departureTime:string;arrivalTime:string;arrivalDayOffset:number;aircraftType:string;aircraftSubtype:string;aircraftConfiguration:string|null};
 export type ScheduleEditionLeg={scheduleLegId:string;flightNumber:string;operationalSuffix:string;itineraryVariation:string;legSequence:number;serviceType:string;periodStart:string;periodEnd:string;operatingDays:string;departureAirport:string;arrivalAirport:string;departureTime:string;arrivalTime:string;arrivalDayOffset:number;aircraftType:string|null;aircraftSubtype:string|null;aircraftConfiguration:string|null};
-export type FlightScheduleEdition={importId:string;name:string;sourceFormat:string;status:string;seasonCode:string|null;coverageStart:string|null;coverageEnd:string|null;recordCount:number;legCount:number;rejectedCount:number;canEdit:boolean;canDelete:boolean;legs:ScheduleEditionLeg[]};
+export type FlightScheduleEdition={importId:string;name:string;sourceFormat:string;status:string;seasonCode:string|null;coverageStart:string|null;coverageEnd:string|null;recordCount:number;legCount:number;rejectedCount:number;canEdit:boolean;canDelete:boolean;canReviewEquipment:boolean;equipmentReviewComplete:boolean;legs:ScheduleEditionLeg[]};
+export type SsimEquipmentReviewInput={aircraftType:string;aircraftSubtype:string;aircraftConfiguration:string};
 export type ManualScheduleItineraryResult={importId:string;scheduleLegIds:string[];status:string};
 
 export type FlightScheduleStageResult={
@@ -28,6 +30,7 @@ export interface FlightScheduleRepository{
   workspace(iata:string):Promise<FlightScheduleWorkspace>;
   createAndStage(iata:string,metadata:{sourceCarrierIata:string;fileName:string;sha256:string;sizeBytes:number;seasonCode:string|null;creatorReference:string|null},records:SsimImportRecord[],legs:SsimNormalizedLeg[]):Promise<FlightScheduleStageResult>;
   publish(iata:string,importId:string):Promise<FlightScheduleStageResult>;
+  saveEquipmentReview(iata:string,importId:string,values:SsimEquipmentReviewInput[]):Promise<FlightScheduleEdition>;
   cancel(iata:string,importId:string):Promise<void>;
   createRevision(iata:string,importId:string):Promise<string>;
   saveParameters(iata:string,scheduleLegId:string,values:FlightScheduleParameters):Promise<FlightScheduleWorkspace>;

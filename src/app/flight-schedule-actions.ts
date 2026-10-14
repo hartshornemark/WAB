@@ -16,13 +16,18 @@ export async function importSsimSchedule(iata:string,_previous:ScheduleActionSta
     const bytes=new Uint8Array(await file.arrayBuffer()),text=new TextDecoder("utf-8",{fatal:true}).decode(bytes),sha256=createHash("sha256").update(bytes).digest("hex");
     const result=await(await flightScheduleServices()).importFile(iata,{fileName:file.name,text,sha256,sizeBytes:file.size});
     revalidatePath(`/carrier/${iata}/flight-schedules`);
-    return{ok:true,message:`Validated ${result.normalizedLegs.toLocaleString()} flight legs. Review this edition, then publish it when ready.`,importId:result.importId,status:result.status,legs:result.normalizedLegs};
+    return{ok:true,message:`Validated ${result.normalizedLegs.toLocaleString()} flight legs. Review the default aircraft type and AHM565 D9 cabin configuration before publishing.`,importId:result.importId,status:result.status,legs:result.normalizedLegs};
   }catch(error){console.error("[SSIM import]",error);return{ok:false,message:message(error)}}
 }
 
 export async function publishSsimSchedule(iata:string,importId:string):Promise<ScheduleActionState>{
   try{const result=await(await flightScheduleServices()).publish(iata,importId);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"The schedule is now published for daily load-control planning.",importId:result.importId,status:result.status,legs:result.normalizedLegs}}
   catch(error){console.error("[SSIM publish]",error);return{ok:false,message:message(error)}}
+}
+
+export async function saveSsimEquipmentReview(iata:string,importId:string,values:unknown):Promise<ScheduleActionState>{
+  try{await(await flightScheduleServices()).saveEquipmentReview(iata,importId,values);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"Aircraft types and D9 cabin configurations confirmed. This schedule edition is ready to publish.",importId,status:"VALIDATED"}}
+  catch(error){console.error("[SSIM equipment review]",error);return{ok:false,message:message(error)}}
 }
 
 export async function cancelScheduleEdition(iata:string,importId:string):Promise<ScheduleActionState>{

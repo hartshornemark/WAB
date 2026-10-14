@@ -1,7 +1,14 @@
 export class FlightScheduleInvalid extends Error{}
 export class FlightScheduleDenied extends Error{}
 export class FlightScheduleConflict extends Error{}
-export function firstAircraftConfiguration(rows:Array<{typeCode:string;subtype:string;code:string}>,typeCode:string,subtype:string){return rows.find(item=>item.typeCode===typeCode&&item.subtype===subtype)?.code??null}
+export type SsimEquipmentReviewValue={aircraftType:string;aircraftSubtype:string;aircraftConfiguration:string};
+export function validSsimEquipmentReview(value:unknown):SsimEquipmentReviewValue[]{
+ const rows=Array.isArray(value)?value:[];
+ if(!rows.length)throw new FlightScheduleInvalid("Review the aircraft type and D9 configuration before publishing.");
+ const seen=new Set<string>();
+ return rows.map(raw=>{const row=raw as Partial<SsimEquipmentReviewValue>,aircraftType=String(row?.aircraftType??"").trim().toUpperCase(),aircraftSubtype=String(row?.aircraftSubtype??"").trim().toUpperCase(),aircraftConfiguration=String(row?.aircraftConfiguration??"").trim().toUpperCase();if(!/^[A-Z0-9]{2,4}$/.test(aircraftType)||!/^[A-Z0-9]{1,4}$/.test(aircraftSubtype)||!/^[A-Z]$/.test(aircraftConfiguration))throw new FlightScheduleInvalid("Select a configured aircraft type and D9 cabin configuration for every SSIM aircraft type.");if(seen.has(aircraftType))throw new FlightScheduleInvalid(`Review ${aircraftType} only once.`);seen.add(aircraftType);return{aircraftType,aircraftSubtype,aircraftConfiguration}});
+}
+export function firstAircraftConfiguration(rows:Array<{typeCode:string;subtype:string;code:string;isDefault?:boolean}>,typeCode:string,subtype:string){const matches=rows.filter(item=>item.typeCode===typeCode&&item.subtype===subtype);return matches.find(item=>item.isDefault)?.code??matches[0]?.code??null}
 export function scheduleAircraftConfiguration(value:string|null){const code=(value??"").trim().toUpperCase();return !code||code==="XX"?null:code}
 export function scheduleAircraftSubtype(leg:{aircraftSubtype:string|null;parameters:{aircraftSubtype:string}|null},fallback:string=""){return leg.parameters?.aircraftSubtype??leg.aircraftSubtype??fallback}
 export function scheduleAircraftCarriesPassengers(rows:Array<{typeCode:string;subtype:string;operatingRole:"PASSENGER"|"FREIGHTER"|"COMBI"}>,typeCode:string|null,subtype:string|null){return rows.find(item=>item.typeCode===typeCode&&item.subtype===subtype)?.operatingRole!=="FREIGHTER"}

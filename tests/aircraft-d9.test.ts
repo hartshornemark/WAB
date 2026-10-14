@@ -94,6 +94,10 @@ test("D9 requires one alphabetic configuration code", () => {
   );
 });
 
+test("D9 preserves the carrier-selected schedule default", () => {
+  assert.equal(validateD9Configuration({ ...configuration, isDefault: true }, areas, classes, formula).isDefault, true);
+});
+
 test("D9 suggests its description from class codes and configuration-wide seat totals", () => {
   assert.equal(suggestD9Description(configuration.rows, classes), "C28");
   const oneClass: D9Class[] = [
