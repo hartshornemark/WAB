@@ -767,6 +767,7 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .operational-summary-facts>span{display:grid;gap:3px;min-width:132px;padding:10px 12px;border-radius:7px;background:#f4f7fc}
 .operational-summary-facts small{color:var(--muted);font-size:10px;font-weight:900}
 .operational-summary-facts strong{font-size:14px}
+.operational-summary-facts .operational-summary-breakdown{color:var(--ink);font-size:11px;letter-spacing:.02em}
 .operational-summary-facts .summary-emphasis.ready{background:#dff3e6;color:#216841}
 .operational-summary-facts .summary-emphasis.incomplete{background:#fff0cc;color:#765414}
 .operational-collapsible-body{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
