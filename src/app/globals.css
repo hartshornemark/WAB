@@ -1101,6 +1101,7 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .operational-equipment-form{display:grid;grid-template-columns:minmax(220px,1fr) minmax(220px,1fr) 140px 190px;align-items:end;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
 .operational-equipment-form label{display:grid;gap:5px;color:var(--muted);font-size:10px;font-weight:900}
 .operational-equipment-form select,.operational-equipment-form button{height:var(--control-height);min-height:var(--control-height)}
+.operational-equipment-form button{padding-inline:18px;line-height:1;white-space:nowrap}
 .operational-equipment-form select{width:100%;border:1px solid #b8c8e2;border-radius:7px;background:#fff;padding:9px 11px;color:var(--ink)}
 .operational-equipment-readonly{color:var(--muted)}
 .operational-equipment-control>.load-control-notice{margin:0}
