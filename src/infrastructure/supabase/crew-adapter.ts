@@ -31,7 +31,7 @@ export function createCrewAdapter(client: RequestClient): CrewRepository {
     async saveHold(iata,revision,code,values){
       const {data,error}=await client.schema("Basic_Carrier_Record").rpc("save_carrier_crew_hold_baggage",{p_iata:iata,p_revision:revision,p_code:code,p_values:values as import("./database.types").Json});
       if(error?.code==="42501")throw new CrewDenied();
-      if(error?.code==="40001")throw new CrewConflict();
+      if(["40001","PT409"].includes(error?.code??""))throw new CrewConflict();
       if(error&&["22023","23514","23503"].includes(error.code))throw new CrewInvalid("Check the variation and enter both baggage weights as whole numbers, zero or greater.");
       if(error)throw new DataUnavailable();return snapshot(data);
     },
@@ -43,7 +43,7 @@ export function createCrewAdapter(client: RequestClient): CrewRepository {
     async save(iata, revision, values) {
       const { data, error } = await client.schema("Basic_Carrier_Record").rpc("save_carrier_crew_weights", { p_iata: iata, p_revision: revision, p_values: values });
       if (error?.code === "42501") throw new CrewDenied();
-      if (error?.code === "40001") throw new CrewConflict();
+      if (["40001","PT409"].includes(error?.code??"")) throw new CrewConflict();
       if (error?.code === "22023" || error?.code === "23514") throw new CrewInvalid("Check the weights. Both hand-baggage weights are required when they are not included in crew weights.");
       if (error?.code === "23503") throw new CrewInvalid("Complete and save Carrier Details and the B1 weight unit first.");
       if (error) throw new DataUnavailable();

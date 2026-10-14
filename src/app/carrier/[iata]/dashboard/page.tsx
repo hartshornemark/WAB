@@ -47,6 +47,7 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
         <Link className="button-link secondary" href={`${carrierBase}/load-control`}>DAILY LOAD CONTROL</Link>
         <Link className="button-link secondary" href={`${carrierBase}/loadsheet-simulator`}>LOADSHEET SIMULATOR</Link>
         <Link className="button-link secondary" href={`${carrierBase}/flight-schedules`}>FLIGHT SCHEDULES</Link>
+        <Link className="button-link secondary" href={`${carrierBase}/load-control-timeline`}>LOAD CONTROL TIMELINE</Link>
         <Link className="button-link secondary" href={`${carrierBase}/aircraft`}>ADD OR CHANGE AIRCRAFT</Link>
       </div>
       <p className="dashboard-intro">Select an aircraft to open its complete configuration dashboard.</p>

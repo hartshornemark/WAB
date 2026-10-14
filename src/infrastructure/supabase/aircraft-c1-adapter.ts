@@ -4,7 +4,7 @@ import{AircraftC1Conflict,AircraftC1Denied,AircraftC1Invalid,type AircraftC1Snap
 import type{AircraftC1Repository}from"@/ports/aircraft-c1-repository";
 import type{RequestClient}from"./server";
 
-function fail(e:{code?:string}|null){if(!e)return;if(e.code==="42501")throw new AircraftC1Denied();if(["40001","40P01"].includes(e.code??""))throw new AircraftC1Conflict();if(e.code==="23505")throw new AircraftC1Invalid("That Aircraft Identity already exists.");if(["23514","23503","22023","23502"].includes(e.code??""))throw new AircraftC1Invalid("Check the Aircraft Identity and C1 selections.");throw new DataUnavailable();}
+function fail(e:{code?:string}|null){if(!e)return;if(e.code==="42501")throw new AircraftC1Denied();if(["40001","PT409","40P01"].includes(e.code??""))throw new AircraftC1Conflict();if(e.code==="23505")throw new AircraftC1Invalid("That Aircraft Identity already exists.");if(["23514","23503","22023","23502"].includes(e.code??""))throw new AircraftC1Invalid("Check the Aircraft Identity and C1 selections.");throw new DataUnavailable();}
 function list(data:unknown){const s=data as AircraftListSnapshot;if(!s||typeof s.canView!=="boolean"||typeof s.canCreateAircraft!=="boolean"||typeof s.canCreateIdentity!=="boolean"||!Array.isArray(s.rows)||s.rows.some(x=>!Array.isArray(x.variantCodes)||!["PASSENGER","FREIGHTER","COMBI"].includes(x.operatingRole)))throw new DataUnavailable();return s;}
 function c1(data:unknown){const s=data as AircraftC1Snapshot;if(!s||typeof s.canView!=="boolean"||typeof s.canEdit!=="boolean"||typeof s.canAssignManufacturer!=="boolean"||typeof s.revision!=="string"||!Array.isArray(s.variantCodes)||!["PASSENGER","FREIGHTER","COMBI"].includes(s.operatingRole)||!s.values)throw new DataUnavailable();return s;}
 

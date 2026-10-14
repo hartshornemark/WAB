@@ -1,7 +1,8 @@
 "use client";
 import{useState,useTransition}from"react";
-import{saveOperationalFreightPlanning}from"@/app/load-control-actions";
+import{saveOperationalBaggageAccommodation,saveOperationalFreightPlanning}from"@/app/load-control-actions";
 import{cargoOfferLimitingLabel}from"@/domain/freight-acceptance";
+import type{PlanningBaggageContent}from"@/domain/operational-flights";
 import type{OperationalFreightPlanning}from"@/ports/operational-flight-repository";
 
 const kg=(value:number|null|undefined)=>value===null||value===undefined?"—":`${Math.round(value).toLocaleString()} KG`;
@@ -10,15 +11,56 @@ const volume=(value:number)=>value.toLocaleString(undefined,{minimumFractionDigi
 const bulkDetail=(volumeValue:number,density:number|null,planningWeight:number)=>{const densityWeight=Math.round(volumeValue*Number(density??0)),formula=`${volume(volumeValue)} × B1 cargo density ${number(density,0)} = ${kg(densityWeight)}`;return densityWeight>planningWeight?`${formula} · limited to ${kg(planningWeight)} by the hold maximum`:formula};
 type Draft={weightBasis:"FLEET_WEIGHT"|"REGISTRATION";registration:string;crewCode:string;pantryCode:string};
 const draftOf=(p:OperationalFreightPlanning):Draft=>({weightBasis:p.weightBasis,registration:p.registration??"",crewCode:p.crewCode??"",pantryCode:p.pantryCode??""});
+const passengerLimit=(value:OperationalFreightPlanning["limitingFactor"])=>value==="PAYLOAD"?"PAYLOAD LIMITING":value==="HOLD_WEIGHT"?"HOLD WEIGHT LIMITING":value==="HOLD_VOLUME"?"HOLD VOLUME LIMITING":"PLANNING INCOMPLETE";
+const sumContents=(rows:PlanningBaggageContent[],kind:"ULD"|"BULK",field:"pieces"|"netWeight")=>rows.filter(row=>row.kind===kind).reduce((sum,row)=>sum+row[field],0);
+function withPlanningBulkRemainder(planning:OperationalFreightPlanning,rows:PlanningBaggageContent[]):PlanningBaggageContent[]{
+ const totalWeight=Math.round(planning.plannedBaggageWeight??0),totalPieces=Math.max(0,planning.plannedBaggagePieces??0),ulds=rows.filter(row=>row.kind==="ULD"),existingBulk=rows.find(row=>row.kind==="BULK");let allocatedPieces=0,allocatedWeight=0;
+ const weightedUlds=ulds.map(row=>{allocatedPieces+=row.pieces;const cumulativeWeight=totalPieces>0?Math.round(totalWeight*allocatedPieces/totalPieces):0,netWeight=Math.max(0,cumulativeWeight-allocatedWeight);allocatedWeight=cumulativeWeight;return{...row,netWeight}}),remainderPieces=Math.max(0,totalPieces-allocatedPieces),contents:PlanningBaggageContent[]=[...weightedUlds];
+ if(planning.holdSystem!=="ULD"&&remainderPieces>0)contents.push({...existingBulk,loadId:"PLANNED_BAGGAGE:BULK",kind:"BULK",uldCode:null,uldNumber:null,pieces:remainderPieces,netWeight:Math.max(0,totalWeight-allocatedWeight)});
+ return contents;
+}
+function plannedBaggageContents(planning:OperationalFreightPlanning,uldCount:number):PlanningBaggageContent[]{
+ const totalPieces=Math.max(0,planning.plannedBaggagePieces??0),capacity=planning.baggagePiecesPerUld??null,rows:PlanningBaggageContent[]=[];let remaining=totalPieces;
+ for(let index=0;index<uldCount;index++){const pieces=capacity===null?(index===uldCount-1?remaining:Math.floor(remaining/(uldCount-index))):Math.min(capacity,remaining);remaining-=pieces;rows.push({loadId:`PLANNED_BAGGAGE:${index+1}`,kind:"ULD",uldCode:planning.uldCode??null,uldNumber:null,pieces,netWeight:0})}
+ return withPlanningBulkRemainder(planning,rows);
+}
 
-export function FreightCargoOffer({iata,flightId,initial}:{iata:string;flightId:string;initial:OperationalFreightPlanning}){
+function PassengerCargoOffer({iata,flightId,initial}:{iata:string;flightId:string;initial:OperationalFreightPlanning}){
+ const[planning,setPlanning]=useState(initial),accommodation=planning.baggageAccommodation,initialUldCount=accommodation?.uldCount??planning.plannedBaggageUldPositions??0,[editing,setEditing]=useState(accommodation?.status!=="ACCEPTED"),[uldCount,setUldCount]=useState(initialUldCount),[contents,setContents]=useState<PlanningBaggageContent[]>(()=>withPlanningBulkRemainder(planning,accommodation?.contents.length?accommodation.contents:plannedBaggageContents(planning,initialUldCount))),[notice,setNotice]=useState<{ok:boolean;text:string}|null>(null),[pending,start]=useTransition(),uld=planning.holdSystem!=="BULK",total=Math.round(planning.plannedBaggageWeight??0),totalPieces=planning.plannedBaggagePieces??0,contentPieces=contents.reduce((sum,row)=>sum+row.pieces,0),uldPieces=sumContents(contents,"ULD","pieces"),bulkPieces=sumContents(contents,"BULK","pieces"),contentUldWeight=sumContents(contents,"ULD","netWeight"),contentBulkWeight=sumContents(contents,"BULK","netWeight"),uldNet=contentUldWeight,safeBulk=contentBulkWeight,capacity=planning.baggagePiecesPerUld??null,capacityExceeded=capacity!==null&&contents.some(row=>row.kind==="ULD"&&row.pieces>capacity),pieceDifference=contentPieces-totalPieces,reconciled=pieceDifference===0&&contentUldWeight+contentBulkWeight===total,maximumUlds=accommodation?.maximumUldCount??planning.uldPositionCount??0,space=uld?`${planning.availableUldPositions??0} ${planning.uldCode??"ULD"}${planning.holdSystem==="MIXED"?" + BULK":""}`:`${number(planning.totalAvailableCargoVolume,2)} m³ BULK`;
+ const rebuild=(nextCount:number)=>{setContents(plannedBaggageContents(planning,nextCount));setNotice(null)};
+ const changePieces=(loadId:string,value:number)=>setContents(current=>withPlanningBulkRemainder(planning,current.map(row=>row.loadId===loadId&&row.kind==="ULD"?{...row,pieces:Math.max(0,Math.floor(value)||0)}:row)));
+ const reset=()=>{const nextCount=accommodation?.uldCount??initialUldCount;setUldCount(nextCount);setContents(withPlanningBulkRemainder(planning,accommodation?.contents.length?accommodation.contents:plannedBaggageContents(planning,nextCount)));setEditing(false);setNotice(null)};
+ const save=()=>start(async()=>{const result=await saveOperationalBaggageAccommodation(iata,flightId,accommodation?.version??0,{uldCount,uldNetWeight:uldNet,bulkNetWeight:safeBulk,contents});if(!result.ok||!result.accommodation){setNotice({ok:false,text:result.message});return}setPlanning(current=>({...current,baggageAccommodation:result.accommodation!}));setContents(withPlanningBulkRemainder(planning,result.accommodation.contents));setEditing(false);setNotice({ok:true,text:result.message})});
+ return <details className="cargo-offer-section passenger-cargo-offer operational-collapsible" open>
+  <summary className="cargo-offer-heading"><div><p className="eyebrow">PASSENGER FLIGHT CAPACITY</p><h2>Cargo Offer</h2><p>Capacity remaining for cargo and mail after the booked passenger load and planned baggage.</p></div><div className={planning.ready?"cargo-offer-total ready":"cargo-offer-total incomplete"}><small>TOTAL CARGO OFFER</small><strong>{planning.ready?kg(planning.cargoOfferWeight):"INCOMPLETE"}</strong><span>{planning.ready?`${number(planning.totalAvailableCargoVolume,2)} m³ · ${space} · ${passengerLimit(planning.limitingFactor)}`:"Complete the missing planning data"}</span></div></summary>
+  <div className="operational-collapsible-body"><div className="passenger-offer-flow"><div><small>MAXIMUM PAYLOAD</small><strong>{kg(planning.maximumPayload)}</strong></div><div><small>BOOKED PASSENGERS</small><strong>{kg(planning.passengerWeight)}</strong></div><div><small>PLANNED BAGGAGE</small><strong>{kg(planning.plannedBaggageWeight)}</strong><span>{planning.plannedBaggagePieces!==null&&planning.plannedBaggagePieces!==undefined?`${planning.plannedBaggagePieces.toLocaleString()} PCS · `:""}{number(planning.plannedBaggageVolume,2)} m³</span></div><div><small>REMAINING PAYLOAD</small><strong>{kg(planning.remainingPayload)}</strong></div></div>
+  <div className="passenger-offer-holds">{uld&&<div><small>PROPOSED BAGGAGE</small><strong>{planning.plannedBaggageUldPositions??0} {planning.uldCode??"ULD"}</strong><span>Calculated from planned weight and volume</span></div>}{uld&&<div><small>AVAILABLE ULD CAPACITY</small><strong>{planning.availableUldPositions??0} {planning.uldCode??"ULD"}</strong><span>For cargo and mail</span></div>}{planning.holdSystem!=="ULD"&&<div><small>AVAILABLE BULK CAPACITY</small><strong>{kg(planning.availableBulkWeight)}</strong><span>{number(planning.availableBulkVolume,2)} m³</span></div>}<div><small>TOTAL AVAILABLE VOLUME</small><strong>{number(planning.totalAvailableCargoVolume,2)} m³</strong><span>ULD positions plus Bulk</span></div></div>
+  <section className={`baggage-accommodation ${accommodation?.status==="ACCEPTED"&&!editing?"accepted":"review"}`}>
+   <header><div><p className="eyebrow">BAGGAGE ACCOMMODATION</p><h3>{accommodation?.status==="ACCEPTED"?"Accepted baggage plan":"Review proposed baggage plan"}</h3><p>Confirm the baggage ULD count, planned pieces in each ULD and any baggage spill into the Bulk hold before AUTOLOAD.</p></div>{!editing&&<button type="button" className="secondary" onClick={()=>{setEditing(true);setNotice(null)}}>EDIT</button>}</header>
+   {editing?<div className="baggage-accommodation-form">
+    <label>Baggage ULD count<input type="number" min="0" max={maximumUlds} step="1" value={uldCount} disabled={!uld} onChange={event=>{const value=Math.max(0,Math.min(maximumUlds,Number(event.target.value)||0));setUldCount(value);rebuild(value)}}/><small>Proposed: {planning.plannedBaggageUldPositions??0} {planning.uldCode??"ULD"}</small></label>
+    <label>Baggage in ULDs<input value={`${uldNet.toLocaleString()} KG · ${uldPieces.toLocaleString()} PCS`} disabled/><small>Net weight is distributed from the planned piece split</small></label>
+    <label>Baggage in Bulk<input value={`${safeBulk.toLocaleString()} KG · ${bulkPieces.toLocaleString()} PCS`} disabled/><small>{planning.holdSystem==="ULD"?"No Bulk hold available":"Calculated remainder after the ULD allocation"}</small></label>
+    <section className="baggage-planning-contents" aria-labelledby="baggage-planning-contents-heading"><header><div><h4 id="baggage-planning-contents-heading">Planned ULD contents and Bulk remainder</h4><p>Revise the ULD piece split before AUTOLOAD. The remaining pieces and weight move to Bulk automatically.</p></div><strong>{contentPieces.toLocaleString()} / {totalPieces.toLocaleString()} PCS</strong></header><div className="baggage-planning-grid"><div className="head"><span>LOAD</span><span>PIECES</span><span>NET WEIGHT</span></div>{contents.map((row,index)=><div key={row.loadId}><span><strong>{row.kind==="ULD"?`${planning.uldCode??"ULD"} ${index+1}`:"BULK"}</strong><small>{row.kind==="ULD"&&capacity!==null?`MAX ${capacity} PCS`:"CALCULATED REMAINDER"}</small></span><label><span className="sr-only">Pieces in planned baggage {row.kind==="ULD"?`ULD ${index+1}`:"Bulk"}</span><input type="number" min="0" max={row.kind==="ULD"&&capacity!==null?capacity:9999} step="1" value={row.pieces} disabled={row.kind==="BULK"} onChange={event=>changePieces(row.loadId,Number(event.target.value))}/></label><strong>{row.netWeight.toLocaleString()} KG</strong></div>)}</div><p>Planning figures only. Bulk remains editable during Close Out for operational corrections.</p></section>
+    {!reconciled&&<p className="load-control-notice warning">Allocate all {totalPieces.toLocaleString()} planned pieces. {Math.abs(pieceDifference).toLocaleString()} {pieceDifference>0?"too many":"still to allocate"}.</p>}
+    {capacityExceeded&&<p className="load-control-notice error">A planned baggage ULD exceeds the configured maximum of {capacity?.toLocaleString()} pieces.</p>}
+    <div className="baggage-accommodation-actions"><button type="button" className="secondary" disabled={pending||accommodation?.status!=="ACCEPTED"} onClick={reset}>CANCEL</button><button type="button" disabled={pending||!reconciled||capacityExceeded||(uldCount===0&&uldNet>0)||uldCount>maximumUlds} onClick={save}>{pending?"SAVING…":"ACCEPT BAGGAGE PLAN"}</button></div>
+   </div>:<div className="baggage-accommodation-summary"><span><small>ULD ACCOMMODATION</small><strong>{accommodation?.uldCount??0} {accommodation?.uldCode??planning.uldCode??"ULD"}</strong><em>{kg(accommodation?.uldNetWeight)} · {(accommodation?.contents??[]).filter(row=>row.kind==="ULD").map(row=>row.pieces).join(" / ")||"0"} PCS</em></span><span><small>BULK ACCOMMODATION</small><strong>{kg(accommodation?.bulkNetWeight)}</strong><em>Baggage spill · {sumContents(accommodation?.contents??[],"BULK","pieces").toLocaleString()} PCS</em></span><span><small>TOTAL PLANNED BAGGAGE</small><strong>{kg(accommodation?.totalNetWeight)}</strong><em>{planning.plannedBaggagePieces!==null&&planning.plannedBaggagePieces!==undefined?`${planning.plannedBaggagePieces.toLocaleString()} PCS · `:""}Accepted for AUTOLOAD</em></span></div>}
+   {notice&&<p className={notice.ok?"load-control-notice success":"load-control-notice error"}>{notice.text}</p>}
+  </section>
+  {planning.missing.length>0&&<p className="field-error">Missing: {planning.missing.map(item=>item.replaceAll("_"," ").toLowerCase()).join(", ")}.</p>}</div>
+ </details>
+}
+
+export function FreightCargoOffer({iata,flightId,initial,showAircraftAssignment=true}:{iata:string;flightId:string;initial:OperationalFreightPlanning;showAircraftAssignment?:boolean}){
  const[saved,setSaved]=useState(initial),[draft,setDraft]=useState(()=>draftOf(initial)),[editing,setEditing]=useState(false),[notice,setNotice]=useState<{ok:boolean;text:string}|null>(null),[pending,start]=useTransition();
  if(!saved.applicable)return null;
+ if(saved.operatingRole!=="FREIGHTER")return <PassengerCargoOffer iata={iata} flightId={flightId} initial={saved}/>;
  const save=()=>start(async()=>{const result=await saveOperationalFreightPlanning(iata,flightId,saved.version,{...draft,registration:draft.weightBasis==="REGISTRATION"?draft.registration:null});if(!result.ok||!result.planning){setNotice({ok:false,text:result.message});return}setSaved(result.planning);setDraft(draftOf(result.planning));setEditing(false);setNotice({ok:true,text:result.message})});
  return <div className="freight-planning-stack">
-  <details className="freight-planning operational-collapsible">
+  {showAircraftAssignment&&<details className="freight-planning operational-collapsible">
    <summary className="operational-collapsible-summary">
-    <div><p className="eyebrow">FREIGHT LOAD PLANNING</p><h2>Aircraft and operating codes</h2><p>Aircraft weight basis and the flight's applicable crew and pantry codes.</p></div>
+    <div><p className="eyebrow">FREIGHT LOAD PLANNING</p><h2>Aircraft and operating codes</h2><p>Aircraft weight basis and the flight&apos;s applicable crew and pantry codes.</p></div>
     <div className="operational-summary-facts">
      <span><small>WEIGHT BASIS</small><strong>{saved.weightBasis==="FLEET_WEIGHT"?"FLEET WEIGHT":saved.registration}</strong></span>
      <span><small>CREW CODE</small><strong>{saved.crewCode??"—"}</strong></span>
@@ -39,11 +81,11 @@ export function FreightCargoOffer({iata,flightId,initial}:{iata:string;flightId:
     </div>}
     {notice&&<p className={notice.ok?"load-control-notice success":"load-control-notice error"}>{notice.text}</p>}
    </div>
-  </details>
+  </details>}
   <details className="cargo-offer-section operational-collapsible">
    <summary className="cargo-offer-heading">
     <div><p className="eyebrow">PLANNING CAPACITY</p><h2>Cargo Offer</h2><p>Gross capacity available for cargo, mail and special loads before fuel restrictions are known.</p></div>
-    <div className={saved.ready?"cargo-offer-total ready":"cargo-offer-total incomplete"}><small>CARGO OFFER</small><strong>{saved.ready?kg(saved.cargoOfferWeight):"INCOMPLETE"}</strong><span>{saved.ready?cargoOfferLimitingLabel(saved.limitingFactor):"Complete the missing aircraft data"}</span></div>
+    <div className={saved.ready?"cargo-offer-total ready":"cargo-offer-total incomplete"}><small>CARGO OFFER</small><strong>{saved.ready?kg(saved.cargoOfferWeight):"INCOMPLETE"}</strong><span>{saved.ready?cargoOfferLimitingLabel(saved.limitingFactor as "MZFW"|"HOLD_CAPACITY"):"Complete the missing aircraft data"}</span></div>
    </summary>
    <div className="operational-collapsible-body">
     <div className="cargo-offer-capacity"><div><small>MZFW</small><strong>{kg(saved.mzfw)}</strong></div><div><small>PLANNING AIRCRAFT WEIGHT</small><strong>{kg(saved.planningAircraftWeight)}</strong></div><div><small>STRUCTURAL PAYLOAD CAPACITY</small><strong>{kg(saved.structuralCapacity)}</strong></div><div><small>SPACE WEIGHT CAPACITY</small><strong>{kg(saved.spaceWeightCapacity)}</strong></div></div>

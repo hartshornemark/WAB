@@ -69,8 +69,11 @@ test("display name uses own-profile result and falls back safely on missing data
 
 test("saved load-plan response retains the submitted solution",()=>{
   const solution:LoadPlanningSolution={status:"FEASIBLE",engine:"MANUAL",solveMilliseconds:0,assignments:[{loadId:"PAJ1",positionId:"A12"}],sequencePenalty:0,usedSimplicityGroups:0,trimDeviationScaled:0,messages:[]};
-  const plan=operationalLoadPlan({edition:5,source:"MANUAL",assignments:solution.assignments,createdAt:"2026-10-08T12:00:00Z"},solution);
+  const planningBaseline={edition:1 as const,estimatedZfw:68537,plannedLizfw:65.62,createdAt:"2026-10-08T11:00:00Z"};
+  const plan=operationalLoadPlan({edition:5,source:"MANUAL",assignments:solution.assignments,createdAt:"2026-10-08T12:00:00Z",actualisedAt:"2026-10-08T12:10:00Z",planningBaseline},solution);
   assert.equal(plan.edition,5);
   assert.equal(plan.solution,solution);
+  assert.deepEqual(plan.planningBaseline,planningBaseline);
+  assert.equal(plan.actualisedAt,"2026-10-08T12:10:00Z");
   assert.deepEqual(plan.solution?.assignments,[{loadId:"PAJ1",positionId:"A12"}]);
 });

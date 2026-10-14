@@ -26,7 +26,7 @@ export function createClassAdapter(client: RequestClient): ClassRepository {
     async save(iata, revision, values) {
       const { data, error } = await client.schema("Basic_Carrier_Record").rpc("save_carrier_class_codes", { p_iata: iata, p_revision: revision, p_rows: values });
       if (error?.code === "42501") throw new ClassDenied();
-      if (error?.code === "40001") throw new ClassConflict();
+      if (["40001","PT409"].includes(error?.code??"")) throw new ClassConflict();
       if (error?.code === "23503") throw new ClassInvalid("Complete and save Carrier Details before setting up classes.");
       if (error?.code === "22023" || error?.code === "23514") throw new ClassInvalid("Check the class codes, priorities and descriptions, then try again.");
       if (error) throw new DataUnavailable();

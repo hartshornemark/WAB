@@ -26,7 +26,7 @@ export function createCommodityAdapter(client: RequestClient): CommodityReposito
     async save(iata, revision, values) {
       const { data, error } = await client.schema("Basic_Carrier_Record").rpc("save_carrier_commodity_codes", { p_iata: iata, p_revision: revision, p_rows: values });
       if (error?.code === "42501") throw new CommodityDenied();
-      if (error?.code === "40001") throw new CommodityConflict();
+      if (["40001","PT409"].includes(error?.code??"")) throw new CommodityConflict();
       if (error?.code === "22023") throw new CommodityInvalid("Check the codes and descriptions, then try again.");
       if (error) throw new DataUnavailable();
       return snapshot(data);

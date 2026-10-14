@@ -27,7 +27,7 @@ export function createPassengerAdapter(client: RequestClient): PassengerReposito
     async save(iata,revision,section,values) {
       const { data,error } = await client.schema("Basic_Carrier_Record").rpc("save_carrier_passenger_weights",{p_iata:iata,p_revision:revision,p_section:section,p_values:values});
       if (error?.code === "42501") throw new PassengerDenied();
-      if (error?.code === "40001" || error?.code === "40P01") throw new PassengerConflict();
+      if (["40001","PT409","40P01"].includes(error?.code??"")) throw new PassengerConflict();
       if (error?.code === "23503") throw new PassengerInvalid("A class or variation is missing or still used by a weight set. Save its definition first, or remove the linked weight sets before removing it.");
       if (error?.code === "23505") throw new PassengerInvalid("Duplicate class/variation weight sets or variation labels are not allowed.");
       if (error && ["22023","22P02","23514","23502"].includes(error.code)) throw new PassengerInvalid("Check the codes, descriptions and weights. Separate hand-baggage weight is required when excluded.");

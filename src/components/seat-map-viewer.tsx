@@ -8,6 +8,16 @@ const colours=["#444444","#777777","#AAAAAA","#D0D0D0"];
 type MapChoice={code:string;description:string;layout:SeatMap|null;error:string|null};
 type MapCalibration={canEdit:boolean;offsetX:number;locked:boolean};
 export type SeatMapPassengerLoad={male:number;female:number;child:number;infant:number};
+export function OperationalCabinOverlay({iata,typeCode,subtype,configurationCode,areas}:{iata:string;typeCode:string;subtype:string;configurationCode:string|null;areas:Array<{areaId:string;passengers:number}>}){
+ const[loaded,setLoaded]=useState<{choices:MapChoice[];calibration:MapCalibration}|null>(null),[error,setError]=useState(""),[pending,start]=useTransition();
+ useEffect(()=>{let current=true;start(async()=>{const result=await loadSeatMap(iata,typeCode,subtype);if(!current)return;if(result.ok)setLoaded({choices:result.layouts,calibration:result.calibration});else setError(result.error)});return()=>{current=false}},[iata,subtype,typeCode]);
+ const selected=loaded?.choices.find(choice=>choice.code===configurationCode)??loaded?.choices[0],layout=selected?.layout,passengerLoads=Object.fromEntries(areas.map(area=>[area.areaId,{male:area.passengers,female:0,child:0,infant:0}]));
+ if(pending&&!loaded)return <p className="load-control-notice">Loading the calibrated cabin overlay…</p>;
+ if(error)return <p className="load-control-notice warning">{error}</p>;
+ if(selected?.error)return <p className="load-control-notice warning">{selected.error}</p>;
+ if(!layout)return <p className="load-control-notice warning">No calibrated cabin drawing is available for this configuration.</p>;
+ return <section className="operational-cabin-overlay"><header><div><p className="eyebrow">CABIN LOAD</p><h4>Booked passenger forecast</h4></div><div><strong>{areas.reduce((sum,area)=>sum+area.passengers,0).toLocaleString()} PAX</strong><span>AREA-PROPORTIONAL FORECAST</span>{selected.code&&<small>CONFIGURATION {selected.code}</small>}</div></header><SeatDiagram layout={layout} rows={layout.decks.flatMap(deck=>deck.rows)} areas={layout.decks.flatMap(deck=>deck.areas)} areaIds={[...new Set(layout.decks.flatMap(deck=>deck.rows.map(row=>row.areaId)))]} previewShift={loaded!.calibration.offsetX} passengerLoads={passengerLoads}/><p>Tail left · Nose right. The current view distributes booked passengers by cabin area; check-in integration can replace this with live area, row or individual-seat occupancy.</p></section>;
+}
 export function SeatMapViewer({iata,snapshot,configurationCode,passengerLoads,buttonLabel="VIEW SEAT MAP"}:{iata:string;snapshot:AircraftD8Snapshot;configurationCode?:string;passengerLoads?:Record<string,SeatMapPassengerLoad>;buttonLabel?:string}) {
   const [loaded,setLoaded]=useState<{choices:MapChoice[];calibration:MapCalibration}|null>(null),[error,setError]=useState(""),[pending,start]=useTransition();
   const reason=seatMapUnavailable(snapshot);
@@ -45,7 +55,7 @@ function SeatMapDialog({iata,choices,calibration,initialCode,passengerLoads,onCl
     <p className="hold-layout-caption">Tail Left · Nose Right. Rows use the balance arms calculated from C4 and D8. Seat groups run from top to bottom (left to right facing the nose). Crossed seats are blocked and excluded from the usable seat total. Seat sizes and aisle widths are schematic; row labels identify rows, not individual seats.{layout?.calibration.seatMapCaption&&<> {layout.calibration.seatMapCaption}</>}</p>
   </dialog>;
 }
-function SeatDiagram({layout,rows,areas,areaIds,previewShift,passengerLoads}:{layout:SeatMap;rows:SeatMapRow[];areas:SeatMapArea[];areaIds:string[];previewShift:number;passengerLoads?:Record<string,SeatMapPassengerLoad>}) {
+export function SeatDiagram({layout,rows,areas,areaIds,previewShift,passengerLoads}:{layout:SeatMap;rows:SeatMapRow[];areas:SeatMapArea[];areaIds:string[];previewShift:number;passengerLoads?:Record<string,SeatMapPassengerLoad>}) {
   const [imageFailed,setImageFailed]=useState(false);
   if(imageFailed)return <p role="alert" className="field-error">The aircraft outline could not be loaded. Close this view and open it again to retry.</p>;
   const aircraft=layout.calibration,image=aircraft.imageFrame;

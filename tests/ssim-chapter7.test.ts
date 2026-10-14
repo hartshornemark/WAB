@@ -33,7 +33,7 @@ test("parses fixed-width SSIM Chapter 7 records and attaches supplementary data"
   assert.partialDeepStrictEqual(result.legs[0],{
     flightNumber:"040",itineraryVariationIdentifier:"01",legSequenceNumber:1,operatingDays:"1001010",departureAirport:"MLE",arrivalAirport:"RSI",
     arrivalDayOffset:1,departureUtcOffsetMinutes:300,arrivalUtcOffsetMinutes:180,
-    aircraftTypeIata:"319",aircraftConfiguration:"XX",
+    aircraftTypeIata:"319",aircraftConfiguration:null,
   });
   const supplementary=result.legs[0].additionalData.supplementaryRecords as Array<Record<string,unknown>>;
   assert.equal(supplementary.length,1);
@@ -46,6 +46,15 @@ test("parses a flight number with a final alphabetic character",()=>{
   assert.equal(result.legs[0]?.flightNumber,"401A");
   const supplementary=result.legs[0]?.additionalData.supplementaryRecords as Array<Record<string,unknown>>;
   assert.equal(supplementary.length,1);
+});
+
+test("keeps the SSIM aircraft identity to the three-character IATA type",()=>{
+  const source=fixture().split("\r\n");
+  source[2]=`${source[2].slice(0,75)}JCD${source[2].slice(78)}`;
+  const result=parseSsimChapter7(source.join("\r\n"),"ZZ");
+  assert.equal(result.legs[0]?.aircraftTypeIata,"319");
+  assert.equal(result.legs[0]?.aircraftConfiguration,null);
+  assert.match(String(result.legs[0]?.additionalData.type3UnmappedTail),/^JCD/);
 });
 
 test("marks a carrier discrepancy as an error before staging",()=>{

@@ -8,7 +8,7 @@ import type { Json } from "./database.types";
 const fail = (error:{code?:string}|null) => {
   if (!error) return;
   if (error.code === "42501") throw new AircraftD11Denied();
-  if (error.code === "40001") throw new AircraftD11Conflict();
+  if (["40001","PT409"].includes(error.code??"")) throw new AircraftD11Conflict();
   if (["23514","23503","23505","22023","23502","22P02","22001"].includes(error.code??"")) throw new AircraftD11Invalid("Check every D11 Floor Loading Limit.");
   throw new DataUnavailable();
 };

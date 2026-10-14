@@ -11,6 +11,7 @@ import {AuthenticationRequired,CarrierUnavailable}from"@/domain/models";
 import { createLogoAdapter } from "@/infrastructure/supabase/logo-adapter";
 import { logoImageProcessor } from "@/infrastructure/images/logo-image-processor";
 import { createCarrierLogos } from "@/application/carrier-logos";
+import {createCpSatLoadPlanningSolver} from "@/infrastructure/solver/cp-sat-load-planning-solver";
 // The only composition root: new adapters/client for every request; no shared session state.
 export async function services() {
   const client = await createRequestClient();
@@ -23,6 +24,8 @@ export async function logoServices() {
   const client = await createRequestClient();
   return createCarrierLogos(createAuthAdapter(client), createCarrierAdapter(client), createLogoAdapter(client), logoImageProcessor);
 }
+
+export function loadPlanningSolver(){return createCpSatLoadPlanningSolver()}
 
 import { createCarrierDetails } from "@/application/carrier-details";
 import { createDetailsAdapter } from "@/infrastructure/supabase/details-adapter";
@@ -215,3 +218,6 @@ export async function aircraftOverlayCalibrationServices(){const client=await cr
 import{createOperationalFlights}from"@/application/operational-flights";
 import{createOperationalFlightAdapter}from"@/infrastructure/supabase/operational-flight-adapter";
 export async function operationalFlightServices(){const client=await createRequestClient();return createOperationalFlights(createAuthAdapter(client),createCarrierAdapter(client),createOperationalFlightAdapter(client));}
+import{createOperationalTimeline}from"@/application/operational-timeline";
+import{createOperationalTimelineAdapter}from"@/infrastructure/supabase/operational-timeline-adapter";
+export async function operationalTimelineServices(){const client=await createRequestClient();return createOperationalTimeline(createAuthAdapter(client),createCarrierAdapter(client),createOperationalTimelineAdapter(client));}

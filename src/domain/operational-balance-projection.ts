@@ -22,6 +22,11 @@ export function estimatedZfwBalancePoint(input:{weight:number;baseIndex:number;p
  return{weight:input.weight,indexValue,macValue:macPercentForIndex(input.weight,indexValue,input.formula)};
 }
 
+/** DOW plus all accommodated deadload, excluding passenger weight and passenger index effect. */
+export function estimatedDeadloadBalancePoint(input:{zfwWeight:number;zfwBaseIndex:number;passengerWeight:number;passengerIndex:number;problem:LoadPlanningProblem;assignments:LoadPlanningAssignment[];formula:AircraftC4Values}):OperationalBalancePoint{
+ return estimatedZfwBalancePoint({weight:input.zfwWeight-input.passengerWeight,baseIndex:input.zfwBaseIndex-input.passengerIndex,problem:input.problem,assignments:input.assignments,formula:input.formula});
+}
+
 export function projectedFuelCurve(origin:OperationalBalancePoint,rows:OperationalFuelCurvePoint[],maximumWeight:number):Array<{weight:number;indexValue:number}>{
  const maximumFuel=Math.max(0,maximumWeight-origin.weight),sorted=[...rows].filter(row=>Number.isFinite(row.fuelWeight)&&Number.isFinite(row.indexValue)&&row.fuelWeight>=0).sort((a,b)=>a.fuelWeight-b.fuelWeight),usable=sorted.filter(row=>row.fuelWeight<=maximumFuel);
  if(!usable.some(row=>row.fuelWeight===0))usable.unshift({fuelWeight:0,indexValue:0});
