@@ -9,7 +9,7 @@ export async function signIn(_state: { error: string }, form: FormData) {
   try { await (await services()).signIn(email, password); }
   catch { return { error: "Unable to sign in. Check your details and try again." }; }
   revalidatePath("/", "layout");
-  redirect("/carriers");
+  redirect("/work");
 }
 export async function signOut() {
   await (await services()).signOut();
