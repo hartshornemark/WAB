@@ -7,7 +7,7 @@ import {WorkspaceShell} from "@/components/workspace-shell";
 const options=[
   {title:"Airport Configuration",description:"Review and maintain the airport reference data used throughout the solution.",icon:"/work-options/airports.png",href:"/admin/airports",direct:true},
   {title:"Schedule Creation / Amendment",description:"Create, import, review and amend a carrier's published flight schedules.",icon:"/work-options/schedules.png",href:"/carriers?work=schedules",direct:false},
-  {title:"Load Control",description:"Open the daily operational flight board and continue active load-control work.",icon:"/work-options/load-control.png",href:"/carriers?work=load-control",direct:false},
+  {title:"Load Control",description:"Open your combined operational workload across authorised carriers and locations.",icon:"/work-options/load-control.png",href:"/load-control",direct:true},
   {title:"AHM560 / 565 Database",description:"Configure carrier standards, aircraft data and weight-and-balance requirements.",icon:"/work-options/ahm.png",href:"/carriers?work=ahm",direct:false},
 ] as const;
 

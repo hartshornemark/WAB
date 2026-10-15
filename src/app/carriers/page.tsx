@@ -7,6 +7,7 @@ import { WorkspaceShell } from "@/components/workspace-shell";
 const workRoutes={schedules:"flight-schedules","load-control":"load-control",ahm:"dashboard"} as const;
 export default async function Carriers({searchParams}:{searchParams:Promise<{work?:string}>}) {
   const work=(await searchParams).work,route=workRoutes[work as keyof typeof workRoutes],labels={schedules:"Schedule Creation / Amendment","load-control":"Load Control",ahm:"AHM560 / 565 Database"} as const,label=labels[work as keyof typeof labels];
+  if(work==="load-control")redirect("/load-control");
   const result = await (await services()).listCarriers().catch(error => {
     if (error instanceof AuthenticationRequired) redirect("/login");
     throw error;
