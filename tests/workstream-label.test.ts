@@ -5,6 +5,7 @@ import { workstreamLabel } from "../src/domain/workstream";
 test("labels each primary work stream", () => {
   assert.equal(workstreamLabel("/work"), "OPERATIONS WORKSPACE");
   assert.equal(workstreamLabel("/admin/airports"), "AIRPORT CONFIGURATION");
+  assert.equal(workstreamLabel("/admin/users"), "USER ADMINISTRATION");
   assert.equal(workstreamLabel("/carrier/AB/flight-schedules"), "SCHEDULE CREATION / AMENDMENT");
   assert.equal(workstreamLabel("/carrier/AB/load-control"), "LOAD CONTROL");
   assert.equal(workstreamLabel("/carrier/AB/load-control-timeline"), "LOAD CONTROL");

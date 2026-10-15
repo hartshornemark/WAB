@@ -9,6 +9,7 @@ const options=[
   {title:"Schedule Creation / Amendment",description:"Create, import, review and amend a carrier's published flight schedules.",icon:"/work-options/schedules.png",href:"/carriers?work=schedules",direct:false},
   {title:"Load Control",description:"Open your combined operational workload across authorised carriers and locations.",icon:"/work-options/load-control.png",href:"/load-control",direct:true},
   {title:"AHM560 / 565 Database",description:"Configure carrier standards, aircraft data and weight-and-balance requirements.",icon:"/work-options/ahm.png",href:"/carriers?work=ahm",direct:false},
+  {title:"User Administration",description:"Create users and manage their carrier, location and permission assignments.",icon:"/work-options/users.svg",href:"/admin/users",direct:true},
 ] as const;
 
 export default async function WorkPage(){
