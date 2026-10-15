@@ -39,7 +39,7 @@ export default async function CarrierDashboardPage({params}:{params:Promise<{iat
     redirect(`/mockups/configuration-dashboard.html?${query.toString()}`);
   }
   return <WorkspaceShell user={result.user}>
-    <Link href="/carriers" className="back">← Change carrier</Link>
+    <Link href="/work" className="back">← Work options</Link>
     <p className="eyebrow">CARRIER WORKSPACE / {result.carrier.iata}</p>
     <div className="crew-carrier-heading"><CarrierLogo iata={iata} logoUrl={result.carrier.logoUrl}/><div><h1>Carrier Home</h1><p className="muted">{result.carrier.name}</p></div></div>
     <>
