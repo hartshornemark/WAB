@@ -11,5 +11,5 @@ export function NewCarrierForm(){const[state,action,pending]=useActionState(crea
   </div>
   <div className="new-carrier-logo"><label htmlFor="new-carrier-logo">Carrier Logo <span>Optional</span></label><p id="new-carrier-logo-help" className="muted">PNG, JPEG or WebP · up to 2 MB. A transparent background works best.</p><input id="new-carrier-logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="new-carrier-logo-help"/></div>
   <div aria-live="polite">{state.error&&<p className="field-error">{state.error}</p>}</div>
-  <div className="new-carrier-actions"><Link className="secondary button-link" href="/carriers">CANCEL</Link><button disabled={pending}>{pending?"CREATING…":"CREATE CARRIER"}</button></div>
+  <div className="new-carrier-actions"><Link className="secondary button-link" href="/carriers?work=ahm">CANCEL</Link><button disabled={pending}>{pending?"CREATING…":"CREATE CARRIER"}</button></div>
 </form>}
