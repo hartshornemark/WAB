@@ -140,7 +140,7 @@ function LoadBoard({deck,holdGroups,rows,loads,selectedLoadId,volumeUnit,onSelec
  const selected=selectedLoadId?loads.get(selectedLoadId):undefined;
  return <div className={`load-board ${deck.toLowerCase()}-deck`}>
   <div className="load-board-direction"><span>TAIL</span><b>NOSE TO TAIL · RIGHT TO LEFT</b><span>NOSE</span></div>
-  <div className="load-board-holds">{holdGroups.map(([holdId,holdSlots])=><section className="load-board-hold" key={holdId}><header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{holdSlots.length} LOADING OPTIONS · {new Set(holdSlots.flatMap(slot=>slot.positions.flatMap(position=>position.occupiedBayIds))).size} PHYSICAL BAYS</small></header><div>{holdSlots.map(slot=>{
+  <div className="load-board-holds">{holdGroups.map(([holdId,holdSlots])=>{const visibleSlots=activeGraphicSlots(holdSlots,rows,selected);return <section className="load-board-hold" key={holdId}><header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{visibleSlots.length} ACTIVE POSITIONS · {new Set(holdSlots.flatMap(slot=>slot.positions.flatMap(position=>position.occupiedBayIds))).size} PHYSICAL BAYS</small></header><div>{visibleSlots.map(slot=>{
    const slotIds=new Set(slot.positions.map(position=>position.id)),slotRows=rows.filter(row=>slotIds.has(row.assignment.positionId)),canPlace=Boolean(selected&&slot.positions.some(position=>fits(selected,position))),selectedHere=Boolean(selectedLoadId&&slotRows.some(row=>row.load!.id===selectedLoadId)),remaining=bulkRemaining(slot,slotRows.map(row=>row.load!)),bulk=slot.positions[0].loadType==="BULK",maximumWeight=bulk?slot.positions.reduce((sum,position)=>sum+position.maximumWeightKg,0):Math.max(...slot.positions.map(position=>position.maximumWeightKg)),maximumVolume=slot.positions.every(position=>position.maximumVolumeLitres!==null)?bulk?slot.positions.reduce((sum,position)=>sum+(position.maximumVolumeLitres??0),0):Math.max(...slot.positions.map(position=>position.maximumVolumeLitres??0)):null,swap=Boolean(selected&&!selectedHere&&canPlace&&slotRows.length===1&&selected.loadType==="ULD");
    return <article className={`load-board-slot ${slotRows.length?"is-loaded":"is-empty"} ${selectedLoadId?(canPlace?"can-drop":"blocked"):""} ${selectedHere?"selected-source":""}`} key={slot.key} onDragOver={event=>{event.preventDefault();event.dataTransfer.dropEffect=canPlace?"move":"none"}} onDrop={event=>{event.preventDefault();const loadId=event.dataTransfer.getData("text/plain");if(loadId)onMove(loadId,slot)}}>
     <header><strong>{slot.locationRef}</strong></header>
@@ -150,15 +150,15 @@ function LoadBoard({deck,holdGroups,rows,loads,selectedLoadId,volumeUnit,onSelec
     {selected&&!selectedHere&&canPlace&&<button type="button" className="load-board-place" onClick={()=>onMove(selected.id,slot)}>{swap?"SWAP HERE":"PLACE HERE"}</button>}
     {selected&&!selectedHere&&!canPlace&&<span className="load-board-blocked">NOT COMPATIBLE</span>}
    </article>
-  })}</div></section>)}</div>
+  })}</div></section>})}</div>
  </div>
 }
 
 function PrintLoadBoard({deck,holdGroups,rows,volumeUnit}:{deck:DeckKey;holdGroups:[string,GraphicSlot[]][];rows:AssignmentRow[];volumeUnit:"FT3"|"M3"}){
- const columns=holdGroups.map(([,holdSlots])=>holdSlots.some(slot=>slot.positions[0]?.loadType==="BULK")?"minmax(32mm, 1.55fr)":`minmax(0, ${Math.max(1,holdSlots.length)}fr)`).join(" ");
+ const activeGroups=holdGroups.map(([holdId,holdSlots])=>[holdId,activeGraphicSlots(holdSlots,rows)] as [string,GraphicSlot[]]),columns=activeGroups.map(([,holdSlots])=>holdSlots.some(slot=>slot.positions[0]?.loadType==="BULK")?"minmax(32mm, 1.55fr)":`minmax(0, ${Math.max(1,holdSlots.length)}fr)`).join(" ");
  return <div className={`load-plan-print-board ${deck.toLowerCase()}-deck`}>
   <div className="load-plan-print-direction"><span>TAIL</span><b>NOSE TO TAIL · RIGHT TO LEFT</b><span>NOSE</span></div>
-  <div className="load-plan-print-holds" style={{gridTemplateColumns:columns}}>{holdGroups.map(([holdId,holdSlots])=><section className="load-plan-print-hold" key={holdId}>
+  <div className="load-plan-print-holds" style={{gridTemplateColumns:columns}}>{activeGroups.map(([holdId,holdSlots])=><section className="load-plan-print-hold" key={holdId}>
    <header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{holdSlots.length} POS</small></header>
    <div style={{gridTemplateColumns:`repeat(${holdSlots.length}, minmax(0, 1fr))`}}>{holdSlots.map(slot=>{
     const slotIds=new Set(slot.positions.map(position=>position.id)),slotRows=rows.filter(row=>slotIds.has(row.assignment.positionId)),remaining=bulkRemaining(slot,slotRows.map(row=>row.load!)),bulk=slot.positions[0].loadType==="BULK",maximumWeight=bulk?slot.positions.reduce((sum,position)=>sum+position.maximumWeightKg,0):Math.max(...slot.positions.map(position=>position.maximumWeightKg)),maximumVolume=slot.positions.every(position=>position.maximumVolumeLitres!==null)?bulk?slot.positions.reduce((sum,position)=>sum+(position.maximumVolumeLitres??0),0):Math.max(...slot.positions.map(position=>position.maximumVolumeLitres??0)):null;
@@ -186,6 +186,7 @@ function PrintLoadCard({load,loadReference,volumeUnit}:{load:SolverLoad;loadRefe
 }
 
 function targetForSourceSlot(positions: SolverPosition[], source: SolverPosition) { const key = slotKey(source); return positions.filter((position) => slotKey(position) === key); }
+function activeGraphicSlots(slots:GraphicSlot[],rows:AssignmentRow[],selected?:SolverLoad){const assignedIds=new Set(rows.map(row=>row.assignment.positionId)),occupied=new Set<string>(),accepted=new Set<string>(),ranked=slots.map((slot,index)=>{const assigned=slot.positions.find(position=>assignedIds.has(position.id)),compatible=selected?slot.positions.filter(position=>fits(selected,position)):[],representative=assigned??compatible.sort((left,right)=>left.occupiedBayIds.length-right.occupiedBayIds.length)[0]??[...slot.positions].sort((left,right)=>left.occupiedBayIds.length-right.occupiedBayIds.length)[0];return{slot,index,assigned:Boolean(assigned),compatible:compatible.length>0,bays:representative?.occupiedBayIds??[]}}).sort((left,right)=>Number(right.assigned)-Number(left.assigned)||Number(right.compatible)-Number(left.compatible)||left.bays.length-right.bays.length||left.index-right.index);for(const item of ranked){if(item.bays.some(bay=>occupied.has(bay)))continue;accepted.add(item.slot.key);for(const bay of item.bays)occupied.add(bay)}return slots.filter(slot=>accepted.has(slot.key))}
 function formatVolume(value:number,unit:"FT3"|"M3"){return`${(value/1000).toFixed(2)} ${unit==="FT3"?"CU FT":"m³"}`}
 function formatSolveDuration(milliseconds:number){return milliseconds>=1000?`${(milliseconds/1000).toFixed(2)} s`:`${milliseconds.toLocaleString()} ms`;}
 function holdName(value: string) { const upper = value.toUpperCase(); if (upper.includes("MDECK") || upper.includes("MAIN")) return "MAIN DECK"; const suffix = upper.includes(":") ? upper.slice(upper.lastIndexOf(":") + 1) : upper; if (["FWD","MID","AFT"].includes(suffix)) return `${suffix} HOLD`; if (/^\d+$/.test(suffix)) return `BULK HOLD ${suffix}`; return value; }
