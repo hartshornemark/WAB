@@ -10,7 +10,7 @@ export function workstreamNavigation(pathname: string) {
     return {workOptions,carrierHome:null,aircraftDashboard:null};
   }
   if (parts[2] === "aircraft" && parts[3] && parts[4]) {
-    return {workOptions,carrierHome,aircraftDashboard:`/carrier/${iata}/aircraft/${encodeURIComponent(parts[3])}/${encodeURIComponent(parts[4])}/dashboard`};
+    return {workOptions,carrierHome:null,aircraftDashboard:`/carrier/${iata}/aircraft/${encodeURIComponent(parts[3])}/${encodeURIComponent(parts[4])}/dashboard`};
   }
   return {workOptions,carrierHome,aircraftDashboard:null};
 }

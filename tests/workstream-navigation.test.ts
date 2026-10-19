@@ -35,6 +35,7 @@ test("AHM pages retain contextual dashboards as well as work options", () => {
   assert.ok(aircraftSelection);
   assert.ok(aircraftPage);
   assert.equal(aircraftSelection.carrierHome, "/carrier/AB/dashboard");
+  assert.equal(aircraftPage.carrierHome, null);
   assert.equal(
     aircraftPage.aircraftDashboard,
     "/carrier/AB/aircraft/738/800/dashboard",
