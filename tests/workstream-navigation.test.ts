@@ -29,17 +29,14 @@ test("work-stream pages return to work options without diverting through Carrier
   }
 });
 
-test("AHM pages retain contextual dashboards as well as work options", () => {
+test("every AHM sheet returns to the main carrier AHM dashboard", () => {
   const aircraftSelection = workstreamNavigation("/carrier/AB/aircraft");
   const aircraftPage = workstreamNavigation("/carrier/AB/aircraft/738/800/d4");
   assert.ok(aircraftSelection);
   assert.ok(aircraftPage);
   assert.equal(aircraftSelection.carrierHome, "/carrier/AB/dashboard");
-  assert.equal(aircraftPage.carrierHome, null);
-  assert.equal(
-    aircraftPage.aircraftDashboard,
-    "/carrier/AB/aircraft/738/800/dashboard",
-  );
+  assert.equal(aircraftPage.carrierHome, "/carrier/AB/dashboard");
+  assert.equal(aircraftPage.aircraftDashboard, null);
 });
 
 test("carrier-level A2 and B1 to B4 sheets return to the carrier dashboard", () => {
