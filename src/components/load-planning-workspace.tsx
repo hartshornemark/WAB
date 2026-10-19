@@ -155,14 +155,14 @@ function LoadBoard({deck,holdGroups,rows,loads,selectedLoadId,volumeUnit,onSelec
 }
 
 function PrintLoadBoard({deck,holdGroups,rows,volumeUnit}:{deck:DeckKey;holdGroups:[string,GraphicSlot[]][];rows:AssignmentRow[];volumeUnit:"FT3"|"M3"}){
- const activeGroups=holdGroups.map(([holdId,holdSlots])=>[holdId,activeGraphicSlots(holdSlots,rows)] as [string,GraphicSlot[]]),columns=activeGroups.map(([,holdSlots])=>holdSlots.some(slot=>slot.positions[0]?.loadType==="BULK")?"minmax(32mm, 1.55fr)":`minmax(0, ${Math.max(1,holdSlots.length)}fr)`).join(" ");
+ const activeGroups=holdGroups.map(([holdId,holdSlots])=>{const visibleSlots=activeGraphicSlots(holdSlots,rows);return{holdId,holdSlots,visibleSlots,physicalGrid:physicalSlotGrid(visibleSlots,holdSlots)}}),columns=activeGroups.map(group=>group.holdSlots.some(slot=>slot.positions[0]?.loadType==="BULK")?"minmax(32mm, 1.55fr)":`minmax(0, ${Math.max(1,group.physicalGrid.columns)}fr)`).join(" ");
  return <div className={`load-plan-print-board ${deck.toLowerCase()}-deck`}>
   <div className="load-plan-print-direction"><span>TAIL</span><b>NOSE TO TAIL · RIGHT TO LEFT</b><span>NOSE</span></div>
-  <div className="load-plan-print-holds" style={{gridTemplateColumns:columns}}>{activeGroups.map(([holdId,holdSlots])=><section className="load-plan-print-hold" key={holdId}>
-   <header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{holdSlots.length} POS</small></header>
-   <div style={{gridTemplateColumns:`repeat(${holdSlots.length}, minmax(0, 1fr))`}}>{holdSlots.map(slot=>{
+  <div className="load-plan-print-holds" style={{gridTemplateColumns:columns}}>{activeGroups.map(({holdId,visibleSlots,physicalGrid})=><section className="load-plan-print-hold" key={holdId}>
+   <header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{visibleSlots.length} POS</small></header>
+   <div className="load-plan-print-physical-grid" style={{gridTemplateColumns:`repeat(${physicalGrid.columns}, minmax(0, 1fr))`}}>{visibleSlots.map(slot=>{
     const slotIds=new Set(slot.positions.map(position=>position.id)),slotRows=rows.filter(row=>slotIds.has(row.assignment.positionId)),remaining=bulkRemaining(slot,slotRows.map(row=>row.load!),volumeUnit),bulk=slot.positions[0].loadType==="BULK",maximumWeight=bulk?slot.positions.reduce((sum,position)=>sum+position.maximumWeightKg,0):Math.max(...slot.positions.map(position=>position.maximumWeightKg)),maximumVolume=slot.positions.every(position=>position.maximumVolumeLitres!==null)?bulk?slot.positions.reduce((sum,position)=>sum+(position.maximumVolumeLitres??0),0):Math.max(...slot.positions.map(position=>position.maximumVolumeLitres??0)):null;
-    return <article className={`load-plan-print-slot ${bulk?"bulk":"uld"}`} key={slot.key}>
+    return <article className={`load-plan-print-slot ${bulk?"bulk":"uld"}`} style={physicalGrid.styles.get(slot.key)} key={slot.key}>
      <header><strong><GraphicPositionLabel value={slot.locationRef}/></strong><span>MX {Math.round(maximumWeight)} KG{maximumVolume!==null?` · ${formatVolume(maximumVolume,volumeUnit)}`:""}</span></header>
      <div className="load-plan-print-loads">{slotRows.length?slotRows.map(row=><PrintLoadCard key={row.load!.id} load={row.load!} loadReference={row.assignment.loadReference} volumeUnit={volumeUnit}/>):<span className="load-plan-print-empty">NO FIT</span>}</div>
      {remaining&&<small className="load-plan-print-remaining">{remaining}</small>}
