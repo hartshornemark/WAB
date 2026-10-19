@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { balancePointWithinEnvelope, calculateFinalPayloadCapability, calculateOperationalFuelEffect, fuelIndexAtWeight, operationalEnvelopeBoundary, operationalEnvelopeConfigured, validateOperationalFuelInput } from "../src/domain/operational-fuel";
+import { balancePointWithinEnvelope, calculateFinalPayloadCapability, calculateOperationalFuelEffect, fuelIndexAtWeight, operationalEnvelopeBoundary, operationalEnvelopeConfigured, operationalEnvelopeSelection, validateOperationalFuelInput } from "../src/domain/operational-fuel";
 
 const formula={datum:0,referenceArm:0,constantK:0,constantC:1000,macRcLength:10,lemacLerc:0};
 const curve=[{fuelWeight:0,indexValue:0},{fuelWeight:5000,indexValue:2},{fuelWeight:10000,indexValue:5}];
@@ -22,6 +22,7 @@ test("conditional TOW and LAW envelopes are selected by the applicable fuel quan
  const boundary={fwd:[{weight:50000,indexValue:40,macValue:null},{weight:70000,indexValue:45,macValue:null}],aft:[{weight:50000,indexValue:70,macValue:null},{weight:70000,indexValue:75,macValue:null}]};
  const values={maximumWeights:{mrw:71000,tow:70000,law:65000,zfw:60000},envelopes:{tow:boundary,law:boundary,zfw:boundary},envelopeModes:{tow:"CONDITIONAL",law:"STANDARD",zfw:"STANDARD"},conditionalEnvelopes:{tow:[{id:"1",code:"LOW",conditionBasis:"TAKE_OFF_FUEL",conditionDescription:"",lowerBound:0,lowerInclusive:true,upperBound:10000,upperInclusive:true,boundary}],law:[],zfw:[]}} as never;
  assert.equal(operationalEnvelopeBoundary(values,"tow",8500,null),boundary);
+ assert.equal(operationalEnvelopeSelection(values,"tow",8500,null)?.code,"LOW");
  assert.equal(balancePointWithinEnvelope({weight:58500,indexValue:50,macValue:20},boundary),true);
  assert.equal(balancePointWithinEnvelope({weight:58500,indexValue:80,macValue:40},boundary),false);
 });

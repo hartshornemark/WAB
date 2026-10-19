@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect,useState} from "react";
 import {useIndexDecimalPlaces} from "@/components/index-display-preference";
 import {formatNumeric} from "@/domain/display-standards";
 import {conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint} from "@/domain/aircraft-c5";
@@ -156,6 +156,7 @@ export function BalanceEnvelopeView({ values, applicability, unit, formula, idea
   const lawUsesTow=loadsheetPoints.some(point=>point.phase==="law")&&!chartInstances.some(item=>item.phase==="law")&&chartInstances.some(item=>item.phase==="tow");
   const conditionalGroups=activeCharts.flatMap(chart=>{const options=chartInstances.filter(item=>item.phase===chart.key&&item.condition);return options.length?[{phase:chart.key,label:`${chart.key.toUpperCase()} CONDITION`,options}]:[]});
   const[selectedConditions,setSelectedConditions]=useState<Record<string,string>>(()=>Object.fromEntries(conditionalGroups.map(group=>[group.phase,group.options.find(option=>option.conditionCode===selectedConditionCodes[group.phase])?.key??group.options[0].key])));
+  useEffect(()=>{setSelectedConditions(current=>Object.fromEntries(conditionalGroups.map(group=>[group.phase,group.options.find(option=>option.conditionCode===selectedConditionCodes[group.phase])?.key??current[group.phase]??group.options[0].key])))},[selectedConditionCodes.tow,selectedConditionCodes.law,selectedConditionCodes.zfw]);
   const overlayInstances=chartInstances.filter(chart=>!chart.condition||selectedConditions[chart.phase]===chart.key);
   const idealTrim=idealTrimPoints.map(point=>({weight:point.weight,indexValue:point.indexValue??(formula&&point.macValue!==null?indexForMacPercent(point.weight,point.macValue,formula):Number.NaN)})).filter(point=>Number.isFinite(point.weight)&&Number.isFinite(point.indexValue)).sort((a,b)=>a.weight-b.weight);
   const operationalMarkers=loadsheetPoints.filter(point=>point.phase==="tow"||point.phase==="law").map(point=>point.label);

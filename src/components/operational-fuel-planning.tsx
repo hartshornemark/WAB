@@ -9,8 +9,8 @@ import {
   balancePointWithinEnvelope,
   calculateFinalPayloadCapability,
   calculateOperationalFuelEffect,
-  operationalEnvelopeBoundary,
   operationalEnvelopeConfigured,
+  operationalEnvelopeSelection,
   type FuelledBalancePoint,
   type OperationalFuelEffect,
   type OperationalFuelPlan,
@@ -19,7 +19,7 @@ import {
 const numberOrBlank = (value: number | null) => value === null ? "" : String(value);
 const kilograms = (value: number) => `${Math.round(value).toLocaleString()} KG`;
 
-export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initial, zfw, acceptedCargoWeight, nonCargoTrafficWeight, curves, defaultTaxiFuel, maximumWeights, envelopeValues, balanceApplicability, formula, onEffectChange, onStatusChange }: {
+export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initial, zfw, acceptedCargoWeight, nonCargoTrafficWeight, curves, defaultTaxiFuel, maximumWeights, envelopeValues, balanceApplicability, formula, onEffectChange, onEnvelopeSelectionChange, onStatusChange }: {
   iata: string;
   flightId: string;
   loadPlanEdition: number;
@@ -34,6 +34,7 @@ export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initi
   balanceApplicability: AircraftC5Applicability;
   formula: AircraftC4Values;
   onEffectChange?: (effect: OperationalFuelEffect | null) => void;
+  onEnvelopeSelectionChange?: (codes: Partial<Record<"tow"|"law",string>>) => void;
   onStatusChange?: (status: OperationalFuelPlan["status"]) => void;
 }) {
   const initialCurve = curves.find((curve) => curve.configurationCode === initial.configurationCode && curve.specificGravity === initial.specificGravity) ?? curves[0] ?? null;
@@ -51,15 +52,18 @@ export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initi
   useEffect(() => { onEffectChange?.(effect); }, [effect, onEffectChange]);
   const checks = useMemo(() => {
     if (!effect || !curve) return [];
-    const towBoundary = operationalEnvelopeBoundary(envelopeValues, "tow", effect.takeOffFuel, curve.configurationCode);
+    const towSelection = operationalEnvelopeSelection(envelopeValues, "tow", effect.takeOffFuel, curve.configurationCode);
+    const towBoundary = towSelection?.boundary ?? null;
     const hasLawEnvelope = operationalEnvelopeConfigured(envelopeValues, "law");
-    const lawBoundary = hasLawEnvelope ? operationalEnvelopeBoundary(envelopeValues, "law", effect.landingFuel, curve.configurationCode) : towBoundary;
+    const lawSelection = hasLawEnvelope ? operationalEnvelopeSelection(envelopeValues, "law", effect.landingFuel, curve.configurationCode) : towSelection;
+    const lawBoundary = lawSelection?.boundary ?? null;
     return [
-      { label: "RAMP", point: effect.ramp, maximum: maximumWeights.mrw, envelope: true, envelopeBasis: null, balanceRequired: false },
-      { label: "TOW", point: effect.takeOff, maximum: maximumWeights.tow, envelope: balanceApplicability.tow ? balancePointWithinEnvelope(effect.takeOff, towBoundary) : true, envelopeBasis: balanceApplicability.tow ? "TOW" : null, balanceRequired: balanceApplicability.tow },
-      { label: "LAW", point: effect.landing, maximum: maximumWeights.law, envelope: balanceApplicability.law ? balancePointWithinEnvelope(effect.landing, lawBoundary) : true, envelopeBasis: balanceApplicability.law ? (hasLawEnvelope ? "LAW" : "TOW") : null, balanceRequired: balanceApplicability.law },
+      { label: "RAMP", point: effect.ramp, maximum: maximumWeights.mrw, envelope: true, envelopeBasis: null, envelopeCode: null, balanceRequired: false },
+      { label: "TOW", point: effect.takeOff, maximum: maximumWeights.tow, envelope: balanceApplicability.tow ? balancePointWithinEnvelope(effect.takeOff, towBoundary) : true, envelopeBasis: balanceApplicability.tow ? "TOW" : null, envelopeCode: towSelection?.code??null, balanceRequired: balanceApplicability.tow },
+      { label: "LAW", point: effect.landing, maximum: maximumWeights.law, envelope: balanceApplicability.law ? balancePointWithinEnvelope(effect.landing, lawBoundary) : true, envelopeBasis: balanceApplicability.law ? (hasLawEnvelope ? "LAW" : "TOW") : null, envelopeCode: lawSelection?.code??null, balanceRequired: balanceApplicability.law },
     ];
   }, [balanceApplicability, curve, effect, envelopeValues, maximumWeights]);
+  useEffect(()=>{onEnvelopeSelectionChange?.(Object.fromEntries(checks.filter(check=>check.envelopeCode).map(check=>[check.label.toLowerCase(),check.envelopeCode!])) as Partial<Record<"tow"|"law",string>>)},[checks,onEnvelopeSelectionChange]);
   const invalidChecks = checks.filter((check) => check.point.weight > check.maximum || (check.balanceRequired && check.envelope === false)), incompleteEnvelope = checks.some((check) => check.balanceRequired && check.envelope === null);
   const payload = useMemo(() => effect ? calculateFinalPayloadCapability({ dryOperatingWeight: zfw.weight - acceptedCargoWeight - nonCargoTrafficWeight, acceptedCargoWeight, nonCargoTrafficWeight, takeOffFuel: effect.takeOffFuel, landingFuel: effect.landingFuel, maximumWeights }) : null, [acceptedCargoWeight, effect, maximumWeights, nonCargoTrafficWeight, zfw.weight]);
   const save = (finalise:boolean) => {
@@ -81,7 +85,7 @@ export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initi
     <div className="operational-collapsible-body">
       {!curves.length && <p className="load-control-notice error">No applicable C8 Standard Fuel curve is configured for this aircraft.</p>}
       <div className="operational-fuel-inputs"><label><span>Fuel distribution</span><select value={curveId} onChange={(event) => setCurveId(event.target.value)} disabled={!curves.length||fuelLocked}>{curves.map((item) => <option value={item.id} key={item.id}>{item.label}</option>)}</select></label><label><span>Block fuel (KG)</span><input type="number" min="0" step="1" value={blockFuel} disabled={fuelLocked} onChange={(event) => setBlockFuel(event.target.value)} /></label><label><span>Taxi fuel (KG)</span><input type="number" min="0" step="1" value={taxiFuel} disabled={fuelLocked} onChange={(event) => setTaxiFuel(event.target.value)} /></label><label><span>Trip fuel (KG)</span><input type="number" min="0" step="1" value={tripFuel} disabled={fuelLocked} onChange={(event) => setTripFuel(event.target.value)} /></label></div>
-      {effect && <div className="operational-fuel-derived"><span><span className="operational-weight-heading"><small>ZFW</small><b>ESTIMATED</b></span><strong>{kilograms(zfw.weight)}</strong><em>LIZFW {zfw.indexValue.toFixed(2)} · MACZFW {zfw.macValue.toFixed(1)}%</em></span>{checks.map((check) => { const valid = check.point.weight <= check.maximum && (!check.balanceRequired || check.envelope !== false),indexCode=check.label==="TOW"?"LITOW":check.label==="LAW"?"LILAW":null,macCode=check.label==="TOW"?"MACTOW":check.label==="LAW"?"MACLAW":null; return <span className={valid ? "valid" : "invalid"} key={check.label}><span className="operational-weight-heading"><small>{check.label}</small><b>ESTIMATED</b></span><strong>{kilograms(check.point.weight)}</strong><em>{check.balanceRequired&&indexCode&&macCode?`${indexCode} ${check.point.indexValue.toFixed(2)} · ${macCode} ${check.point.macValue.toFixed(1)}%${check.label==="LAW"&&check.envelopeBasis==="TOW"?" · TOW ENVELOPE":""}`:"WEIGHT CHECK ONLY"}</em></span>; })}</div>}
+      {effect && <div className="operational-fuel-derived"><span><span className="operational-weight-heading"><small>ZFW</small><b>ESTIMATED</b></span><strong>{kilograms(zfw.weight)}</strong><em>LIZFW {zfw.indexValue.toFixed(2)} · MACZFW {zfw.macValue.toFixed(1)}%</em></span>{checks.map((check) => { const valid = check.point.weight <= check.maximum && (!check.balanceRequired || check.envelope !== false),indexCode=check.label==="TOW"?"LITOW":check.label==="LAW"?"LILAW":null,macCode=check.label==="TOW"?"MACTOW":check.label==="LAW"?"MACLAW":null,envelopeLabel=check.envelopeCode?` · ENVELOPE ${check.envelopeCode}`:check.label==="LAW"&&check.envelopeBasis==="TOW"?" · TOW ENVELOPE":""; return <span className={valid ? "valid" : "invalid"} key={check.label}><span className="operational-weight-heading"><small>{check.label}</small><b>ESTIMATED</b></span><strong>{kilograms(check.point.weight)}</strong><em>{check.balanceRequired&&indexCode&&macCode?`${indexCode} ${check.point.indexValue.toFixed(2)} · ${macCode} ${check.point.macValue.toFixed(1)}%${envelopeLabel}`:"WEIGHT CHECK ONLY"}</em></span>; })}</div>}
       {payload&&<div className="operational-payload-comparison"><span><small>MAX ALLOWABLE TRAFFIC LOAD</small><strong>{kilograms(payload.maximumAllowableTrafficLoad)}</strong><em>MATL · {payload.limitingFactor} LIMITING</em></span><span><small>ALLOWED TRAFFIC LOAD</small><strong>{kilograms(payload.allowedTrafficLoad)}</strong><em>ATL for this flight</em></span><span><small>TOTAL TRAFFIC LOAD</small><strong>{kilograms(payload.actualTrafficLoad)}</strong></span><span className={payload.operationalUnderload<=0?"invalid":payload.operationalUnderload<=payload.allowedTrafficLoad*.05?"warning":"valid"}><small>UNDERLOAD</small><strong>{kilograms(payload.operationalUnderload)}</strong><em>{payload.operationalUnderload<=0?"ACTUAL LOAD AT OR ABOVE ATL":"ATL − ACTUAL TRAFFIC LOAD"}</em></span></div>}
       {payload&&<p className="operational-matl-basis">MATL is the lowest of: MTOW − Operating Weight; MLAW + Trip Fuel − Operating Weight; or MZFW + Take-off Fuel − Operating Weight. Operating Weight = DOW + Take-off Fuel.</p>}
       {calculation.error && <p className="load-control-notice error">{calculation.error}</p>}

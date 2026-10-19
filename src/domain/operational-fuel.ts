@@ -117,16 +117,20 @@ const boundaryIndex = (points: EnvelopeBoundary["fwd"], weight: number) => {
 };
 
 export function operationalEnvelopeBoundary(values: AircraftC5Values, phase: AircraftC5Phase, fuelWeight: number, configurationCode: string | null) {
-  if (values.envelopeModes?.[phase] !== "CONDITIONAL") return envelopeBoundaryConfigured(values.envelopes[phase]) ? values.envelopes[phase] : null;
+  return operationalEnvelopeSelection(values, phase, fuelWeight, configurationCode)?.boundary ?? null;
+}
+
+export function operationalEnvelopeSelection(values: AircraftC5Values, phase: AircraftC5Phase, fuelWeight: number, configurationCode: string | null) {
+  if (values.envelopeModes?.[phase] !== "CONDITIONAL") return envelopeBoundaryConfigured(values.envelopes[phase]) ? { code: null, condition: null, boundary: values.envelopes[phase] } : null;
   const candidates = (values.conditionalEnvelopes?.[phase] ?? []).filter((item) => !item.configurationCode || item.configurationCode === configurationCode);
-  const boundary = candidates.find((item) => {
+  const selected = candidates.find((item) => {
     const conditionFuel = item.conditionBasis === "TAKE_OFF_FUEL" || item.conditionBasis === "LANDING_FUEL" ? fuelWeight : null;
     if (conditionFuel === null) return false;
     const lower = item.lowerBound === null || (item.lowerInclusive ? conditionFuel >= item.lowerBound : conditionFuel > item.lowerBound);
     const upper = item.upperBound === null || (item.upperInclusive ? conditionFuel <= item.upperBound : conditionFuel < item.upperBound);
     return lower && upper;
-  })?.boundary ?? null;
-  return envelopeBoundaryConfigured(boundary) ? boundary : null;
+  }) ?? null;
+  return selected && envelopeBoundaryConfigured(selected.boundary) ? { code: selected.code, condition: selected, boundary: selected.boundary } : null;
 }
 
 export function balancePointWithinEnvelope(point: FuelledBalancePoint, boundary: EnvelopeBoundary | null) {
