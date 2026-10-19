@@ -101,6 +101,23 @@ test("carrier-supplied A320 hold boundaries override the global aircraft-type de
 });
 test("unsupported aircraft calibration and denied view are blocked",()=>{assert.match(holdLayoutUnavailable(d2({typeCode:"320"}))!,/calibrated/);assert.match(holdLayoutUnavailable(d2({canView:false}))!,/permission/);assert.equal(buildHoldLayout(d2(),d4({canView:false})).doors.length,0)});
 test("invalid door position reports the D4 error instead of substituting a location",()=>{const snap=d4();snap.doors[0].forwardArm=45.287;snap.doors[0].aftArm=46.240;assert.throws(()=>buildHoldLayout(d2(),snap),/Door 5/)});
+test("a door with blank Start and End uses its saved Area anchor",()=>{
+  const areaHold={...hold,id:"LOWER:ALB",name:"ALB",compartments:[{id:"5",areas:[
+    {id:"51",maxWeight:700,maxVolume:3,indexPerWeightUnit:.01},
+    {id:"52",maxWeight:797,maxVolume:4.22,indexPerWeightUnit:.02},
+  ]}]};
+  const doors=d4({doors:[{holdId:"LOWER:ALB",holdType:"BLK",deckName:"Lower Deck",forwardArm:null,aftArm:null,height:null,orientation:"L",anchorType:"AREA",anchorRef:"51"}]});
+  const layout=buildHoldLayout(d2({rows:[areaHold]}),doors);
+  const anchor=layout.holds[0].subdivisions.find(segment=>segment.id==="51")!;
+  assert.equal(layout.doors[0].holdId,"LOWER:ALB");
+  assert.equal(layout.doors[0].orientation,"L");
+  assert.ok(Math.abs(layout.doors[0].x-anchor.x)<1e-8);
+  assert.ok(Math.abs(layout.doors[0].width-anchor.width)<1e-8);
+});
+test("a door with blank Start and End reports an unavailable anchor precisely",()=>{
+  const doors=d4({doors:[{...d4().doors[0],forwardArm:null,aftArm:null,anchorType:"AREA",anchorRef:"UNKNOWN"}]});
+  assert.throws(()=>buildHoldLayout(d2(),doors),/select a valid D4 Door Anchor/);
+});
 test("new saved weights and door positions are used on subsequent builds",()=>{const snap=d4();snap.doors[0].forwardArm=25.4;const layout=buildHoldLayout(d2({rows:[{...hold,maxWeight:1600}]}),snap);assert.equal(layout.holds[0].maxWeight,1600);assert.equal(layout.doors[0].width,holdLayoutX(25.4)-holdLayoutX(26.240))});
 test("A320-200 uses its own calibrated Airbus plan and datum",()=>{
   const a320Hold={...hold,name:"1",balanceCentroid:9.730,balanceFrom:7.255,balanceTo:12.205};
@@ -345,4 +362,16 @@ test("a saved door remains visible when its bulk hold boundary is not yet drawab
  const layout=buildHoldLayout(snap,doors,positions);
  assert.deepEqual(layout.holds.map(item=>item.name),["FWD"]);
  assert.deepEqual(layout.doors.map(item=>item.holdId),["LOWER:FWD","LOWER:ALB"]);
+});
+
+test("an anchored door remains valid when its source D2 Area is outside the fitted configuration",()=>{
+ const area=(id:string)=>({id,maxWeight:700,maxVolume:3,indexPerWeightUnit:.01});
+ const sourceHold={...hold,id:"LOWER:ALB",name:"ALB",compartments:[{id:"5",areas:[area("51"),area("52")]}]};
+ const effectiveHold={...sourceHold,compartments:[{id:"5",areas:[area("52")]}]};
+ const snap=d2({rows:[effectiveHold]}),source=d2({rows:[sourceHold]});
+ const doors=d4({doors:[{holdId:"LOWER:ALB",holdType:"BLK",deckName:"Lower Deck",forwardArm:null,aftArm:null,height:null,orientation:"L",anchorType:"AREA",anchorRef:"51"}]});
+ const layout=build(snap,doors,undefined,A319_LAYOUT,source);
+ assert.equal(layout.doors.length,1);
+ assert.equal(layout.doors[0].x,layout.holds[0].x);
+ assert.equal(layout.doors[0].width,layout.holds[0].width);
 });

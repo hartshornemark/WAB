@@ -1,5 +1,5 @@
 import { aircraftD2HoldId, bulkHoldIdentity, type AircraftD2Snapshot, type AircraftD2HoldRow } from "./aircraft-d2";
-import type { AircraftD4Snapshot } from "./aircraft-d4";
+import type { AircraftD4Door, AircraftD4Snapshot } from "./aircraft-d4";
 import type { AircraftD3Position, AircraftD3Snapshot } from "./aircraft-d3";
 import { aircraftD2Status } from "./aircraft-d2-status";
 import { aircraftD4Status, aircraftD4DoorComplete } from "./aircraft-d4-status";
@@ -205,6 +205,25 @@ export type HoldLayout = {
   uldArrangementSelectors: LayoutUldArrangementSelector[];
   boundaryNotes?: string[];
 };
+function anchoredDoorRange(hold:LayoutHold,anchorType:AircraftD4Door["anchorType"],anchorRef:string|null|undefined):{x:number;width:number}|null{
+  if(!anchorType||!anchorRef)return null;
+  const segments=anchorType==="ULD_POSITION"
+    ?hold.uldPositions.filter(position=>position.id===anchorRef)
+    :hold.subdivisions.filter(segment=>anchorType==="AREA"
+      ?segment.kind==="AREA"&&segment.id===anchorRef
+      :(segment.kind==="COMPARTMENT"&&segment.id===anchorRef)||segment.compartmentId===anchorRef);
+  if(!segments.length)return null;
+  const x=Math.min(...segments.map(segment=>segment.x));
+  const end=Math.max(...segments.map(segment=>segment.x+segment.width));
+  return{x,width:end-x};
+}
+function savedDoorAnchorExists(hold:AircraftD2HoldRow,door:AircraftD4Door,d3:AircraftD3Snapshot|undefined):boolean{
+  if(!door.anchorType||!door.anchorRef)return false;
+  if(door.anchorType==="COMPARTMENT")return hold.compartments.some(compartment=>compartment.id===door.anchorRef);
+  if(door.anchorType==="AREA")return hold.compartments.some(compartment=>compartment.areas.some(area=>area.id===door.anchorRef));
+  const holdId=aircraftD2HoldId(hold);
+  return Boolean(d3?.configurations.some(configuration=>configuration.holdId===holdId&&configuration.rows.some(row=>row.rowType==="POSITION"&&row.positionId===door.anchorRef)));
+}
 function automaticUldArrangementSelectors(holds:LayoutHold[]):LayoutUldArrangementSelector[]{
   return holds.flatMap(hold=>[...new Set(hold.uldPositions.map(position=>position.uldType))].flatMap(uldType=>{
     const positions=hold.uldPositions.filter(position=>position.uldType===uldType);
@@ -372,6 +391,15 @@ export function buildHoldLayout(d2: AircraftD2Snapshot, d4: AircraftD4Snapshot, 
     const holdId = aircraftD2HoldId(hold);
     const door = d4.doors.find(d => d.holdId === holdId)!;
     if (!aircraftD4DoorComplete(door)) continue;
+    if(door.forwardArm===null&&door.aftArm===null){
+      const sourceHold=sourceD2.rows.find(item=>aircraftD2HoldId(item)===holdId)??hold;
+      if(!savedDoorAnchorExists(sourceHold,door,d3))throw new Error(`Door ${hold.name}: select a valid D4 Door Anchor when Start and End are blank.`);
+      const layoutHold=holds.find(item=>aircraftD2HoldId(item)===holdId);
+      if(!layoutHold)continue;
+      const anchor=anchoredDoorRange(layoutHold,door.anchorType,door.anchorRef)??{x:layoutHold.x,width:layoutHold.width};
+      doors.push({holdId,deckCode:hold.deckCode,...anchor,orientation:door.orientation!});
+      continue;
+    }
     const doorArmOffset=aircraft.reviewDoorArmOffset??0;
     const from = door.forwardArm!+doorArmOffset, to = door.aftArm!+doorArmOffset;
     // A door provides access to its associated hold, but the opening does not
