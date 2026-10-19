@@ -40,3 +40,17 @@ test("AHM pages retain contextual dashboards as well as work options", () => {
     "/carrier/AB/aircraft/738/800/dashboard",
   );
 });
+
+test("carrier-level A2 and B1 to B4 sheets return to the carrier dashboard", () => {
+  for (const pathname of [
+    "/carrier/AB",
+    "/carrier/AB/crew-weights",
+    "/carrier/AB/passenger-weights",
+    "/carrier/AB/baggage-weights",
+  ]) {
+    const navigation = workstreamNavigation(pathname);
+    assert.ok(navigation);
+    assert.equal(navigation.carrierHome, "/carrier/AB/dashboard");
+    assert.equal(navigation.aircraftDashboard, null);
+  }
+});
