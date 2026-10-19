@@ -103,10 +103,10 @@
 }
 .topbar .account { color: #d0dcf1; }
 .topbar-workspace-navigation { display:flex; align-items:center; gap:8px; }
-.topbar-work-options,.topbar-carrier-home { color:#dbe6f7; border:1px solid rgba(145,172,217,.72); border-radius:6px; padding:6px 10px; font-size:11px; font-weight:700; letter-spacing:.45px; text-decoration:none; white-space:nowrap; }
-.topbar-work-options:hover,.topbar-carrier-home:hover { color:#fff; background:#3b66b8; }
-.topbar-dashboard { color:#fff; border:1px solid #91acd9; border-radius:7px; padding:8px 14px; font-weight:700; letter-spacing:.5px; text-decoration:none; white-space:nowrap; }
-.topbar-dashboard:hover { background:#3b66b8; }
+.topbar-work-options { color:#dbe6f7; border:1px solid rgba(145,172,217,.72); border-radius:6px; padding:6px 10px; font-size:11px; font-weight:700; letter-spacing:.45px; text-decoration:none; white-space:nowrap; }
+.topbar-work-options:hover { color:#fff; background:#3b66b8; }
+.topbar-carrier-home,.topbar-dashboard { display:inline-flex; height:38px; box-sizing:border-box; align-items:center; justify-content:center; color:#fff; border:1px solid #91acd9; border-radius:7px; padding:0 14px; font-size:13px; font-weight:700; letter-spacing:.5px; text-decoration:none; white-space:nowrap; }
+.topbar-carrier-home:hover,.topbar-dashboard:hover { background:#3b66b8; }
 .topbar .secondary {
   background: transparent;
   border-color: #91acd9;
