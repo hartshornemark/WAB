@@ -1,5 +1,6 @@
 "use client";
 import{useState,useTransition}from"react";
+import{useRouter}from"next/navigation";
 import{saveOperationalPassengerBooking}from"@/app/load-control-actions";
 import type{OperationalPassengerBooking}from"@/domain/operational-passengers";
 import{forecastPassengerAreas,type PassengerAreaCapacity}from"@/domain/passenger-area-forecast";
@@ -7,10 +8,10 @@ import{forecastPassengerAreas,type PassengerAreaCapacity}from"@/domain/passenger
 const kg=(value:number|null)=>value===null?"—":`${Math.round(value).toLocaleString()} KG`;
 const draftOf=(booking:OperationalPassengerBooking)=>Object.fromEntries(booking.classes.map(row=>[row.code,String(row.booked)]));
 export function OperationalPassengerBookingPanel({iata,flightId,initial,configurationCode,cabinAreas}:{iata:string;flightId:string;initial:OperationalPassengerBooking;configurationCode:string|null;cabinAreas:PassengerAreaCapacity[]}){
- const[saved,setSaved]=useState(initial),[draft,setDraft]=useState<Record<string,string>>(()=>draftOf(initial)),[notice,setNotice]=useState<{ok:boolean;text:string}|null>(null),[pending,start]=useTransition();
+ const[saved,setSaved]=useState(initial),[draft,setDraft]=useState<Record<string,string>>(()=>draftOf(initial)),[notice,setNotice]=useState<{ok:boolean;text:string}|null>(null),[pending,start]=useTransition(),router=useRouter();
  if(!saved.applicable)return null;
  const editable=saved.canEdit,dirty=JSON.stringify(draft)!==JSON.stringify(draftOf(saved)),forecastTotal=editable?saved.classes.reduce((sum,row)=>sum+Math.max(0,Number(draft[row.code]||0)||0),0):saved.totalBooked,areaForecast=forecastPassengerAreas(forecastTotal,cabinAreas),bookedByClass=saved.classes.filter(row=>row.booked>0).map(row=>`${row.code}${row.booked.toLocaleString()}`).join(" · ");
- const save=()=>start(async()=>{const result=await saveOperationalPassengerBooking(iata,flightId,saved.version,{classes:saved.classes.map(row=>({code:row.code,booked:Number(draft[row.code]||0)}))});if(!result.ok||!result.booking){setNotice({ok:false,text:result.message});return}setSaved(result.booking);setDraft(draftOf(result.booking));setNotice({ok:true,text:result.message})});
+ const save=()=>start(async()=>{const result=await saveOperationalPassengerBooking(iata,flightId,saved.version,{classes:saved.classes.map(row=>({code:row.code,booked:Number(draft[row.code]||0)}))});if(!result.ok||!result.booking){setNotice({ok:false,text:result.message});return}setSaved(result.booking);setDraft(draftOf(result.booking));setNotice({ok:true,text:result.message});router.refresh()});
  return <details className="passenger-booking operational-collapsible" open>
   <summary className="operational-collapsible-summary"><div><p className="eyebrow">PASSENGER PLANNING</p><h2>Booked Passengers</h2><p>Manual booking snapshot by class of service for planning before passenger-system integration.</p></div><div className="operational-summary-facts"><span><small>BOOKED</small><strong>{saved.totalBooked.toLocaleString()}</strong>{bookedByClass&&<small className="operational-summary-breakdown">{bookedByClass}</small>}</span><span><small>PLANNING WEIGHT</small><strong>{kg(saved.totalPassengerWeight)}</strong></span></div></summary>
   <div className="operational-collapsible-body">
