@@ -10,7 +10,7 @@ import {
   calculateFinalPayloadCapability,
   calculateOperationalFuelEffect,
   operationalEnvelopeConfigured,
-  operationalEnvelopeSelection,
+  operationalEnvelopeSelectionForFuel,
   type FuelledBalancePoint,
   type OperationalFuelEffect,
   type OperationalFuelPlan,
@@ -19,7 +19,7 @@ import {
 const numberOrBlank = (value: number | null) => value === null ? "" : String(value);
 const kilograms = (value: number) => `${Math.round(value).toLocaleString()} KG`;
 
-export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initial, zfw, acceptedCargoWeight, nonCargoTrafficWeight, curves, defaultTaxiFuel, maximumWeights, envelopeValues, balanceApplicability, formula, onEffectChange, onEnvelopeSelectionChange, onStatusChange }: {
+export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initial, zfw, acceptedCargoWeight, nonCargoTrafficWeight, curves, defaultTaxiFuel, maximumWeights, envelopeValues, aircraftFuelConfigurationCode, balanceApplicability, formula, onEffectChange, onEnvelopeSelectionChange, onStatusChange }: {
   iata: string;
   flightId: string;
   loadPlanEdition: number;
@@ -31,6 +31,7 @@ export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initi
   defaultTaxiFuel: number | null;
   maximumWeights: AircraftC5Values["maximumWeights"];
   envelopeValues: AircraftC5Values;
+  aircraftFuelConfigurationCode: string | null;
   balanceApplicability: AircraftC5Applicability;
   formula: AircraftC4Values;
   onEffectChange?: (effect: OperationalFuelEffect | null) => void;
@@ -52,17 +53,17 @@ export function OperationalFuelPlanning({ iata, flightId, loadPlanEdition, initi
   useEffect(() => { onEffectChange?.(effect); }, [effect, onEffectChange]);
   const checks = useMemo(() => {
     if (!effect || !curve) return [];
-    const towSelection = operationalEnvelopeSelection(envelopeValues, "tow", effect.takeOffFuel, curve.configurationCode);
+    const towSelection = operationalEnvelopeSelectionForFuel(envelopeValues, "tow", effect, aircraftFuelConfigurationCode);
     const towBoundary = towSelection?.boundary ?? null;
     const hasLawEnvelope = operationalEnvelopeConfigured(envelopeValues, "law");
-    const lawSelection = hasLawEnvelope ? operationalEnvelopeSelection(envelopeValues, "law", effect.landingFuel, curve.configurationCode) : towSelection;
+    const lawSelection = hasLawEnvelope ? operationalEnvelopeSelectionForFuel(envelopeValues, "law", effect, aircraftFuelConfigurationCode) : towSelection;
     const lawBoundary = lawSelection?.boundary ?? null;
     return [
       { label: "RAMP", point: effect.ramp, maximum: maximumWeights.mrw, envelope: true, envelopeBasis: null, envelopeCode: null, balanceRequired: false },
       { label: "TOW", point: effect.takeOff, maximum: maximumWeights.tow, envelope: balanceApplicability.tow ? balancePointWithinEnvelope(effect.takeOff, towBoundary) : true, envelopeBasis: balanceApplicability.tow ? "TOW" : null, envelopeCode: towSelection?.code??null, balanceRequired: balanceApplicability.tow },
       { label: "LAW", point: effect.landing, maximum: maximumWeights.law, envelope: balanceApplicability.law ? balancePointWithinEnvelope(effect.landing, lawBoundary) : true, envelopeBasis: balanceApplicability.law ? (hasLawEnvelope ? "LAW" : "TOW") : null, envelopeCode: lawSelection?.code??null, balanceRequired: balanceApplicability.law },
     ];
-  }, [balanceApplicability, curve, effect, envelopeValues, maximumWeights]);
+  }, [aircraftFuelConfigurationCode, balanceApplicability, curve, effect, envelopeValues, maximumWeights]);
   useEffect(()=>{onEnvelopeSelectionChange?.(Object.fromEntries(checks.filter(check=>check.envelopeCode).map(check=>[check.label.toLowerCase(),check.envelopeCode!])) as Partial<Record<"tow"|"law",string>>)},[checks,onEnvelopeSelectionChange]);
   const invalidChecks = checks.filter((check) => check.point.weight > check.maximum || (check.balanceRequired && check.envelope === false)), incompleteEnvelope = checks.some((check) => check.balanceRequired && check.envelope === null);
   const payload = useMemo(() => effect ? calculateFinalPayloadCapability({ dryOperatingWeight: zfw.weight - acceptedCargoWeight - nonCargoTrafficWeight, acceptedCargoWeight, nonCargoTrafficWeight, takeOffFuel: effect.takeOffFuel, landingFuel: effect.landingFuel, maximumWeights }) : null, [acceptedCargoWeight, effect, maximumWeights, nonCargoTrafficWeight, zfw.weight]);

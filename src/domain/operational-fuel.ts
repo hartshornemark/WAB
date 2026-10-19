@@ -133,6 +133,13 @@ export function operationalEnvelopeSelection(values: AircraftC5Values, phase: Ai
   return selected && envelopeBoundaryConfigured(selected.boundary) ? { code: selected.code, condition: selected, boundary: selected.boundary } : null;
 }
 
+export function operationalEnvelopeSelectionForFuel(values: AircraftC5Values, phase: AircraftC5Phase, fuel: { takeOffFuel: number; landingFuel: number }, configurationCode: string | null) {
+  const candidates=(values.conditionalEnvelopes?.[phase]??[]).filter(item=>!item.configurationCode||item.configurationCode===configurationCode);
+  const basis=candidates[0]?.conditionBasis;
+  const fuelWeight=basis==="LANDING_FUEL"?fuel.landingFuel:fuel.takeOffFuel;
+  return operationalEnvelopeSelection(values,phase,fuelWeight,configurationCode);
+}
+
 export function balancePointWithinEnvelope(point: FuelledBalancePoint, boundary: EnvelopeBoundary | null) {
   if (!boundary) return null;
   const fwd = boundaryIndex(boundary.fwd, point.weight), aft = boundaryIndex(boundary.aft, point.weight);
