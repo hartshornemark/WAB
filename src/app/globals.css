@@ -47,18 +47,6 @@
 .login-layout .intro .eyebrow {
   color: #b9d0fa;
 }
-.login-layout .intro-tagline {
-  margin: 0 0 28px;
-  color: #dbe6f7;
-  font-size: clamp(16px, 1.35vw, 20px);
-  font-weight: 600;
-  letter-spacing: .02em;
-}
-.login-layout .intro-tagline strong {
-  color: #b9d0fa;
-  font-weight: 800;
-  letter-spacing: .1em;
-}
 .login-layout .intro-copy > p:last-child,
 .login-layout .intro-footer {
   color: #d0dcf1;
@@ -73,6 +61,15 @@
 .login-layout .brand {
   gap: 22px;
 }
+.login-tagline {
+  color: #fff;
+  font-size: clamp(23px, 2.15vw, 32px);
+  font-weight: 750;
+  letter-spacing: .025em;
+  line-height: 1.15;
+  text-transform: none;
+  white-space: nowrap;
+}
 .login-logo {
   width: 64px;
   height: auto;
@@ -82,6 +79,10 @@
 @media (max-width: 760px) {
   .login-logo {
     width: 44px;
+  }
+  .login-tagline {
+    font-size: 18px;
+    white-space: normal;
   }
 }
 
