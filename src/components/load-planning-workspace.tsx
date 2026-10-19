@@ -23,7 +23,7 @@ const fits = (load: SolverLoad, position: SolverPosition) => load.loadType === p
 const overlap = (left: SolverPosition, right: SolverPosition) => left.occupiedBayIds.some((bay) => right.occupiedBayIds.includes(bay));
 const deckFor = (position: SolverPosition): DeckKey => /MAIN|MDECK|UPPER|(^|\W)MD(\W|$)/.test(`${position.deckCode} ${position.holdId}`.toUpperCase()) ? "MAIN" : "LOWER";
 const sameAssignments=(left:LoadPlanningAssignment[],right:LoadPlanningAssignment[])=>left.length===right.length&&left.every(item=>right.some(other=>other.loadId===item.loadId&&other.positionId===item.positionId&&(other.loadReference??"")===(item.loadReference??"")));
-const loadIdentity=(load:SolverLoad,loadReference?:string|null)=>loadReference?.trim()||(/^PLANNED_BAGGAGE:\d+$/.test(load.id)?null:load.description.split(" · ")[0]);
+const loadIdentity=(load:SolverLoad,loadReference?:string|null)=>{const saved=loadReference?.trim();if(saved)return saved;const described=load.description.split(" · ")[0]?.trim();if(!/^PLANNED_BAGGAGE:\d+$/.test(load.id))return described||null;if(!described||described===load.uldCode||/^(?:BF|BJ|BP|BY|B) BAGGAGE \d+\/\d+$/.test(described))return null;return described;};
 
 const metrics = (problem: LoadPlanningProblem, solution: LoadPlanningSolution, assignments: LoadPlanningAssignment[]): LoadPlanningSolution => {
   const positions = new Map(problem.positions.map((position) => [position.id, position])), loads = new Map(problem.loads.map((load) => [load.id, load]));
