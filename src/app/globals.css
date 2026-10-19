@@ -1007,7 +1007,8 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-board-hold>header span{grid-column:1/-1;color:#586f91;font-size:9px;font-weight:900;letter-spacing:.1em}
 .load-board-hold>header strong{font-size:14px}
 .load-board-hold>header small{color:#586f91;font-size:9px;font-weight:850}
-.load-board-hold>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));align-items:stretch;gap:8px;padding:9px}
+.load-board-hold>div{display:grid;align-items:stretch;gap:8px;padding:9px}
+.load-board-hold>.load-board-physical-grid{grid-template-rows:repeat(2,minmax(178px,auto));grid-auto-flow:column;overflow-x:auto}
 .load-board-slot{position:relative;display:flex;min-width:0;min-height:178px;flex-direction:column;gap:6px;padding:8px;border:1px dashed #91a5c2;border-radius:8px;background:#fff;transition:border-color .15s,background .15s,box-shadow .15s,opacity .15s}
 .load-board-slot>header{display:block;padding-bottom:8px;border-bottom:1px solid #d4deec}
 .load-board-slot>header strong{font-size:21px;line-height:1;white-space:nowrap}
@@ -1075,7 +1076,7 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-plan-unallocated .load-plan-card.special-load::before{background:repeating-linear-gradient(135deg,#111 0 4px,#fff 4px 8px)}
 .load-plan-unallocated .load-plan-card.dangerous::before{background:repeating-linear-gradient(135deg,#c9252d 0 4px,#fff 4px 8px)}
 @media(max-width:900px){.load-board-holds{grid-template-columns:1fr!important}.load-board-slot{min-height:190px}.load-plan-selected-actions{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){.load-board-hold>div{grid-template-columns:1fr!important}.load-plan-unallocated .load-plan-card{width:200px;min-width:200px}}
+@media(max-width:650px){.load-plan-unallocated .load-plan-card{width:200px;min-width:200px}}
 
 /* Keep section-header summaries consistent with the compact Flight Plan facts. */
 .cargo-offer-heading,.freight-acceptance-heading{align-items:center}
