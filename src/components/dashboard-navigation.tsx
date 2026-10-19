@@ -7,5 +7,6 @@ import { workstreamNavigation } from "@/domain/workstream-navigation";
 export function DashboardNavigation() {
   const hrefs = workstreamNavigation(usePathname());
   if (!hrefs) return null;
-  return <nav className="topbar-workspace-navigation" aria-label="Workspace navigation"><Link className="topbar-work-options" href={hrefs.workOptions}>WORK OPTIONS</Link>{hrefs.carrierHome&&<Link className="topbar-carrier-home" href={hrefs.carrierHome}>DASHBOARD</Link>}{hrefs.aircraftDashboard&&<Link className="topbar-dashboard" href={hrefs.aircraftDashboard}>AIRCRAFT DASHBOARD</Link>}</nav>;
+  const dashboard=hrefs.aircraftDashboard??hrefs.carrierHome;
+  return <nav className="topbar-workspace-navigation" aria-label="Workspace navigation"><Link className="topbar-work-options" href={hrefs.workOptions}>WORK OPTIONS</Link>{dashboard&&<Link className="topbar-dashboard" href={dashboard}>DASHBOARD</Link>}</nav>;
 }
