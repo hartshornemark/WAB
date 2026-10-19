@@ -91,6 +91,7 @@ export type Database = {
       activate_aircraft_layout:{Args:{p_id:string};Returns:undefined};
       get_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
       save_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
+      save_carrier_ulds_with_baggage_default:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
       save_carrier_uld_inventory_applicability:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_records:boolean};Returns:Json};
       save_carrier_uld_applicability:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_utilises:boolean};Returns:Json};
       get_carrier_densities:{Args:{p_iata:string};Returns:Json};

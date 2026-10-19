@@ -76,8 +76,9 @@ export function mixedBaggageContents(classes:OperationalBaggageClass[],uldPieceT
 }
 
 export function baggageContentsForUldCount(classes:OperationalBaggageClass[],uldCount:number,uldCode:string|null,pieceCapacity:number|null){
- const totalPieces=classes.reduce((sum,row)=>sum+Math.max(0,row.plannedPieces),0),count=Math.max(0,Math.floor(uldCount)),capacity=pieceCapacity&&pieceCapacity>0?pieceCapacity:null;let remaining=totalPieces;
- const targets=capacity?Array.from({length:count},()=>{const pieces=Math.min(capacity,remaining);remaining-=pieces;return pieces}):split(totalPieces,count);
+ const active=classes.filter(row=>row.plannedPieces>0),totalPieces=active.reduce((sum,row)=>sum+Math.max(0,row.plannedPieces),0),count=Math.max(0,Math.floor(uldCount)),capacity=pieceCapacity&&pieceCapacity>0?pieceCapacity:null;
+ const separated=capacity?active.flatMap(row=>{let remaining=row.plannedPieces;return Array.from({length:Math.ceil(remaining/capacity)},()=>{const pieces=Math.min(capacity,remaining);remaining-=pieces;return pieces})}):split(totalPieces,count);
+ const targets=capacity?Array.from({length:count},(_,index)=>separated[index]??0):separated;
  return mixedBaggageContents(classes,targets,uldCode);
 }
 

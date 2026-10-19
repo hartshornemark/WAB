@@ -15,15 +15,28 @@ test("baggage commodities default across four passenger cabins",()=>{
  assert.equal(defaultBaggageCommodityCode("R","Regional"),"B");
 });
 
-test("one ULD can retain several individually expressed baggage commodities",()=>{
+test("the proposed plan keeps each baggage commodity in its own ULD",()=>{
  const rows=baggageContentsForUldCount(classes,3,"AKE",47);
  assert.deepEqual(rows.map(row=>[row.kind,row.pieces,row.commodities.map(item=>`${item.commodityCode}/${item.pieces}`)]),[
-  ["ULD",47,["BJ/16","BY/31"]],
+  ["ULD",16,["BJ/16"]],
   ["ULD",47,["BY/47"]],
   ["ULD",47,["BY/47"]],
-  ["BULK",10,["BY/10"]],
+  ["BULK",41,["BY/41"]],
  ]);
  assert.equal(rows.reduce((sum,row)=>sum+row.netWeight,0),2265);
+});
+
+test("PE901 proposes one BJ DPE and seven BY DPEs at the carrier limit",()=>{
+ const rows=baggageContentsForUldCount([
+  {...classes[0],plannedPieces:10,plannedWeight:200},
+  {...classes[1],plannedPieces:195,plannedWeight:3900},
+ ],8,"DPE",30);
+ assert.deepEqual(rows.map(row=>[row.kind,row.pieces,row.commodities.map(item=>`${item.commodityCode}/${item.pieces}`)]),[
+  ["ULD",10,["BJ/10"]],
+  ["ULD",30,["BY/30"]],["ULD",30,["BY/30"]],["ULD",30,["BY/30"]],
+  ["ULD",30,["BY/30"]],["ULD",30,["BY/30"]],["ULD",30,["BY/30"]],
+  ["ULD",15,["BY/15"]],
+ ]);
 });
 
 test("manual ULD totals redistribute class baggage and leave one mixed Bulk balance",()=>{

@@ -1,5 +1,5 @@
 export type UldInventoryRange={id:string|null;carrierCode:string;serialStart:string;serialEnd:string};
-export type UldRow={isCustom:boolean;code:string;type:string;isDefault:boolean;tare:string;maximum:string;volume:string;remarks:string;inventory:UldInventoryRange[]};
+export type UldRow={isCustom:boolean;code:string;type:string;isDefault:boolean;isBaggageDefault:boolean;baggageMaxPieces:string;tare:string;maximum:string;volume:string;remarks:string;inventory:UldInventoryRange[]};
 export type MasterUld={code:string;type:string;tare:string;maximum:string;volume:string;mainDeckOnly:boolean};
 export type UldSnapshot={canView:boolean;canEdit:boolean;revision:string;weightUnit:string;volumeUnit:string;utilisesUlds:boolean;recordsInventory:boolean;aircraftType:string;aircraftSubtype:string;rows:UldRow[];master:MasterUld[]};
 export class UldInvalid extends Error {}
@@ -13,13 +13,14 @@ export function uldEditRow(row:UldRow):UldRow{return {...row,tare:uldDisplayValu
 export function adoptUld(master:MasterUld,current:UldSnapshot,rows:UldRow[]):UldRow{
  const convert=(s:string,factor:number,places:number)=>s?String(Number((Number(s)*factor).toFixed(places))):"";
  const wf=current.weightUnit==="LB"?1/0.45359237:1,vf=current.volumeUnit==="ft3"?1/0.028316846592:1;
- return {isCustom:false,code:master.code,type:master.type,isDefault:!rows.some(r=>r.type===master.type),tare:convert(master.tare,wf,0),maximum:convert(master.maximum,wf,0),volume:convert(master.volume,vf,2),remarks:"",inventory:[]};
+ return {isCustom:false,code:master.code,type:master.type,isDefault:!rows.some(r=>r.type===master.type),isBaggageDefault:rows.length===0,baggageMaxPieces:"40",tare:convert(master.tare,wf,0),maximum:convert(master.maximum,wf,0),volume:convert(master.volume,vf,2),remarks:"",inventory:[]};
 }
 export function setMasterUldSelected(master:MasterUld,current:UldSnapshot,rows:UldRow[],selected:boolean):UldRow[]{
  const existing=rows.find(row=>row.code===master.code);
  if(selected)return existing?rows:[...rows,adoptUld(master,current,rows)];
  if(!existing||existing.isCustom)return rows;
  const remaining=rows.filter(row=>row.code!==master.code);
+ if(existing.isBaggageDefault&&remaining.length){remaining[0]={...remaining[0],isBaggageDefault:true};}
  if(!existing.isDefault)return remaining;
  const replacement=remaining.find(row=>row.type===existing.type);
  return replacement?remaining.map(row=>row.code===replacement.code?{...row,isDefault:true}:row):remaining;
@@ -33,7 +34,8 @@ export function validateUlds(input:unknown,current:UldSnapshot):UldRow[]{
  const master=current.master.find(m=>m.code===row.code);if(!row.isCustom&&!master)throw new UldInvalid("Choose a ULD from the master list, or add a Carrier ULD.");
  const type=row.isCustom?row.type:master!.type;
  if(seen.has(row.code))throw new UldInvalid("Each ULD code may appear only once.");seen.add(row.code);
- if(typeof row.isDefault!=="boolean"||typeof row.remarks!=="string"||row.remarks.length>2000)throw new UldInvalid("Check the default selection and keep remarks within 2,000 characters.");
+ if(typeof row.isDefault!=="boolean"||typeof row.isBaggageDefault!=="boolean"||typeof row.baggageMaxPieces!=="string"||typeof row.remarks!=="string"||row.remarks.length>2000)throw new UldInvalid("Check the default selections and keep remarks within 2,000 characters.");
+ if(row.isBaggageDefault&&!/^\d{1,3}$/.test(row.baggageMaxPieces)||row.isBaggageDefault&&Number(row.baggageMaxPieces)<1)throw new UldInvalid("Enter a Default Baggage ULD planning limit of 1 to 999 pieces.");
  if(!Array.isArray(row.inventory)||row.inventory.length>100)throw new UldInvalid("Keep no more than 100 ULD inventory ranges for each ULD Code.");
  const inventoryKeys=new Set<string>();
  const inventory=row.inventory.map(range=>{
@@ -51,6 +53,7 @@ export function validateUlds(input:unknown,current:UldSnapshot):UldRow[]{
  return {...row,type,inventory};
  });
  if([...defaults.values()].some(n=>n!==1))throw new UldInvalid("Choose exactly one Default for each adopted ULD Type.");
+ if(rows.length&&rows.filter(row=>row.isBaggageDefault).length!==1)throw new UldInvalid("Choose exactly one Default Baggage ULD for this aircraft.");
  return rows;
 }
 
@@ -58,6 +61,6 @@ export function customUld(code:string,type:string,rows:UldRow[]):UldRow{
  code=code.trim().toUpperCase();type=type.trim().toUpperCase();
  if(!/^[A-Z0-9]{3}$/.test(code)||!/^[A-Z0-9][A-Z0-9-]{0,5}$/.test(type))throw new UldInvalid("Enter a three-character ULD Code and a ULD Type of one to six letters, numbers or hyphens.");
  if(rows.some(r=>r.code===code))throw new UldInvalid("This ULD Code has already been added.");
- return {isCustom:true,code,type,isDefault:!rows.some(r=>r.type===type),tare:"",maximum:"",volume:"",remarks:"",inventory:[]};
+ return {isCustom:true,code,type,isDefault:!rows.some(r=>r.type===type),isBaggageDefault:rows.length===0,baggageMaxPieces:"40",tare:"",maximum:"",volume:"",remarks:"",inventory:[]};
 }
 export function newInventoryRange():UldInventoryRange{return {id:null,carrierCode:"",serialStart:"",serialEnd:""};}
