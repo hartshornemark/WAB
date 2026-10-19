@@ -66,7 +66,7 @@ export async function saveManualScheduleLeg(iata:string,importId:string,values:u
 }
 
 export async function saveManualScheduleItinerary(iata:string,importId:string,values:unknown):Promise<ScheduleActionState>{
-  try{const result=await(await flightScheduleServices()).saveManualItinerary(iata,importId,values);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:`Manual itinerary saved with ${result.scheduleLegIds.length} segment${result.scheduleLegIds.length===1?"":"s"}. You can add another flight or publish the edition.`,importId:result.importId,status:result.status,legs:result.scheduleLegIds.length}}
+  try{const result=await(await flightScheduleServices()).saveManualItinerary(iata,importId,values);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:`Saved ${result.scheduleLegIds.length} itinerary segment${result.scheduleLegIds.length===1?"":"s"}. The flight now appears in Schedule Editions above and is ready for review or publication.`,importId:result.importId,status:result.status,legs:result.scheduleLegIds.length}}
   catch(error){console.error("[Manual schedule itinerary]",error);return{ok:false,message:message(error)}}
 }
 
