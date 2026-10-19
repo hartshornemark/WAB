@@ -162,11 +162,11 @@ function PrintLoadBoard({deck,holdGroups,rows,volumeUnit}:{deck:DeckKey;holdGrou
    <header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{visibleSlots.length} POS</small></header>
    <div className="load-plan-print-physical-grid" style={{gridTemplateColumns:`repeat(${physicalGrid.columns}, minmax(0, 1fr))`}}>{visibleSlots.map(slot=>{
     const slotIds=new Set(slot.positions.map(position=>position.id)),slotRows=rows.filter(row=>slotIds.has(row.assignment.positionId)),remaining=bulkRemaining(slot,slotRows.map(row=>row.load!),volumeUnit),bulk=slot.positions[0].loadType==="BULK",maximumWeight=bulk?slot.positions.reduce((sum,position)=>sum+position.maximumWeightKg,0):Math.max(...slot.positions.map(position=>position.maximumWeightKg)),maximumVolume=slot.positions.every(position=>position.maximumVolumeLitres!==null)?bulk?slot.positions.reduce((sum,position)=>sum+(position.maximumVolumeLitres??0),0):Math.max(...slot.positions.map(position=>position.maximumVolumeLitres??0)):null;
-    const door=/\s*\(DOOR\)$/i.test(slot.locationRef),orientation=slot.positions.find(position=>position.doorOrientation)?.doorOrientation;
+    const door=/\s*\(DOOR\)$/i.test(slot.locationRef);
     return <article className={`load-plan-print-slot ${bulk?"bulk":"uld"} ${door?"door-position":""}`} style={physicalGrid.styles.get(slot.key)} key={slot.key}>
      <header><strong>{slot.locationRef.replace(/\s*\(DOOR\)$/i,"")}</strong><span>MX {Math.round(maximumWeight)} KG{maximumVolume!==null?` · ${formatVolume(maximumVolume,volumeUnit)}`:""}</span></header>
      <div className="load-plan-print-loads">{slotRows.length?slotRows.map(row=><PrintLoadCard key={row.load!.id} load={row.load!} loadReference={row.assignment.loadReference} volumeUnit={volumeUnit}/>):<span className="load-plan-print-empty">NO FIT</span>}</div>
-     {door&&<small className="load-plan-print-door">DOOR{orientation?` · ${orientation==="R"?"RIGHT":orientation==="L"?"LEFT":"CENTRE"}`:""}</small>}
+     {door&&<small className="load-plan-print-door">DOOR</small>}
      {remaining&&<small className="load-plan-print-remaining">{remaining}</small>}
     </article>
    })}</div>
