@@ -137,10 +137,10 @@ function UnavailableDocumentCentre({edition,adjusted}:{edition:number;adjusted:b
 }
 
 function LoadBoard({deck,holdGroups,rows,loads,selectedLoadId,volumeUnit,onSelect,onMove}:{deck:DeckKey;holdGroups:[string,GraphicSlot[]][];rows:AssignmentRow[];loads:Map<string,SolverLoad>;selectedLoadId:string|null;volumeUnit:"FT3"|"M3";onSelect:(loadId:string)=>void;onMove:(loadId:string,slot:GraphicSlot)=>void}){
- const selected=selectedLoadId?loads.get(selectedLoadId):undefined;
+ const selected=selectedLoadId?loads.get(selectedLoadId):undefined,activeHolds=holdGroups.map(([holdId,holdSlots])=>{const visibleSlots=activeGraphicSlots(holdSlots,rows,selected);return{holdId,holdSlots,visibleSlots,physicalGrid:physicalSlotGrid(visibleSlots)}}),maximumColumns=Math.max(1,...activeHolds.map(hold=>hold.physicalGrid.columns));
  return <div className={`load-board ${deck.toLowerCase()}-deck`}>
   <div className="load-board-direction"><span>TAIL</span><b>NOSE TO TAIL · RIGHT TO LEFT</b><span>NOSE</span></div>
-  <div className="load-board-holds">{holdGroups.map(([holdId,holdSlots])=>{const visibleSlots=activeGraphicSlots(holdSlots,rows,selected),physicalGrid=physicalSlotGrid(visibleSlots);return <section className="load-board-hold" key={holdId}><header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{visibleSlots.length} ACTIVE POSITIONS · {new Set(holdSlots.flatMap(slot=>slot.positions.flatMap(position=>position.occupiedBayIds))).size} PHYSICAL BAYS</small></header><div className="load-board-physical-grid" style={{gridTemplateColumns:`repeat(${physicalGrid.columns}, var(--load-bay-width))`}}>{visibleSlots.map(slot=>{
+  <div className="load-board-holds">{activeHolds.map(({holdId,holdSlots,visibleSlots,physicalGrid})=><section className="load-board-hold" key={holdId}><header><strong>{loadBoardHoldName(deck,holdId)}</strong><small>{visibleSlots.length} ACTIVE POSITIONS · {new Set(holdSlots.flatMap(slot=>slot.positions.flatMap(position=>position.occupiedBayIds))).size} PHYSICAL BAYS</small></header><div className="load-board-physical-grid" style={{gridTemplateColumns:`repeat(${physicalGrid.columns}, minmax(0, calc(${100/maximumColumns}% - ${(maximumColumns-1)*8/maximumColumns}px)))`}}>{visibleSlots.map(slot=>{
    const slotIds=new Set(slot.positions.map(position=>position.id)),slotRows=rows.filter(row=>slotIds.has(row.assignment.positionId)),canPlace=Boolean(selected&&slot.positions.some(position=>fits(selected,position))),selectedHere=Boolean(selectedLoadId&&slotRows.some(row=>row.load!.id===selectedLoadId)),remaining=bulkRemaining(slot,slotRows.map(row=>row.load!)),bulk=slot.positions[0].loadType==="BULK",maximumWeight=bulk?slot.positions.reduce((sum,position)=>sum+position.maximumWeightKg,0):Math.max(...slot.positions.map(position=>position.maximumWeightKg)),maximumVolume=slot.positions.every(position=>position.maximumVolumeLitres!==null)?bulk?slot.positions.reduce((sum,position)=>sum+(position.maximumVolumeLitres??0),0):Math.max(...slot.positions.map(position=>position.maximumVolumeLitres??0)):null,swap=Boolean(selected&&!selectedHere&&canPlace&&slotRows.length===1&&selected.loadType==="ULD");
    return <article className={`load-board-slot ${slotRows.length?"is-loaded":"is-empty"} ${selectedLoadId?(canPlace?"can-drop":"blocked"):""} ${selectedHere?"selected-source":""}`} style={physicalGrid.styles.get(slot.key)} key={slot.key} onDragOver={event=>{event.preventDefault();event.dataTransfer.dropEffect=canPlace?"move":"none"}} onDrop={event=>{event.preventDefault();const loadId=event.dataTransfer.getData("text/plain");if(loadId)onMove(loadId,slot)}}>
     <header><strong>{slot.locationRef}</strong></header>
@@ -150,7 +150,7 @@ function LoadBoard({deck,holdGroups,rows,loads,selectedLoadId,volumeUnit,onSelec
     {selected&&!selectedHere&&canPlace&&<button type="button" className="load-board-place" onClick={()=>onMove(selected.id,slot)}>{swap?"SWAP HERE":"PLACE HERE"}</button>}
     {selected&&!selectedHere&&!canPlace&&<span className="load-board-blocked">NOT COMPATIBLE</span>}
    </article>
-  })}</div></section>})}</div>
+  })}</div></section>)}</div>
  </div>
 }
 
