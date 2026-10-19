@@ -47,6 +47,18 @@
 .login-layout .intro .eyebrow {
   color: #b9d0fa;
 }
+.login-layout .intro-tagline {
+  margin: 0 0 28px;
+  color: #dbe6f7;
+  font-size: clamp(16px, 1.35vw, 20px);
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.login-layout .intro-tagline strong {
+  color: #b9d0fa;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
 .login-layout .intro-copy > p:last-child,
 .login-layout .intro-footer {
   color: #d0dcf1;
