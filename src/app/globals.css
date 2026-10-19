@@ -1014,6 +1014,8 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-board-slot>header strong{font-size:21px;line-height:1;white-space:nowrap}
 .load-board-slot-limits{display:flex;justify-content:space-between;gap:8px;color:#5b6f8e;font-size:9px;font-weight:850}.load-board-slot-limits span{min-width:0;white-space:nowrap}
 .load-board-slot-loads{display:grid;gap:7px;flex:1;align-content:start}
+.load-board-slot-loads:has(>.load-plan-card.uld:only-child){display:flex;align-items:stretch}
+.load-board-slot-loads>.load-plan-card.uld:only-child{min-height:100%;flex:1}
 .load-board-empty{display:grid;min-height:112px;place-items:center;color:#7f91aa;font-size:10px;font-weight:900;letter-spacing:.08em;text-align:center}
 .load-board-slot.can-drop{border-color:#2d8b57;background:#edf9f1;box-shadow:inset 0 0 0 2px #2d8b5726}
 .load-board-slot.blocked{opacity:.48;background:#eef1f5}
