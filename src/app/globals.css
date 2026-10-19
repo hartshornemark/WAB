@@ -1027,7 +1027,7 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-board-slot .load-plan-card{display:flex;min-height:92px;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;padding:8px 7px;border:1px solid #3069a8;border-radius:9px;background:#fff;white-space:normal}
 .load-board-slot .load-plan-card-unload{width:100%;color:#111;font-size:15px;line-height:1;text-align:center}
 .load-board-slot .load-plan-card-commodity{display:grid;flex:1;place-items:center;color:#111;font-size:27px;font-weight:950;line-height:1}
-.load-board-slot .load-plan-card-identity{display:none}
+.load-board-slot .load-plan-card-identity{display:block;color:#4f5968;font-size:7px;font-weight:900;line-height:1;text-align:center}
 .load-board-slot .load-plan-card-weight,.load-board-slot .load-plan-card-pieces{display:block;color:#4f5968;font-size:9px;font-weight:900;text-align:center}
 .load-board-slot .load-plan-card :is(.load-plan-card-unload,.load-plan-card-identity,.load-plan-card-weight,.load-plan-card-pieces){max-width:100%;overflow:hidden;overflow-wrap:normal;text-overflow:ellipsis;white-space:nowrap;word-break:normal}
 .load-board-slot .load-plan-card.uld .load-plan-card-special{display:none}
@@ -1047,19 +1047,21 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-board-slot .load-plan-card.bulk .load-plan-card-volume{grid-column:1;grid-row:4;align-self:end;justify-self:center;font-size:10px;font-weight:850;text-align:center}
 .load-board-slot .load-plan-card.empty-uld .empty-uld-mark{font-size:38px}
 .load-board.main-deck .load-board-slot .load-plan-card.uld{min-height:86px;padding-right:5px;padding-left:5px;gap:2px}
-.load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:9px 13px minmax(23px,1fr) 9px;align-items:center;justify-items:stretch;gap:0;padding:0 5px 4px}
+.load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:9px 13px minmax(23px,1fr) 9px 9px;align-items:center;justify-items:stretch;gap:0;padding:0 5px 4px}
 .load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-unload{grid-row:2}
 .load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-commodity{grid-row:3}
-.load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-badge-special{grid-row:4;align-self:end;margin:0}
+.load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-identity{grid-row:4;align-self:center}
+.load-board.main-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-badge-special{grid-row:5;align-self:end;margin:0}
 .load-board.main-deck .load-board-slot .load-plan-card-unload{overflow:visible;font-size:11px;letter-spacing:-.02em;text-overflow:clip}
 .load-board.main-deck .load-board-slot .load-plan-card-commodity{font-size:23px}
 .load-board.main-deck .load-board-slot .load-plan-card-weight,.load-board.main-deck .load-board-slot .load-plan-card-pieces{display:none}
 .load-board.main-deck .load-board-slot .load-plan-card-badge-special{overflow:visible;font-size:6.5px;letter-spacing:-.02em;text-overflow:clip}
-.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:9px 13px minmax(23px,1fr) 9px 9px;align-items:center;justify-items:stretch;gap:0;padding:0 5px 4px}
+.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:9px 13px minmax(23px,1fr) 9px 9px 9px;align-items:center;justify-items:stretch;gap:0;padding:0 5px 4px}
 .load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-unload{grid-row:2}
 .load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-commodity{grid-row:3}
-.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-weight,.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-pieces{grid-row:4}
-.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-badge-special{grid-row:5;align-self:end;margin:0}
+.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-identity{grid-row:4;align-self:center}
+.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-weight,.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-pieces{grid-row:5}
+.load-board.lower-deck .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-badge-special{grid-row:6;align-self:end;margin:0}
 .load-board.lower-deck .load-board-slot .load-plan-card.bulk{padding-top:18px;padding-left:7px}
 .load-board .load-board-slot .load-plan-card.uld:not(.empty-uld) .load-plan-card-unload{justify-self:center;width:100%;text-align:center}
 .load-board-remaining{color:#526887;font-size:8px;font-weight:850}
