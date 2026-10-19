@@ -157,6 +157,7 @@ export type Database = {
       create_manual_schedule_revision:{Args:{p_iata:string;p_source_import_id:string};Returns:string};
       save_manual_schedule_leg:{Args:{p_iata:string;p_import_id:string;p_schedule_leg_id:string|null;p_values:Json};Returns:Json};
       save_manual_schedule_itinerary:{Args:{p_iata:string;p_import_id:string;p_values:Json};Returns:Json};
+      change_manual_schedule_series:{Args:{p_iata:string;p_import_id:string;p_schedule_leg_id:string;p_selection_start:string;p_selection_end:string;p_operating_days:string;p_action:string;p_values:Json|null};Returns:Json};
       get_master_airport_configuration:{Args:Record<string,never>;Returns:Json};
       save_master_airport:{Args:{p_original_iata:string|null;p_values:Json};Returns:Json};
       get_flight_schedule_edition:{Args:{p_iata:string;p_import_id:string};Returns:Json};

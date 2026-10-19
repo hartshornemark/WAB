@@ -19,6 +19,7 @@ export type ScheduleEditionLeg={scheduleLegId:string;flightNumber:string;operati
 export type FlightScheduleEdition={importId:string;name:string;sourceFormat:string;status:string;seasonCode:string|null;coverageStart:string|null;coverageEnd:string|null;recordCount:number;legCount:number;rejectedCount:number;canEdit:boolean;canDelete:boolean;canReviewEquipment:boolean;equipmentReviewComplete:boolean;legs:ScheduleEditionLeg[]};
 export type SsimEquipmentReviewInput={aircraftType:string;aircraftSubtype:string;aircraftConfiguration:string};
 export type ManualScheduleItineraryResult={importId:string;scheduleLegIds:string[];status:string};
+export type ScheduleSeriesChangeInput={selectionStart:string;selectionEnd:string;operatingDays:string;action:"AMEND"|"CANCEL";values:ManualScheduleLegInput|null};
 
 export type FlightScheduleStageResult={
   importId:string;status:string;records:number;accepted:number;rejected:number;normalizedLegs:number;
@@ -39,6 +40,7 @@ export interface FlightScheduleRepository{
   createManual(iata:string,name:string,seasonCode:string|null):Promise<string>;
   saveManualLeg(iata:string,importId:string,scheduleLegId:string|null,values:ManualScheduleLegInput):Promise<{importId:string;scheduleLegId:string;status:string}>;
   saveManualItinerary(iata:string,importId:string,values:ManualScheduleLegInput[]):Promise<ManualScheduleItineraryResult>;
+  changeManualSeries(iata:string,importId:string,scheduleLegId:string,values:ScheduleSeriesChangeInput):Promise<FlightScheduleEdition>;
   edition(iata:string,importId:string):Promise<FlightScheduleEdition>;
   deleteManualLeg(iata:string,importId:string,scheduleLegId:string):Promise<FlightScheduleEdition>;
   deleteEdition(iata:string,importId:string):Promise<void>;

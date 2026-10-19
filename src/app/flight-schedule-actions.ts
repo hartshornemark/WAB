@@ -70,6 +70,11 @@ export async function saveManualScheduleItinerary(iata:string,importId:string,va
   catch(error){console.error("[Manual schedule itinerary]",error);return{ok:false,message:message(error)}}
 }
 
+export async function changeManualScheduleSeries(iata:string,importId:string,scheduleLegId:string,values:unknown):Promise<ScheduleActionState>{
+  try{const result=await(await flightScheduleServices()).changeManualSeries(iata,importId,scheduleLegId,values);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"The selected operations were separated from the original series and the schedule revision was updated.",importId:result.importId,status:result.status,legs:result.legCount}}
+  catch(error){console.error("[Manual schedule series change]",error);return{ok:false,message:message(error)}}
+}
+
 export async function deleteManualScheduleLeg(iata:string,importId:string,scheduleLegId:string):Promise<ScheduleActionState>{
   try{await(await flightScheduleServices()).deleteManualLeg(iata,importId,scheduleLegId);revalidatePath(`/carrier/${iata}/flight-schedules`);return{ok:true,message:"Manual flight leg deleted.",importId}}
   catch(error){console.error("[Manual schedule leg deletion]",error);return{ok:false,message:message(error)}}
