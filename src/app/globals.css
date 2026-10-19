@@ -1011,7 +1011,8 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-board-hold>.load-board-physical-grid{grid-template-rows:repeat(2,minmax(178px,auto));grid-auto-flow:column;justify-content:start;overflow:hidden}
 .load-board-slot{position:relative;display:flex;min-width:0;min-height:178px;flex-direction:column;gap:6px;padding:8px;border:1px dashed #91a5c2;border-radius:8px;background:#fff;transition:border-color .15s,background .15s,box-shadow .15s,opacity .15s}
 .load-board-slot>header{display:block;padding-bottom:8px;border-bottom:1px solid #d4deec}
-.load-board-slot>header strong{font-size:21px;line-height:1;white-space:nowrap}
+.load-board-slot>header strong{display:flex;min-width:0;align-items:center;gap:5px;font-size:21px;line-height:1;white-space:nowrap}
+.load-position-door{display:inline-block;min-width:0;padding:3px 4px;border-radius:4px;background:#e7eef9;color:#405b82;font-family:"Arial Narrow",Arial,sans-serif;font-size:9px;font-weight:900;letter-spacing:.04em;line-height:1}
 .load-board-slot-limits{display:flex;justify-content:space-between;gap:8px;color:#5b6f8e;font-size:9px;font-weight:850}.load-board-slot-limits span{min-width:0;white-space:nowrap}
 .load-board-slot-loads{display:grid;gap:7px;flex:1;align-content:start}
 .load-board-slot-loads:has(>.load-plan-card.uld:only-child){display:flex;align-items:stretch}
