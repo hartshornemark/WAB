@@ -1,4 +1,4 @@
-const contactAddress = "administrator@waqiqa.com";
+const contactAddress = "administrator@wabiqa.com";
 
 export function ContactUsLink({ className = "" }: { className?: string }) {
   return <a className={`contact-us-link${className ? ` ${className}` : ""}`} href={`mailto:${contactAddress}`}>
