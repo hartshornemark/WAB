@@ -4,8 +4,8 @@ import { signIn } from "@/app/actions";
 export function SignInForm() {
   const [state, action, pending] = useActionState(signIn, { error: "" });
   return <form action={action} className="sign-in-form">
-    <label htmlFor="email">Email</label>
-    <input id="email" name="email" type="email" autoComplete="username" required maxLength={254} placeholder="you@organisation.com" />
+    <label htmlFor="email">User or email</label>
+    <input id="email" name="email" type="text" autoComplete="username" required maxLength={254} placeholder="User name or email address" />
     <label htmlFor="password">Password</label>
     <input id="password" name="password" type="password" autoComplete="current-password" required maxLength={1024} />
     <div role="status" aria-live="polite" className="form-message">{state.error}</div>

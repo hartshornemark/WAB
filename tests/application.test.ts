@@ -53,4 +53,6 @@ test("invalid credentials input is rejected before authentication; password is p
   assert.equal(received.length, 0);
   await app.signIn("  operator@example.test  ", " password ");
   assert.deepEqual(received, ["operator@example.test", " password "]);
+  await app.signIn("observer", "observer");
+  assert.deepEqual(received, ["observer@wabiqa.com", "observer"]);
 });

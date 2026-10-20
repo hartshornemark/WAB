@@ -3,6 +3,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {services} from "@/composition/services";
 import {WorkspaceShell} from "@/components/workspace-shell";
+import {ContactUsLink} from "@/components/contact-us-link";
 
 const options=[
   {title:"Airport Configuration",description:"Review and maintain the airport reference data used throughout the solution.",icon:"/work-options/airports.png",href:"/admin/airports",direct:true},
@@ -16,7 +17,7 @@ export default async function WorkPage(){
   const user=await(await services()).currentUser();
   if(!user)redirect("/login");
   return <WorkspaceShell user={user}>
-    <section className="work-option-heading"><p className="eyebrow">YOUR WORKSPACE</p><h1>What would you like to work on?</h1><p>Select an operational area to continue.</p></section>
+    <section className="work-option-introduction"><div className="work-option-heading"><p className="eyebrow">YOUR WORKSPACE</p><h1>What would you like to work on?</h1><p>Select an operational area to continue.</p></div><ContactUsLink /></section>
     <div className="work-option-grid">{options.map(option=><Link className="work-option-card" href={option.href} key={option.title}>
       <span className="work-option-icon"><Image src={option.icon} alt="" width={128} height={128} unoptimized/></span>
       <span className="work-option-copy"><span className="work-option-access">{option.direct?"OPEN WORKSPACE":"SELECT CARRIER"}</span><strong>{option.title}</strong><span>{option.description}</span></span>

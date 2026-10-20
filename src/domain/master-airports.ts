@@ -1,6 +1,6 @@
 export type MasterAirport={iata:string;icao:string|null;name:string;city:string|null;countryCode:string|null;timeZone:string;active:boolean;updatedAt:string};
 export type MasterAirportInput=Omit<MasterAirport,"updatedAt">;
-export type MasterAirportConfiguration={airports:MasterAirport[];timeZones:string[]};
+export type MasterAirportConfiguration={airports:MasterAirport[];timeZones:string[];canEdit:boolean};
 export type MasterAirportField="iata"|"icao"|"name"|"city"|"countryCode"|"timeZone";
 export class MasterAirportDenied extends Error{}
 export class MasterAirportInvalid extends Error{constructor(public field:MasterAirportField,message:string){super(message)}}

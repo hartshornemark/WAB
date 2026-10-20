@@ -1,4 +1,4 @@
-export interface AuthenticatedUser { id: string; email: string | null; displayName?: string | null }
+export interface AuthenticatedUser { id: string; email: string | null; displayName?: string | null; readOnly?: boolean }
 export interface Carrier { iata: string; name: string; icao: string; logoUrl?: string | null }
 export class AuthenticationRequired extends Error {}
 export class CarrierUnavailable extends Error {}

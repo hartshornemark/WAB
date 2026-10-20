@@ -106,6 +106,7 @@ export type Database = {
       get_carrier_commodity_codes: { Args: { p_iata: string }; Returns: Json };
       save_carrier_commodity_codes: { Args: { p_iata: string; p_revision: string; p_rows: Json }; Returns: Json };
       current_display_name: { Args: Record<string, never>; Returns: string | null };
+      current_access_mode: { Args: Record<string, never>; Returns: "READ_ONLY" | "STANDARD" };
       can_create_carrier:{Args:Record<string,never>;Returns:boolean};
       create_carrier:{Args:{p_iata:string;p_name:string;p_icao:string};Returns:Json};
       get_carrier_details: { Args: { p_iata: string }; Returns: Json };

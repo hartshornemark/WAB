@@ -14,7 +14,7 @@ test("auth adapter rejects anonymous identities and distinguishes outages", asyn
   assert.equal(await createAuthAdapter(authClient({}, { name: "AuthSessionMissingError" })).currentUser(), null);
   assert.equal(await createAuthAdapter(authClient({}, { status: 401 })).currentUser(), null);
   await assert.rejects(createAuthAdapter(authClient({}, { status: 503 })).currentUser(), DataUnavailable);
-  assert.deepEqual(await createAuthAdapter(authClient({ user: { id: "1", email: "a@b.test" } })).currentUser(), { id: "1", email: "a@b.test", displayName: null });
+  assert.deepEqual(await createAuthAdapter(authClient({ user: { id: "1", email: "a@b.test" } })).currentUser(), { id: "1", email: "a@b.test", displayName: null, readOnly: false });
 });
 test("sign in and sign out use auth adapter and never leak provider errors", async () => {
   const adapter = createAuthAdapter(client({ auth: {
@@ -61,10 +61,17 @@ test("display name uses own-profile result and falls back safely on missing data
   for (const [name, error, expected] of [[" Mark Hartshorne ", null, "Mark Hartshorne"], [null, null, null], ["", null, null], [null, { code: "unavailable" }, null]] as const) {
     const adapter = createAuthAdapter(client({ auth: { getUser: async () => ({ data: { user: { id: "1", email: "a@b.test" } }, error: null }) }, schema: (schema: string) => {
       assert.equal(schema, "Basic_Carrier_Record");
-      return { rpc: async (fn: string, args: unknown) => { assert.equal(fn, "current_display_name"); assert.deepEqual(args, {}); return { data: name, error }; } };
+      return { rpc: async (fn: string, args: unknown) => { assert.deepEqual(args, {}); return fn === "current_display_name" ? { data: name, error } : { data: "STANDARD", error: null }; } };
     } }));
     assert.equal((await adapter.currentUser())?.displayName, expected);
   }
+});
+
+test("observer access mode is exposed as read only", async () => {
+  const adapter = createAuthAdapter(client({ auth: { getUser: async () => ({ data: { user: { id: "1", email: "observer@wab.test" } }, error: null }) }, schema: () => ({
+    rpc: async (fn: string) => fn === "current_access_mode" ? { data: "READ_ONLY", error: null } : { data: "Observer", error: null },
+  }) }));
+  assert.equal((await adapter.currentUser())?.readOnly, true);
 });
 
 test("saved load-plan response retains the submitted solution",()=>{
