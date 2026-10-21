@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="640" viewBox="0 0 1800 640">
+  <rect width="1800" height="640" fill="#f4f7fb"/>
+  <rect x="30" y="28" width="1740" height="584" rx="18" fill="#fff" stroke="#bfd2ee"/>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#182f55}.ey{font-size:14px;font-weight:700;letter-spacing:.5px}.h1{font-size:30px;font-weight:700}.sub{font-size:16px;fill:#536b90}.lab{font-size:12px;font-weight:700}.val{font-size:22px;font-weight:700}.mini{font-size:13px;font-weight:700}.btn{font-size:13px;font-weight:700}.green{fill:#176b42}
+  </style>
+  <text x="70" y="78" class="ey" fill="#2762bd">FUEL &amp; CLOSE OUT</text>
+  <text x="70" y="130" class="h1">Close Out</text>
+  <text x="70" y="162" class="sub">Confirm final passenger and baggage figures before release.</text>
+  <g>
+    <rect x="690" y="52" width="245" height="125" rx="12" fill="#edf3fc"/><text x="706" y="78" class="lab">PASSENGERS</text><text x="706" y="119" class="val">205 PAX</text><text x="706" y="157" class="lab">FINAL COUNTS</text>
+    <rect x="949" y="52" width="245" height="125" rx="12" fill="#edf3fc"/><text x="965" y="78" class="lab">BAGGAGE</text><text x="965" y="119" class="val">205 PCS</text><text x="965" y="157" class="lab">16,185 KG</text>
+    <rect x="1208" y="52" width="245" height="125" rx="12" fill="#edf3fc"/><text x="1224" y="78" class="lab">LOAD CONTENTS</text><text x="1224" y="119" class="val">8 ULD</text><text x="1224" y="157" class="lab">BULK 0 KG</text>
+    <rect x="1467" y="52" width="245" height="125" rx="12" fill="#fff1d2"/><text x="1483" y="78" class="lab" fill="#7b5711">CLOSE OUT STATUS</text><text x="1483" y="119" class="val" fill="#7b5711">AWAITING FINAL</text><text x="1483" y="157" class="lab" fill="#7b5711">READY FOR REVIEW</text>
+  </g>
+  <line x1="30" y1="210" x2="1770" y2="210" stroke="#c7d8ed"/>
+  <text x="70" y="258" class="ey" fill="#2762bd">FINAL TRAFFIC</text>
+  <text x="70" y="299" font-size="25" font-weight="700">Passenger and baggage confirmation</text>
+  <text x="70" y="328" class="sub">Review the final figures and resolve any difference before finalising Close Out.</text>
+  <g>
+    <rect x="70" y="360" width="820" height="132" rx="12" fill="#f7f9fd" stroke="#c1d2eb"/>
+    <text x="92" y="390" class="ey" fill="#2762bd">PASSENGERS</text>
+    <text x="92" y="430" class="val">205 PAX  ·  17,015 KG</text>
+    <text x="92" y="464" class="mini">AVERAGE 83.0 KG / PAX</text>
+    <text x="343" y="464" class="mini green">CABIN AREAS  0A 14  ·  0B 74  ·  0C 117</text>
+    <rect x="656" y="384" width="210" height="76" rx="9" fill="#fff" stroke="#7fa4dc"/><text x="761" y="427" text-anchor="middle" class="btn">REVIEW CABIN DISTRIBUTION</text>
+    <rect x="910" y="360" width="820" height="132" rx="12" fill="#f7f9fd" stroke="#c1d2eb"/>
+    <text x="932" y="390" class="ey" fill="#2762bd">BAGGAGE</text>
+    <text x="932" y="430" class="val">205 PCS  ·  16,185 KG</text>
+    <text x="932" y="464" class="mini">8 ULD  ·  BULK 0 KG</text>
+    <text x="1110" y="464" class="mini green">● RECONCILED</text>
+    <rect x="1496" y="384" width="210" height="76" rx="9" fill="#fff" stroke="#7fa4dc"/><text x="1601" y="427" text-anchor="middle" class="btn">REVIEW ULD / BULK</text>
+  </g>
+  <rect x="70" y="523" width="1252" height="65" rx="10" fill="#dff3e6"/>
+  <text x="92" y="548" class="lab green">RECONCILIATION</text><text x="92" y="575" font-size="20" font-weight="700" class="green">MATCHED — READY TO FINALISE</text>
+  <rect x="1450" y="523" width="280" height="65" rx="10" fill="#376cbe"/><text x="1590" y="562" text-anchor="middle" class="btn" style="fill:#fff">FINALISE CLOSE OUT</text>
+</svg>
