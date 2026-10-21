@@ -1368,12 +1368,12 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 #freight-acceptance-section .freight-manual-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:12px 10px}
 #freight-acceptance-section .freight-manual-group-grid label{display:grid;align-content:end;gap:6px;min-width:0;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase}
 #freight-acceptance-section .freight-manual-group-grid label small{font-size:9px;text-transform:none}
-#freight-acceptance-section .freight-special-information .freight-manual-group-grid{grid-template-columns:minmax(140px,180px) minmax(120px,150px) minmax(82px,max-content) minmax(180px,1fr)}
+#freight-acceptance-section .freight-special-information .freight-manual-group-grid{grid-template-columns:minmax(0,1.1fr) minmax(0,.85fr) 48px minmax(0,1fr)}
 #freight-acceptance-section .freight-special-information :is(.freight-included-code,.freight-included-weight){grid-template-rows:18px var(--control-height);white-space:nowrap}
 #freight-acceptance-section .freight-special-information .freight-dg-check{display:grid;grid-template-rows:18px var(--control-height);align-self:end;gap:6px;width:var(--control-height);min-height:0;overflow:visible;color:var(--muted);font-size:10px;white-space:nowrap}
 #freight-acceptance-section .freight-special-information .freight-dg-check input{flex:0 0 var(--control-height);width:var(--control-height);height:var(--control-height);margin:0;appearance:none;border:1px solid #b8c8e2;border-radius:8px;background:#fff;opacity:1}
 #freight-acceptance-section .freight-special-information .freight-dg-check input:checked{border-color:var(--accent);background-color:var(--accent);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='m5 12 4 4L19 6'/%3E%3C/svg%3E");background-position:center;background-repeat:no-repeat;background-size:24px}
-#freight-acceptance-section .freight-special-information .freight-included-add{align-self:end;white-space:nowrap}
+#freight-acceptance-section .freight-special-information .freight-included-add{box-sizing:border-box;align-self:end;width:100%;min-width:0;padding-inline:8px;font-size:10px;white-space:nowrap}
 #freight-acceptance-section .freight-special-information .freight-included-list,#freight-acceptance-section .freight-special-information .freight-remarks{grid-column:1/-1}
 #freight-acceptance-section .freight-manual-entry>button{display:flex;width:316px;margin-left:auto}
 #freight-acceptance-section .freight-statement-details{margin-top:40px}
