@@ -6,16 +6,16 @@ export function createAuthAdapter(client: RequestClient): AuthService {
   return {
     async currentUser() {
       // Fresh server lookup detects revoked sessions; never trust cookie getSession().user.
-      const [{data,error},{data:name,error:nameError},{data:accessMode,error:accessModeError}]=await Promise.all([
-        client.auth.getUser(),
-        client.schema("Basic_Carrier_Record").rpc("current_display_name", {}),
-        client.schema("Basic_Carrier_Record").rpc("current_access_mode", {}),
-      ]);
+      const {data,error}=await client.auth.getUser();
       if (error) {
         if (error.name === "AuthSessionMissingError" || error.status === 400 || error.status === 401 || error.status === 403) return null;
         throw new DataUnavailable("Authentication is temporarily unavailable.");
       }
       if (!data.user || data.user.is_anonymous) return null;
+      const [{data:name,error:nameError},{data:accessMode,error:accessModeError}]=await Promise.all([
+        client.schema("Basic_Carrier_Record").rpc("current_display_name", {}),
+        client.schema("Basic_Carrier_Record").rpc("current_access_mode", {}),
+      ]);
       // Profile presentation only; authorization continues to use identity and RLS.
       const displayName = !nameError && typeof name === "string" && name.trim() ? name.trim() : null;
       return { id: data.user.id, email: data.user.email ?? null, displayName, readOnly: !accessModeError && accessMode === "READ_ONLY" };

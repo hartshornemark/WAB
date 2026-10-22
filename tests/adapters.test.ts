@@ -9,12 +9,15 @@ import {operationalLoadPlan} from "../src/infrastructure/supabase/operational-fl
 import type{LoadPlanningSolution}from"../src/domain/load-planning-solver";
 const client = (value: unknown) => value as RequestClient;
 test("auth adapter rejects anonymous identities and distinguishes outages", async () => {
-  const authClient = (data: unknown, error: unknown = null) => client({ auth: { getUser: async () => ({ data, error }) }, schema: () => ({ rpc: async () => ({ data: null, error: null }) }) });
+  let profileRequests = 0;
+  const authClient = (data: unknown, error: unknown = null) => client({ auth: { getUser: async () => ({ data, error }) }, schema: () => { profileRequests += 1; return { rpc: async () => ({ data: null, error: null }) }; } });
   assert.equal(await createAuthAdapter(authClient({ user: { id: "1", is_anonymous: true } })).currentUser(), null);
   assert.equal(await createAuthAdapter(authClient({}, { name: "AuthSessionMissingError" })).currentUser(), null);
   assert.equal(await createAuthAdapter(authClient({}, { status: 401 })).currentUser(), null);
   await assert.rejects(createAuthAdapter(authClient({}, { status: 503 })).currentUser(), DataUnavailable);
+  assert.equal(profileRequests, 0);
   assert.deepEqual(await createAuthAdapter(authClient({ user: { id: "1", email: "a@b.test" } })).currentUser(), { id: "1", email: "a@b.test", displayName: null, readOnly: false });
+  assert.equal(profileRequests, 2);
 });
 test("sign in and sign out use auth adapter and never leak provider errors", async () => {
   const adapter = createAuthAdapter(client({ auth: {
