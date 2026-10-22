@@ -84,12 +84,17 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      get_user_attention_items:{Args:Record<string,never>;Returns:Json};
       aircraft_layout_library:{Args:Record<string,never>;Returns:Json};
       get_aircraft_layout:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
       get_aircraft_overlay_calibration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_overlay_kind:string};Returns:Json};
       save_aircraft_overlay_calibration:{Args:{p_iata:string;p_type_code:string;p_subtype:string;p_overlay_kind:string;p_offset_x:number};Returns:Json};
       activate_aircraft_layout:{Args:{p_id:string};Returns:undefined};
       get_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
+      inspect_operational_uld_adoption:{Args:{p_iata:string;p_operational_flight_id:string;p_uld_code:string};Returns:Json};
+      get_carrier_uld_provisional_adoptions:{Args:{p_iata:string;p_type:string;p_subtype:string};Returns:Json};
+      propose_operational_uld_adoption:{Args:{p_iata:string;p_operational_flight_id:string;p_uld_code:string;p_tare_kg:number};Returns:Json};
+      review_carrier_uld_provisional_adoption:{Args:{p_iata:string;p_type:string;p_subtype:string;p_uld_code:string;p_status:string};Returns:undefined};
       save_carrier_ulds:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
       save_carrier_ulds_with_baggage_default:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_rows:Json};Returns:Json};
       save_carrier_uld_inventory_applicability:{Args:{p_iata:string;p_type:string;p_subtype:string;p_revision:string;p_records:boolean};Returns:Json};

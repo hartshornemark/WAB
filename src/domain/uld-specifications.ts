@@ -1,7 +1,9 @@
 export type UldInventoryRange={id:string|null;carrierCode:string;serialStart:string;serialEnd:string};
 export type UldRow={isCustom:boolean;code:string;type:string;isDefault:boolean;isBaggageDefault:boolean;baggageMaxPieces:string;tare:string;maximum:string;volume:string;remarks:string;inventory:UldInventoryRange[]};
 export type MasterUld={code:string;type:string;tare:string;maximum:string;volume:string;mainDeckOnly:boolean};
-export type UldSnapshot={canView:boolean;canEdit:boolean;revision:string;weightUnit:string;volumeUnit:string;utilisesUlds:boolean;recordsInventory:boolean;aircraftType:string;aircraftSubtype:string;rows:UldRow[];master:MasterUld[]};
+export type ProvisionalUldAdoption={code:string;type:string;tareKg:number;maximumGrossWeightKg:number;volumeM3:number;sourceOperationalFlightId:string;proposedAt:string};
+export type OperationalUldAdoption={code:string;type:string;tareWeight:number;maximumGrossWeight:number;volume:number;baseCode:string|null;compatibleUldCode:string;compatiblePositions:{holdId:string;configurationCode:string;positionId:string;configuredUldCode:string;maximumWeight:number|null}[];status:"PENDING"};
+export type UldSnapshot={canView:boolean;canEdit:boolean;revision:string;weightUnit:string;volumeUnit:string;utilisesUlds:boolean;recordsInventory:boolean;aircraftType:string;aircraftSubtype:string;rows:UldRow[];master:MasterUld[];pendingAdoptions?:ProvisionalUldAdoption[]};
 export class UldInvalid extends Error {}
 export class UldDenied extends Error {}
 export class UldConflict extends Error {}

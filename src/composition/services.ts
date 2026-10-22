@@ -221,3 +221,6 @@ export async function operationalFlightServices(){const client=await createReque
 import{createOperationalTimeline}from"@/application/operational-timeline";
 import{createOperationalTimelineAdapter}from"@/infrastructure/supabase/operational-timeline-adapter";
 export async function operationalTimelineServices(){const client=await createRequestClient();return createOperationalTimeline(createAuthAdapter(client),createCarrierAdapter(client),createOperationalTimelineAdapter(client));}
+
+import{createUserAttentionAdapter}from"@/infrastructure/supabase/user-attention-adapter";
+export async function userAttentionServices(){const client=await createRequestClient();return createUserAttentionAdapter(client);}
