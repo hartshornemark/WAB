@@ -1248,6 +1248,45 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 @media(max-width:1000px){.operational-traffic-plan>.operational-collapsible-summary{grid-template-columns:1fr}.traffic-plan-summary-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.operational-traffic-plan-body{grid-template-columns:1fr}.operational-traffic-plan-body>.passenger-booking>.operational-collapsible-summary,.operational-traffic-plan-body>.passenger-booking>.operational-collapsible-body,.operational-traffic-plan-body>.passenger-cargo-offer>.cargo-offer-heading,.operational-traffic-plan-body .baggage-accommodation{grid-column:1}.operational-traffic-plan-body>.passenger-booking>.operational-collapsible-body{border-right:0;border-bottom:1px solid var(--line)}.operational-traffic-plan-body>.passenger-cargo-offer>.cargo-offer-heading{grid-row:3}.operational-traffic-plan-body .baggage-accommodation{grid-row:4}.operational-traffic-plan-body .passenger-offer-flow{grid-row:5;grid-template-columns:repeat(2,minmax(0,1fr))}.operational-traffic-plan-body .passenger-offer-flow>b{display:none}}
 @media(max-width:650px){.operational-traffic-plan{padding:18px}.traffic-plan-summary-facts{grid-template-columns:1fr}.operational-traffic-plan-body{margin:18px -18px -18px}.operational-traffic-plan-body .passenger-offer-flow{grid-template-columns:1fr}}
 
+/* Freighter Traffic Plan is a calculated capacity review; it has no edit or workflow action. */
+.traffic-plan-freighter>.operational-collapsible-summary{grid-template-columns:minmax(320px,1.05fr) minmax(0,3.25fr)}
+.traffic-plan-freighter .traffic-plan-title p:last-child{max-width:430px}
+.traffic-plan-freighter .traffic-plan-summary-facts>span{grid-template-rows:16px 31px 16px 22px;min-height:136px;padding:16px 18px}
+.traffic-plan-freighter .traffic-plan-summary-facts small,.traffic-plan-freighter .traffic-plan-summary-facts em,.traffic-plan-freighter .traffic-plan-summary-facts i,.traffic-plan-freighter .traffic-plan-summary-facts b{font-size:10px}
+.traffic-plan-freighter .traffic-plan-summary-facts strong{font-size:20px;line-height:31px}
+.traffic-plan-freighter .traffic-plan-summary-facts em{align-self:auto;margin-top:5px}
+.traffic-plan-freighter .traffic-plan-summary-facts .remaining em,.traffic-plan-freighter .traffic-plan-summary-facts .remaining i{grid-row:auto}
+.traffic-plan-freighter .traffic-plan-summary-facts .offer{display:grid;grid-template-rows:16px 31px 1fr}
+.traffic-plan-freighter .traffic-plan-summary-facts .offer b{align-self:end;margin-top:0;white-space:normal}
+.operational-traffic-plan-body.freighter{display:block;padding:0;margin-top:22px}
+.operational-traffic-plan-body.freighter>.freight-planning-stack{display:block;margin:0}
+.operational-traffic-plan-body.freighter .cargo-offer-section{padding:28px 30px;border:0;border-radius:0 0 10px 10px}
+.operational-traffic-plan-body.freighter .cargo-offer-section>.cargo-offer-heading{padding-right:48px}
+.operational-traffic-plan-body.freighter .cargo-offer-heading>div:first-child p:last-child{max-width:900px}
+.operational-traffic-plan-body.freighter .cargo-offer-total{box-sizing:border-box;min-width:300px;min-height:102px;padding:16px 20px;border-radius:10px}
+.operational-traffic-plan-body.freighter .cargo-offer-total strong{font-size:24px}
+.operational-traffic-plan-body.freighter .cargo-offer-total small,.operational-traffic-plan-body.freighter .cargo-offer-total span{font-size:11px}
+.operational-traffic-plan-body.freighter .cargo-offer-capacity{gap:14px;margin-top:26px}
+.operational-traffic-plan-body.freighter .cargo-offer-capacity>div{min-height:116px;padding:20px;border:1px solid var(--line);border-radius:10px;background:#f9fbfe}
+.operational-traffic-plan-body.freighter .cargo-offer-capacity>div:last-child{border-color:#ead9ac;background:#fff3d8;color:#765414}
+.operational-traffic-plan-body.freighter .cargo-offer-capacity small{font-size:11px}
+.operational-traffic-plan-body.freighter .cargo-offer-capacity strong{font-size:23px}
+.operational-traffic-plan-body.freighter .cargo-space-list{gap:14px;margin-top:22px}
+.operational-traffic-plan-body.freighter .cargo-space-list article{position:relative;min-height:142px;padding:20px;border:0;border-radius:11px;background:#eef3fc}
+.operational-traffic-plan-body.freighter .cargo-space-list article.bulk{background:#fff3d8;color:#765414}
+.operational-traffic-plan-body.freighter .cargo-space-list article>b{position:absolute;right:18px;top:18px;padding:7px 11px;border-radius:20px;background:#d8e6fa;color:#285fae;font-size:10px}
+.operational-traffic-plan-body.freighter .cargo-space-list article.bulk>b{background:#f1dfb5;color:#765414}
+.operational-traffic-plan-body.freighter .cargo-space-list small{font-size:11px;letter-spacing:.08em}
+.operational-traffic-plan-body.freighter .cargo-space-list strong{font-size:23px}
+.operational-traffic-plan-body.freighter .cargo-space-list em{color:inherit;font-size:11px;font-style:normal;font-weight:800}
+.operational-traffic-plan-body.freighter .cargo-planning-result{display:grid;gap:7px;margin-top:20px;padding:18px 22px;border-radius:10px;background:#e1f2e7;color:#216841}
+.operational-traffic-plan-body.freighter .cargo-planning-result.incomplete{background:#fff3d8;color:#765414}
+.operational-traffic-plan-body.freighter .cargo-planning-result small{font-size:10px;font-weight:900;letter-spacing:.1em}
+.operational-traffic-plan-body.freighter .cargo-planning-result strong{font-size:20px}
+.operational-traffic-plan-body.freighter .cargo-offer-note{margin-top:15px}
+@media(max-width:1000px){.traffic-plan-freighter>.operational-collapsible-summary{grid-template-columns:1fr}.operational-traffic-plan-body.freighter .cargo-offer-capacity{grid-template-columns:repeat(2,1fr)}.operational-traffic-plan-body.freighter .cargo-space-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.operational-traffic-plan-body.freighter{padding:0}.operational-traffic-plan-body.freighter .cargo-offer-section{padding:20px 18px}.operational-traffic-plan-body.freighter .cargo-offer-capacity,.operational-traffic-plan-body.freighter .cargo-space-list{grid-template-columns:1fr}.operational-traffic-plan-body.freighter .cargo-offer-total{min-width:0;width:100%}}
+
 /* Load Control Set Up: one stable summary and two aligned working columns. */
 .operational-setup{margin-top:22px;padding:20px 22px;border:1px solid var(--line);border-radius:10px;background:#fff}
 .operational-setup>.operational-collapsible-summary{display:grid;grid-template-columns:minmax(210px,.9fr) minmax(0,3.2fr);align-items:stretch;gap:18px;padding-right:42px}

@@ -81,14 +81,15 @@ export function FreightCargoOffer({iata,flightId,initial,showAircraftAssignment=
     {notice&&<p className={notice.ok?"load-control-notice success":"load-control-notice error"}>{notice.text}</p>}
    </div>
   </details>}
-  <details className="cargo-offer-section operational-collapsible">
+  <details className="cargo-offer-section operational-collapsible" open>
    <summary className="cargo-offer-heading">
     <div><p className="eyebrow">PLANNING CAPACITY</p><h2>Cargo Offer</h2><p>Gross capacity available for cargo, mail and special loads before fuel restrictions are known.</p></div>
     <div className={saved.ready?"cargo-offer-total ready":"cargo-offer-total incomplete"}><small>CARGO OFFER</small><strong>{saved.ready?kg(saved.cargoOfferWeight):"INCOMPLETE"}</strong><span>{saved.ready?cargoOfferLimitingLabel(saved.limitingFactor as "MZFW"|"HOLD_CAPACITY"):"Complete the missing aircraft data"}</span></div>
    </summary>
    <div className="operational-collapsible-body">
     <div className="cargo-offer-capacity"><div><small>MZFW</small><strong>{kg(saved.mzfw)}</strong></div><div><small>PLANNING AIRCRAFT WEIGHT</small><strong>{kg(saved.planningAircraftWeight)}</strong></div><div><small>STRUCTURAL PAYLOAD CAPACITY</small><strong>{kg(saved.structuralCapacity)}</strong></div><div><small>SPACE WEIGHT CAPACITY</small><strong>{kg(saved.spaceWeightCapacity)}</strong></div></div>
-    <div className="cargo-space-list">{saved.uldPositionGroups.map(row=><article key={`${row.deck}-${row.uldType}-${row.uldCode}`}><small>{row.deck==="MDECK"?"MAIN DECK":"LOWER DECK"}</small><strong>{row.positionCount} × {row.uldType}</strong><span>{row.uldCode?`Default ULD ${row.uldCode} · `:""}{kg(row.maximumWeight)} position capacity</span></article>)}{saved.bulkHolds.map(row=><article key={row.holdId}><small>BULK HOLD {row.name}</small><strong>{volume(row.volume)} m³ · {kg(row.planningWeight)}</strong><span>{bulkDetail(row.volume,saved.cargoPlanningDensity,row.planningWeight)}</span></article>)}</div>
+    <div className="cargo-space-list">{saved.uldPositionGroups.map(row=><article key={`${row.deck}-${row.uldType}-${row.uldCode}`}><b>ACTIVE</b><small>{row.deck==="MDECK"?"MAIN DECK":"LOWER DECK"}</small><strong>{row.positionCount} × {row.uldType}</strong><em>{row.uldCode?`DEFAULT ULD · ${row.uldCode}`:"ULD POSITION GROUP"}</em><span>{kg(row.maximumWeight)} position capacity</span></article>)}{saved.bulkHolds.map(row=><article className="bulk" key={row.holdId}><b>ACTIVE</b><small>BULK HOLD {row.name}</small><strong>{kg(row.planningWeight)}</strong><em>PLANNING DENSITY · {saved.cargoPlanningDensity?.toLocaleString()??"—"} KG/m³</em><span>{bulkDetail(row.volume,saved.cargoPlanningDensity,row.planningWeight)}</span></article>)}</div>
+    <div className={saved.ready?"cargo-planning-result ready":"cargo-planning-result incomplete"}><small>PLANNING RESULT</small><strong>{saved.ready?`CARGO OFFER ${kg(saved.cargoOfferWeight)} · ${saved.limitingFactor==="MZFW"?"LIMITED BY MZFW":saved.limitingFactor==="HOLD_CAPACITY"?"LIMITED BY HOLD CAPACITY":saved.limitingFactor.replaceAll("_"," ")}`:"CARGO OFFER INCOMPLETE"}</strong></div>
     <p className="cargo-offer-note">ULD bays use position count and permitted gross weight only. Volume applies only to Bulk holds. B1 supplies the cargo planning density.</p>
     {saved.missing.length>0&&<p className="field-error">Missing: {saved.missing.map(item=>item.replaceAll("_"," ")).join(", ")}.</p>}
    </div>
