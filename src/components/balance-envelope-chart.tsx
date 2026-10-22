@@ -1,4 +1,4 @@
-import {useEffect,useState} from "react";
+import {useState} from "react";
 import {useIndexDecimalPlaces} from "@/components/index-display-preference";
 import {formatNumeric} from "@/domain/display-standards";
 import {conditionalEnvelopes,envelopeMode,type AircraftC5Values,type EnvelopeBoundary,type EnvelopePoint} from "@/domain/aircraft-c5";
@@ -14,6 +14,7 @@ type PlottedPoint = AircraftC7PlottedPoint;
 export type LoadsheetEnvelopePoint={phase:Phase;label:"ZFW"|"TOW"|"LAW"|"eZFW"|"DEADLOAD";weight:number;indexValue:number;macValue:number};
 export type EnvelopeFuelProjection={label:string;points:Array<{weight:number;indexValue:number}>};
 type ChartInstance={key:string;phase:Phase;title:string;boundary:EnvelopeBoundary;condition:string;conditionCode:string|null};
+type ConditionOverride={key:string;sourceCode:string|undefined};
 
 const charts: { key: Phase; title: string }[] = [
   { key: "zfw", title: "Zero Fuel Balance Envelope" },
@@ -155,8 +156,14 @@ export function BalanceEnvelopeView({ values, applicability, unit, formula, idea
   const chartInstances:ChartInstance[]=activeCharts.flatMap<ChartInstance>(chart=>(envelopeMode(values,chart.key)==="CONDITIONAL"?conditionalEnvelopes(values,chart.key).map(item=>({key:`${chart.key}-${item.id}`,phase:chart.key,title:`${chart.title} — ${item.code}`,boundary:item.boundary,condition:item.conditionBasis==="OTHER"?item.conditionDescription:`${item.conditionBasis==="TAKE_OFF_FUEL"?"Take-off fuel":"Landing fuel"}: ${item.lowerBound===null?"":`${item.lowerInclusive?"≥":">"} ${item.lowerBound.toLocaleString()} ${unit}`} ${item.upperBound===null?"":`${item.upperInclusive?"≤":"<"} ${item.upperBound.toLocaleString()} ${unit}`}`.trim(),conditionCode:item.code})):[{key:chart.key,phase:chart.key,title:chart.title,boundary:values.envelopes[chart.key],condition:"",conditionCode:null}]).filter(item=>boundaryConfigured(item.boundary)));
   const lawUsesTow=loadsheetPoints.some(point=>point.phase==="law")&&!chartInstances.some(item=>item.phase==="law")&&chartInstances.some(item=>item.phase==="tow");
   const conditionalGroups=activeCharts.flatMap(chart=>{const options=chartInstances.filter(item=>item.phase===chart.key&&item.condition);return options.length?[{phase:chart.key,label:`${chart.key.toUpperCase()} CONDITION`,options}]:[]});
-  const[selectedConditions,setSelectedConditions]=useState<Record<string,string>>(()=>Object.fromEntries(conditionalGroups.map(group=>[group.phase,group.options.find(option=>option.conditionCode===selectedConditionCodes[group.phase])?.key??group.options[0].key])));
-  useEffect(()=>{setSelectedConditions(current=>Object.fromEntries(conditionalGroups.map(group=>[group.phase,group.options.find(option=>option.conditionCode===selectedConditionCodes[group.phase])?.key??current[group.phase]??group.options[0].key])))},[selectedConditionCodes.tow,selectedConditionCodes.law,selectedConditionCodes.zfw]);
+  const[conditionOverrides,setConditionOverrides]=useState<Partial<Record<Phase,ConditionOverride>>>({});
+  const selectedConditions=Object.fromEntries(conditionalGroups.map(group=>{
+    const sourceCode=selectedConditionCodes[group.phase];
+    const suppliedKey=group.options.find(option=>option.conditionCode===sourceCode)?.key;
+    const override=conditionOverrides[group.phase];
+    const overrideKey=override&&override.sourceCode===sourceCode&&group.options.some(option=>option.key===override.key)?override.key:undefined;
+    return[group.phase,overrideKey??suppliedKey??group.options[0].key];
+  }));
   const overlayInstances=chartInstances.filter(chart=>!chart.condition||selectedConditions[chart.phase]===chart.key);
   const idealTrim=idealTrimPoints.map(point=>({weight:point.weight,indexValue:point.indexValue??(formula&&point.macValue!==null?indexForMacPercent(point.weight,point.macValue,formula):Number.NaN)})).filter(point=>Number.isFinite(point.weight)&&Number.isFinite(point.indexValue)).sort((a,b)=>a.weight-b.weight);
   const operationalMarkers=loadsheetPoints.filter(point=>point.phase==="tow"||point.phase==="law").map(point=>point.label);
@@ -168,7 +175,7 @@ export function BalanceEnvelopeView({ values, applicability, unit, formula, idea
   return <section className="c5-envelope-view" aria-labelledby="balance-envelope-view-heading">
     <div className="c5-envelope-view-heading"><div><h3 id="balance-envelope-view-heading">AHM565 Sheet C5.2 — Balance Envelope</h3><p>Automatically generated from the configured C5.1 Forward and Aft limits.{formula?" Dashed guides show calculated constant % MAC.":""}{idealTrim.length>=2?" The Ideal Trim line is overlaid from C7.":""}{lawUsesTow?" No separate LAW envelope is configured; the applicable TOW envelope is used for LAW.":""}</p></div><button type="button" className="secondary" onClick={onClose}>CLOSE</button></div>
     {loadsheetPoints.some(point=>point.label==="eZFW")&&<div className="operational-envelope-summary"><div><small>ESTIMATED ZERO FUEL CONDITION</small><strong>{Math.round(loadsheetPoints.find(point=>point.label==="eZFW")!.weight).toLocaleString()} {unit}</strong></div><div><small>ZFW INDEX / %MAC</small><strong>{formatNumeric(loadsheetPoints.find(point=>point.label==="eZFW")!.indexValue,"index",indexDecimalPlaces)} · {loadsheetPoints.find(point=>point.label==="eZFW")!.macValue.toFixed(1)}%</strong></div>{loadsheetPoints.some(point=>point.label==="DEADLOAD")&&<div><small>DEADLOAD INDEX / %MAC</small><strong>{formatNumeric(loadsheetPoints.find(point=>point.label==="DEADLOAD")!.indexValue,"index",indexDecimalPlaces)} · {loadsheetPoints.find(point=>point.label==="DEADLOAD")!.macValue.toFixed(1)}%</strong></div>}{fuelProjection&&<p><strong>{fuelProjection.label}</strong><span>{operationalMarkers.length?`${operationalMarkers.join(" and ")} ${operationalMarkers.length===1?"marker uses":"markers use"} the current fuel figures.`:"Planning projection from eZFW. Operational balance markers will be established when required fuel figures are entered."}</span></p>}</div>}
-    {conditionalGroups.map(group=><nav className="c5-envelope-condition-selectors" aria-label={`${group.label} overlay`} key={group.phase}><span>{group.label}</span>{group.options.map(option=><button type="button" className={selectedConditions[group.phase]===option.key?"selected":""} aria-pressed={selectedConditions[group.phase]===option.key} key={option.key} onClick={()=>setSelectedConditions(current=>({...current,[group.phase]:option.key}))}>{option.title.split(" — ").at(-1)}</button>)}</nav>)}
+    {conditionalGroups.map(group=><nav className="c5-envelope-condition-selectors" aria-label={`${group.label} overlay`} key={group.phase}><span>{group.label}</span>{group.options.map(option=><button type="button" className={selectedConditions[group.phase]===option.key?"selected":""} aria-pressed={selectedConditions[group.phase]===option.key} key={option.key} onClick={()=>setConditionOverrides(current=>({...current,[group.phase]:{key:option.key,sourceCode:selectedConditionCodes[group.phase]}}))}>{option.title.split(" — ").at(-1)}</button>)}</nav>)}
     <div className="c5-envelope-charts">{(combinedOnly||chartInstances.length>1)&&<CombinedEnvelopeSvg unit={unit} scale={scale} formula={formula} series={combinedSeries} idealTrim={idealTrim} loadsheetPoints={loadsheetPoints} fuelProjection={fuelProjection}/>} {!combinedOnly&&chartInstances.map((chart) => <div key={chart.key}>{chart.condition&&<p className="c5-chart-condition">{chart.condition}</p>}<EnvelopeSvg boundary={chart.boundary} title={chart.title} unit={unit} scale={scale} formula={formula} idealTrim={idealTrim} loadsheetPoint={(!chart.condition||selectedConditions[chart.phase]===chart.key)?loadsheetPoints.find(point=>point.phase===chart.phase):undefined}/></div>)}</div>
   </section>;
 }
