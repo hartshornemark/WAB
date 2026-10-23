@@ -1,0 +1,812 @@
+{
+  "scope": "Small synthetic rule-unit examples, not frozen passenger-case results or timing benchmarks",
+  "cases": [
+    {
+      "name": "containers can beat pallets",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 4800,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "P",
+            "occupiedBayIds": [
+              "X",
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 4000,
+            "tareWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "PALLET",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C2",
+            "occupiedBayIds": [
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "pallets can beat containers",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 6000,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "P",
+            "occupiedBayIds": [
+              "X",
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 7000,
+            "tareWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "PALLET",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C2",
+            "occupiedBayIds": [
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "aircraft cap and tare reverse the winner",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 3800,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 6000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "P",
+            "occupiedBayIds": [
+              "X",
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 7000,
+            "tareWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "PALLET",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C2",
+            "occupiedBayIds": [
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "baggage reserves footprint and aircraft gross once",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 1300,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 4000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "P",
+            "occupiedBayIds": [
+              "X",
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 4000,
+            "tareWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "PALLET",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C2",
+            "occupiedBayIds": [
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [
+          {
+            "id": "B1",
+            "netWeightGrams": 500,
+            "volumeMillilitres": 500,
+            "compatiblePositionIds": [
+              "C1"
+            ]
+          }
+        ],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "Bulk baggage deducts weight and space once",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 200,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 1600,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 100,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": [
+          {
+            "id": "B",
+            "kind": "BAGGAGE_BULK",
+            "grossWeightGrams": 200,
+            "bulkVolumeMillilitres": 800,
+            "bulkAreaId": "A",
+            "groupId": null,
+            "occupiedBayIds": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "shared parent weight is not multiplied by area count",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 800,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 1000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          },
+          {
+            "id": "B",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": [
+          {
+            "id": "BAG",
+            "kind": "BAGGAGE_BULK",
+            "grossWeightGrams": 200,
+            "bulkVolumeMillilitres": 0,
+            "bulkAreaId": "A",
+            "groupId": null,
+            "occupiedBayIds": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "shared parent Bulk volume is not multiplied",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 200,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": 500
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          },
+          {
+            "id": "B",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": [
+          {
+            "id": "BAG",
+            "kind": "BAGGAGE_BULK",
+            "grossWeightGrams": 100,
+            "bulkVolumeMillilitres": 300,
+            "bulkAreaId": "A",
+            "groupId": null,
+            "occupiedBayIds": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "no Bulk space remains",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 0,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": [
+          {
+            "id": "BAG",
+            "kind": "BAGGAGE_BULK",
+            "grossWeightGrams": 100,
+            "bulkVolumeMillilitres": 1000,
+            "bulkAreaId": "A",
+            "groupId": null,
+            "occupiedBayIds": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "overfull fixed baggage is infeasible",
+      "expectedStatus": "INFEASIBLE",
+      "expectedNetGrams": null,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": [
+          {
+            "id": "BAG",
+            "kind": "BAGGAGE_BULK",
+            "grossWeightGrams": 100,
+            "bulkVolumeMillilitres": 1001,
+            "bulkAreaId": "A",
+            "groupId": null,
+            "occupiedBayIds": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "baggage cannot exceed its ULD volume",
+      "expectedStatus": "INFEASIBLE",
+      "expectedNetGrams": null,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [
+          {
+            "id": "B1",
+            "netWeightGrams": 100,
+            "volumeMillilitres": 1001,
+            "compatiblePositionIds": [
+              "C1"
+            ]
+          }
+        ],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "ULD and Bulk share one hold gross limit",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 2900,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 3000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 1000
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "fixed occupied footprints stay reserved",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 2400,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "C1",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          },
+          {
+            "id": "C2",
+            "occupiedBayIds": [
+              "Y"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "ROOT"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [],
+        "fixedLoads": [
+          {
+            "id": "OTHER",
+            "kind": "OTHER",
+            "grossWeightGrams": 500,
+            "bulkVolumeMillilitres": 0,
+            "bulkAreaId": null,
+            "groupId": "ROOT",
+            "occupiedBayIds": [
+              "X"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested child and parent limits both apply",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 900,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 2000,
+            "maximumBulkVolumeMillilitres": null
+          },
+          {
+            "id": "CHILD",
+            "parentId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [
+          {
+            "id": "C",
+            "occupiedBayIds": [
+              "X"
+            ],
+            "maximumGrossWeightGrams": 2500,
+            "tareWeightGrams": 100,
+            "maximumVolumeMillilitres": 1000,
+            "kind": "CONTAINER",
+            "groupId": "CHILD"
+          }
+        ],
+        "bulkAreas": [],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "empty offer can still be valid",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 0,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 1000000,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "fractional density shared space is never rounded up",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 0,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 333333,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": 3
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 4
+          },
+          {
+            "id": "B",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 4
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    },
+    {
+      "name": "fractional density area capacity rounds down",
+      "expectedStatus": "OPTIMAL",
+      "expectedNetGrams": 1,
+      "input": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "rule-unit-v2",
+        "timeLimitSeconds": 2,
+        "maximumZeroFuelWeightGrams": 10000,
+        "dryOperatingWeightGrams": 1000,
+        "passengerWeightGrams": 1000,
+        "cargoDensityGramsPerM3": 333333,
+        "groups": [
+          {
+            "id": "ROOT",
+            "parentId": null,
+            "maximumGrossWeightGrams": 10000,
+            "maximumBulkVolumeMillilitres": null
+          }
+        ],
+        "positions": [],
+        "bulkAreas": [
+          {
+            "id": "A",
+            "groupId": "ROOT",
+            "maximumGrossWeightGrams": 1000,
+            "maximumVolumeMillilitres": 4
+          }
+        ],
+        "baggageUlds": [],
+        "fixedLoads": []
+      }
+    }
+  ]
+}

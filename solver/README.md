@@ -20,74 +20,64 @@ solver/.venv/bin/python solver/benchmark_b747.py
 
 The objectives are solved in operational priority order: minimise unloading-sequence inversions within each separately accessed cargo hold, approach Ideal Trim, then simplify the loading pattern. A correctly ordered block may slide within its hold to improve trim without incurring an unloading penalty. Position compatibility, maximum weights, locked assignments and physical-bay overlap are hard constraints.
 
-## A350 capacity replacement: inactive first stage
+## A350 capacity replacement: inactive version 2
 
-The same worker accepts `mode: "CARGO_CAPACITY"` for type 359. This dispatch is
-separate from the existing AUTOLOAD model. No application call site enables it.
-The current database calculation and operational behaviour remain unchanged.
+The worker accepts `mode: "CARGO_CAPACITY"` for type 359 with the explicit
+`A350_MAX_NET_CARGO_V2` contract. No application call site enables it. The live
+database and existing AUTOLOAD behaviour remain unchanged.
 
-The contract and independent witness validator are in
-`src/domain/cargo-capacity.ts`. Inputs contain a versioned snapshot identifier,
-applicable candidate positions with hold-qualified physical bay IDs, whole-gram
-net capacities, and an exact baggage-container reservation. Callers must derive
-these candidates from validated configuration; the worker does not read D2/D3/D4
-or any database. It selects non-overlapping pallet, cargo-container and reserved
-baggage footprints, then maximises pallet count, cargo-container count and cargo
-net weight in that order. A lower priority is attempted only after the previous
-priority is proved optimal. If a later search times out, the previous feasible
-witness is retained with `FEASIBLE`, never falsely labelled `OPTIMAL`.
+The authoritative [calculation rules](../docs/a350-cargo-capacity-rules.md)
+define one objective: maximum permissible net ULD plus Bulk cargo. Baggage and
+other reservations, ULD tare, physical footprints, area and parent limits, Bulk
+space/density and the aircraft weight allowance constrain every arrangement.
+There is no pallet-count priority. Missing configuration is rejected.
 
-These are footprint-capacity results, not a complete published cargo offer or
-actual load placement. Aggregate hold weights, remaining aircraft payload, Bulk
-capacity, configuration applicability and actual baggage fit must still be
-applied and verified by the integration layer. The new third objective optimises
-the complete cargo witness weight; the legacy SQL tie-break considers pallet
-weight. Differences between equal-count arrangements must be reconciled before
-rollout, not accepted as an unexplained increase in capacity.
+The contract and independent witness validator live in
+`src/domain/cargo-capacity.ts`. The worker reads no database or D2/D3/D4 records;
+callers must supply applicable, versioned configuration and prepared baggage
+requirements. Results distinguish proven optimum, feasible, infeasible and
+unknown. A feasible witness alone does not establish the maximum.
 
-The server-only adapter limits each process to two active capacity workers,
-bounds input and output, adds a hard process timeout and forwards no database
-credentials. Deployment-wide admission control is still required before rollout.
-The returned revision must match the request, and the caller must also confirm
-that the snapshot is still current before displaying a result. There is no
-cache, live-read replacement, UI activation or migration in this stage.
+`reference/max_net_cargo_v2.sql` is an offline database reference installed only
+in isolated PGlite rule tests. It is not a migration or an exposed production
+function. Both implementations use the same validated version-2 input contract.
+The frozen version-1 flight/scenario artifacts remain immutable and need explicit,
+sourced enrichment before the next scenario-comparison stage.
 
-Run the offline benchmark with the same configured Python runtime:
+The server-only adapter admits at most two active capacity workers per process,
+bounds input/output and execution, forwards no database credentials, and checks
+returned revision and feasibility. Deployment-wide admission and snapshot
+freshness checks remain integration requirements. There is no live activation,
+cache or migration in this stage.
+
+Run unit checks with:
 
 ```sh
-solver/.venv/bin/python solver/benchmark_cargo_capacity.py
+node --conditions=react-server --import tsx --test tests/cargo-capacity.test.ts
+solver/.venv/bin/python -m unittest discover -s solver -p 'test_*.py' -v
 ```
 
-It runs ten fresh processes for each baggage reservation (0, 5, 34, 35), plus ten
-requests with two concurrent workers, on the captured A350 D3 fixture. Timings
-include Python/OR-Tools startup and output parsing, but exclude live database
-reads, API transport and browser rendering. This fixture is not a fresh snapshot
-of ZZ9350 24OCT. The benchmark verifies resource exclusivity and reservation/net
-totals for every returned witness. Unit tests compare small cases against an
-independent exhaustive oracle and exercise unavailable workers, malformed/stale
-responses, execution limits and concurrency limits.
+The 16 synthetic examples test individual calculation rules; they are not the
+seven frozen passenger-scenario result comparisons or timing benchmarks.
 
-Initial local measurements are recorded in
-[`benchmarks/a350-capacity-2026-10-23.json`](benchmarks/a350-capacity-2026-10-23.json),
-including runtime versions and individual samples. For five reserved baggage
-ULDs, ten startup-inclusive runs had a median of 352.35 ms and a 95th percentile
-of 358.16 ms. Ten requests with two concurrent workers had a 95th percentile of
-400.31 ms. Every feasible fixture run proved all three objectives optimal;
-35 reserved containers was proved infeasible. These small offline samples are
-preliminary evidence, not production acceptance or a live SQL speedup comparison.
+For a subsequently authorised benchmark, the script requires a validated V2
+input file and refuses implicit upgrades of old snapshots:
 
-Remaining work before activation:
+```sh
+solver/.venv/bin/python solver/benchmark_cargo_capacity.py --input /absolute/path/to/v2-input.json --samples 10
+```
 
-1. Obtain versioned raw inputs without invoking the legacy cargo-capacity search;
-   retain carrier permissions and consistent baggage/configuration snapshots.
-2. Preserve the current cargo-offer contract, reconcile the weight tie-break,
-   apply aggregate limits, and independently validate the resulting offer.
-3. Load the board/tray independently of offer calculation, with explicit
-   unavailable/stale/unproved states. Keep the legacy route available for review.
-4. Benchmark both implementations on identical current flight snapshots,
-   including complete request times, cold starts, failures and concurrent users.
-5. Review database changes and deployment readiness with the user before any
-   migration, activation, merge or deployment.
+Historical measurements in
+[`benchmarks/a350-capacity-2026-10-23.json`](benchmarks/a350-capacity-2026-10-23.json)
+measure the superseded pallet-first prototype. They cannot establish V2
+performance or a like-for-like database speed improvement. No new scenario or
+performance benchmark is included in Step 2.
+
+Before activation, source complete V2 snapshots, compare both implementations on
+the frozen scenarios, measure component and complete request performance, review
+failure/concurrency behaviour, and preserve the cargo-offer API and independent
+board/tray availability. Migration, activation, merge and deployment require
+explicit approval.
 
 Deployment packaging must include both `cp_sat_solver.py` and
 `cargo_capacity.py`, and a compatible pinned OR-Tools runtime. Normal AUTOLOAD
