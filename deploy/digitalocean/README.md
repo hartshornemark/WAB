@@ -41,9 +41,35 @@ the staging origin as `https://demo.wabiqa.com` on 23 October 2026. These identi
 the intended app; they do not confirm its current deployment or enable the test
 endpoint.
 
-1. Current app specification and deployment commit for `wabiqa-app`; resolve its
-   exact app ID from the hosting account before any deployment action.
-2. The backend's intended CPU/RAM instance size and region, recorded for testing.
+The supplied `wabiqa-app.yaml` confirms region `sgp`, the `wab` service on port
+3000, two `apps-s-1vcpu-1gb` instances, and GitHub branch `staging` with automatic
+deployment enabled. It defines the existing public ingress and Supabase public
+build/runtime variables. It does not identify the deployed commit or a separate
+capacity database.
+
+`wabiqa-app.capacity-review.patch` is a **review draft against that exact upload**,
+not a spec to submit. It changes `wab` to the preparation branch and disables
+automatic deployment, adds the disabled test settings, and appends the private
+backend. It preserves existing domain, ingress, public variables, region and app
+instance settings. The patch contains no copy of the existing Supabase key.
+The backend proposes one instance of the same `apps-s-1vcpu-1gb` size as the app;
+this is an additional paid component requiring approval, not a provisioned
+resource or a validated solver memory budget. Measure memory and record the final
+size before benchmarking. Secret placeholders must be replaced through the
+hosting secret store, with the same backend secret on both services and a
+different operator secret. Do not submit placeholder values.
+
+Before use, apply the patch to a local copy of the uploaded spec and inspect the
+result. Re-export the live spec first and reconcile any intervening changes.
+Keep the original spec and current deployment ID for rollback. The preparation
+branch must be reviewed and pushed separately before it can be built by hosting.
+Do not push to `staging`: the supplied spec currently deploys that branch
+automatically. No branch switch, resource creation or deployment has been made.
+
+1. Current deployed commit/rollback deployment and exact app ID from the hosting
+   account before any deployment action.
+2. Approval of the proposed backend CPU/RAM size and confirmation of region,
+   recorded for testing.
    No paid database/service or resource size has been invented/provisioned.
 3. Approved isolated native PostgreSQL host, region/tier and database credentials.
    The app currently uses Supabase. **Do not assume a new DigitalOcean PostgreSQL
@@ -169,8 +195,8 @@ restrictions; Python tests cover sealed inputs, read-only connection options,
 child timings and error redaction. Next's production build checks the route.
 
 This workstation has no Docker or DigitalOcean CLI installed. The staging app
-name and URL are confirmed, but its current spec and the isolated database target
-have not been supplied. Therefore **container builds,
+name, URL and exported spec are supplied; the isolated database target and current
+deployment identity remain outstanding. Therefore **container builds,
 native PostgreSQL connectivity/grants, App Platform spec validation, healthcheck
 and hosted smoke/latency tests remain unexecuted**. Do not describe this as a
 verified or deployed hosting environment. No new hosted timing claims are made.
