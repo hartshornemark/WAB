@@ -24,7 +24,7 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
     if (Buffer.byteLength(raw) > 256_000) throw Error("Oversized benchmark job");
     return new Promise((resolve, reject) => {
       const started = performance.now();
-      const child = spawn(env.WAB_SOLVER_PYTHON ?? "python3", [join(root, "solver/staging/app_worker.py")], { env: childEnv, stdio: ["pipe", "pipe", "pipe"] });
+      const child = spawn(/*turbopackIgnore: true*/ env.WAB_SOLVER_PYTHON ?? "python3", [join(root, "solver/staging/app_worker.py")], { env: childEnv, stdio: ["pipe", "pipe", "pipe"] });
       const output: Buffer[] = []; let stdoutBytes = 0, stderrBytes = 0, settled = false, readyAt: number | undefined;
       let pending = "";
       const finish = (error?: Error) => {
