@@ -1,7 +1,9 @@
 # A350 hosted comparison — existing DigitalOcean app and Supabase database
 
-Preparation only. Nothing has been pushed, deployed, provisioned or installed in
-Supabase. This replaces the earlier proposal for a separate private service and
+Deployment runbook. Execution began with explicit user approval on
+23 October 2026: the preparation branch is pushed and the private benchmark
+schema/account are installed on current Supabase. Hosting and benchmark outcomes
+must be recorded separately; instructions below do not themselves prove completion. This replaces the earlier proposal for a separate private service and
 separate reference database. The operational cargo calculation, AUTOLOAD, board,
 tray and other aircraft are unchanged.
 
@@ -42,7 +44,7 @@ push and deployment require explicit approval.
 | `WAB_CAPACITY_TESTS_ENABLED` | initially `false` |
 | `WAB_CAPACITY_TEST_TOKEN` | operator secret, 32+ characters |
 | `CAPACITY_DATABASE_URL` | restricted `capacity_benchmark` connection to the current Supabase project |
-| `CAPACITY_DATABASE_CA_FILE` | optional mounted CA bundle path if system trust cannot verify the database certificate |
+| `CAPACITY_DATABASE_CA_FILE` | optional mounted CA bundle path to override the packaged provider CA bundle |
 | `CAPACITY_RELEASE_ID` | `${_self.COMMIT_HASH}` |
 
 Replace secret placeholders in the hosting secret store; never submit them as
@@ -56,14 +58,23 @@ Get the actual endpoint from Supabase Connect; do not invent its region hostname
 Use a URL-encoded password and no query-string options. The worker enforces TLS
 certificate/hostname validation, a five-second connection timeout, read-only
 sessions, a 60-second statement timeout and one-second lock timeout. Transaction
-pooling on port 6543 is rejected. Verify the provider CA/hostname against the
-chosen direct/session endpoint during the approved hosted smoke test.
+pooling on port 6543 is rejected. The actual verified session endpoint for this project is
+`aws-0-ap-northeast-2.pooler.supabase.com:5432`. The provider CA from the project's
+Database Settings is packaged as `solver/staging/supabase-ca.crt` and is used by
+default. It was downloaded on 23 October 2026 from
+`https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt`.
+Its SHA-256 certificate fingerprint is
+`80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA`.
+It expires 26 April 2031. Certificate and hostname validation remain mandatory;
+refresh the packaged certificate through review if the provider rotates it.
+A native restricted-role connection and the infeasible smoke calculation passed
+from this workstation; repeat through the deployed endpoint before measurement.
 
 The SOLVER child receives no database URL, operator token or app credentials.
 Only the DATABASE child receives the restricted database URL/optional CA path.
 Neither gets the complete app environment. No Supabase service-role key is used.
 
-## Private benchmark SQL — installation prepared, not executed
+## Private benchmark SQL — installation procedure
 
 The existing database is acceptable to the user. Its shared CPU/memory is not a
 blocker. Benchmark objects live exclusively in `capacity_reference`, outside
@@ -96,7 +107,8 @@ The installation creates a NOLOGIN, NOINHERIT role with no elevated privileges o
 memberships, revokes schema/function access from PUBLIC and API roles, and grants
 only schema usage/function execution to `capacity_benchmark`. It changes no
 operational table, function or default privileges for unrelated future objects.
-All installation changes roll back on failure.
+All installation changes roll back on failure. The private functions also have
+`search_path=pg_catalog` pinned; no frozen calculation body is changed.
 
 In a secure administrator session, enable LOGIN for this new role and set its
 password using a secure interactive/password-management method; do not put the
@@ -107,7 +119,8 @@ absence of public-schema CREATE and ownership of benchmark functions before
 running any reference calculation. If these checks fail, investigate; do not
 relax operational schema permissions to make the test pass. Run Supabase security
 advisors after the approved installation and verify API roles cannot access the
-schema/functions. No shared-database migration has been applied by preparation.
+schema/functions. The approved installation has been executed directly; it does not alter the
+shared application migration history or operational objects.
 
 ## Test execution after approved deployment
 

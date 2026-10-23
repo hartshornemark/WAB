@@ -8,7 +8,6 @@ import importlib.metadata
 import json
 import os
 from pathlib import Path
-import ssl
 import sys
 import time
 from urllib.parse import unquote, urlsplit
@@ -49,7 +48,7 @@ def connect_database():
     if pooled and parsed.port != 5432:
         raise ValueError('Use session pooling on port 5432, not transaction pooling')
     return psycopg.connect(url, autocommit=True, connect_timeout=5,
-        sslmode='verify-full', sslrootcert=os.environ.get('CAPACITY_DATABASE_CA_FILE') or ssl.get_default_verify_paths().cafile,
+        sslmode='verify-full', sslrootcert=os.environ.get('CAPACITY_DATABASE_CA_FILE') or str(Path(__file__).with_name('supabase-ca.crt')),
         options='-c default_transaction_read_only=on -c statement_timeout=60000 -c lock_timeout=1000 -c search_path=pg_catalog')
 
 

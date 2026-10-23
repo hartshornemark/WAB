@@ -10,6 +10,8 @@ test("private reference installs transactionally, denies API roles, and calculat
   try {
     await db.exec("create role anon; create role authenticated; create role service_role; create table public.operational_sentinel(id int); insert into public.operational_sentinel values(1);");
     await db.exec("begin;" + files.map(sql).join("\n") + "commit;");
+    const pinned = await db.query<{ pinned: boolean }>("select bool_and(proconfig @> array['search_path=pg_catalog']) pinned from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='capacity_reference'");
+    assert.equal(pinned.rows[0].pinned, true);
     const roles = await db.query<{ name: string; usage: boolean; execute: boolean }>(`select name,has_schema_privilege(name,'capacity_reference','USAGE') usage, has_function_privilege(name,'capacity_reference.timed_offer(jsonb)','EXECUTE') execute from (values ('anon'),('authenticated'),('service_role'),('capacity_benchmark')) r(name)`);
     for (const role of roles.rows) { assert.equal(role.usage, role.name === "capacity_benchmark"); assert.equal(role.execute, role.name === "capacity_benchmark"); }
     await db.exec("set role capacity_benchmark; set default_transaction_read_only=on;");

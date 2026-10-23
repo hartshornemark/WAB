@@ -44,6 +44,7 @@ class StagingCapacityTests(unittest.TestCase):
                 with patch.dict(os.environ, {'CAPACITY_DATABASE_URL': url}):
                     with self.assertRaises(ValueError): worker.connect_database()
         self.assertEqual(captured['sslmode'], 'verify-full')
+        self.assertTrue(captured['sslrootcert'].endswith('supabase-ca.crt'))
         self.assertIn('default_transaction_read_only=on', captured['options'])
         self.assertIn('statement_timeout=60000', captured['options'])
         self.assertEqual(captured['connect_timeout'], 5)
