@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "aircraftSnapshot": "../zz9350-2026-10-24",
+  "knownConfigurationIssue": "F/W and over-capacity cabin bookings remain intentional synthetic benchmark inputs; operational class validation is deferred by user instruction.",
+  "cases": [
+    {"id": "case-01", "source": "user", "passengers": {"F": 3, "C": 10, "W": 22, "Y": 230}},
+    {"id": "case-02", "source": "user", "passengers": {"F": 9, "C": 25, "W": 4, "Y": 150}},
+    {"id": "case-03", "source": "user", "passengers": {"F": 10, "C": 25, "W": 30, "Y": 100}},
+    {"id": "case-04", "source": "user", "passengers": {"F": 7, "C": 4, "W": 0, "Y": 75}},
+    {"id": "case-05", "source": "user", "passengers": {"F": 0, "C": 0, "W": 30, "Y": 30}},
+    {"id": "case-06", "source": "user", "passengers": {"F": 14, "C": 38, "W": 15, "Y": 200}},
+    {
+      "id": "case-07-infeasible",
+      "source": "agent-designed synthetic stress case, requested by user",
+      "passengers": {"F": 0, "C": 0, "W": 0, "Y": 297},
+      "overrides": {"Y": {"Average_Bags_Per_Passenger": 7, "Average_Bag_Weight_Per_Passenger": 105}},
+      "reason": "Seven 15kg bags per Economy passenger, all proposed as ULD baggage with no Bulk diversion: 2079 bags require 42 AKEs at 50 pieces each. This exceeds the 38 candidate container rows even before overlap constraints. Artificial failure test, not a baggage allowance or live booking."
+    }
+  ]
+}

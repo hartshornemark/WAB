@@ -1,0 +1,70 @@
+{
+  "capturedAt": "2026-10-23T03:29:59.372399+00:00",
+  "assumptions": [
+    {
+      "selected": {
+        "Remarks": null,
+        "priority": 9,
+        "Class_Code": null,
+        "Carrier_IATA": "ZZ",
+        "Average_Bag_Volume": null,
+        "Flight_Type_Variation": null,
+        "Baggage_Commodity_Code": null,
+        "Planning_Assumption_UUID": "6c7e89b7-b21d-4b02-b314-22c11c262c2d",
+        "Average_Bags_Per_Passenger": 1,
+        "Average_Bag_Weight_Per_Passenger": 15
+      },
+      "classCode": "C"
+    },
+    {
+      "selected": {
+        "Remarks": null,
+        "priority": 9,
+        "Class_Code": null,
+        "Carrier_IATA": "ZZ",
+        "Average_Bag_Volume": null,
+        "Flight_Type_Variation": null,
+        "Baggage_Commodity_Code": null,
+        "Planning_Assumption_UUID": "6c7e89b7-b21d-4b02-b314-22c11c262c2d",
+        "Average_Bags_Per_Passenger": 1,
+        "Average_Bag_Weight_Per_Passenger": 15
+      },
+      "classCode": "F"
+    },
+    {
+      "selected": {
+        "Remarks": null,
+        "priority": 9,
+        "Class_Code": null,
+        "Carrier_IATA": "ZZ",
+        "Average_Bag_Volume": null,
+        "Flight_Type_Variation": null,
+        "Baggage_Commodity_Code": null,
+        "Planning_Assumption_UUID": "6c7e89b7-b21d-4b02-b314-22c11c262c2d",
+        "Average_Bags_Per_Passenger": 1,
+        "Average_Bag_Weight_Per_Passenger": 15
+      },
+      "classCode": "W"
+    },
+    {
+      "selected": {
+        "Remarks": null,
+        "priority": 9,
+        "Class_Code": null,
+        "Carrier_IATA": "ZZ",
+        "Average_Bag_Volume": null,
+        "Flight_Type_Variation": null,
+        "Baggage_Commodity_Code": null,
+        "Planning_Assumption_UUID": "6c7e89b7-b21d-4b02-b314-22c11c262c2d",
+        "Average_Bags_Per_Passenger": 1,
+        "Average_Bag_Weight_Per_Passenger": 15
+      },
+      "classCode": "Y"
+    }
+  ],
+  "flightBaggageBasis": {
+    "Baggage_Weight_Basis": "STANDARD",
+    "Baggage_Flight_Variation": null
+  },
+  "packingFunctionDefinition": "CREATE OR REPLACE FUNCTION private.a350_baggage_piece_targets(p_classes jsonb, p_piece_limit integer, p_net_limit numeric, p_volume_limit numeric)\n RETURNS jsonb\n LANGUAGE plpgsql\n IMMUTABLE\n SET search_path TO ''\nAS $function$\ndeclare\n row jsonb; premium_pieces integer; premium_weight numeric; premium_volume numeric;\n combine_premium boolean; pieces integer; weight numeric; volume numeric;\n capacity integer; remaining integer; targets jsonb:='[]'::jsonb;\nbegin\n if p_piece_limit is null or p_piece_limit<=0 or p_net_limit is null or p_net_limit<=0\n   or p_volume_limit is null or p_volume_limit<=0 then\n  raise exception 'Configure the default baggage ULD piece, gross-weight, tare and volume limits' using errcode='23514';\n end if;\n for row in select value from jsonb_array_elements(p_classes) loop\n  if nullif(row->>'plannedPieces','') is null or (row->>'plannedPieces')::integer<0\n    or nullif(row->>'plannedWeight','') is null or (row->>'plannedWeight')::numeric<0\n    or ((row->>'plannedPieces')::integer=0 and (row->>'plannedWeight')::numeric>0)\n    or ((row->>'plannedPieces')::integer>0 and\n      (nullif(row->>'plannedVolume','') is null or (row->>'plannedVolume')::numeric<=0\n       or (row->>'plannedWeight')::numeric<=0)) then\n   raise exception 'Complete the baggage pieces, net weight and volume forecast for each active class' using errcode='23514';\n  end if;\n end loop;\n select coalesce(sum((value->>'plannedPieces')::integer),0),coalesce(sum((value->>'plannedWeight')::numeric),0),coalesce(sum((value->>'plannedVolume')::numeric),0)\n into premium_pieces,premium_weight,premium_volume from jsonb_array_elements(p_classes)\n where value->>'commodityCode' in('BF','BJ');\n combine_premium:=premium_pieces>0 and premium_pieces<=p_piece_limit\n   and premium_weight<=p_net_limit and premium_volume<=p_volume_limit;\n if combine_premium then targets:=jsonb_build_array(premium_pieces);end if;\n for row in select value from jsonb_array_elements(p_classes) loop\n  if combine_premium and row->>'commodityCode' in('BF','BJ') then continue;end if;\n  pieces:=(row->>'plannedPieces')::integer;\n  if pieces=0 then continue;end if;\n  weight:=(row->>'plannedWeight')::numeric;volume:=(row->>'plannedVolume')::numeric;\n  capacity:=least(p_piece_limit,floor(p_net_limit*pieces/weight)::integer,floor(p_volume_limit*pieces/volume)::integer);\n  -- Commodity weights are rounded to whole kg when contents are generated.\n  while capacity>0 and ceil(capacity*weight/pieces)>p_net_limit loop capacity:=capacity-1;end loop;\n  if capacity<=0 then raise exception 'A forecast baggage piece exceeds the default ULD weight or volume limit' using errcode='23514';end if;\n  remaining:=pieces;\n  while remaining>0 loop targets:=targets||jsonb_build_array(least(capacity,remaining));remaining:=remaining-least(capacity,remaining);end loop;\n end loop;\n return targets;\nend $function$\n"
+}

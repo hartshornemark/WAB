@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "aircraftSource": "../zz9350-2026-10-24",
+  "aircraftSourceSha256": "1b0791723a1e9234856c993b4ff49e30367bb4f8ad0cc5a5d4c177d36dfdaa03",
+  "calculationStatus": "Neither DB cargo-capacity search nor solver executed",
+  "caseCount": 7,
+  "distinctCoreInputCount": 6,
+  "sourceSha256": {
+    "passenger-cases.json": "fd2158cd1bd657feffb9ec381251cbe9c7a7c3910ecd5bbdb17f2e4ce08a0ee3",
+    "baggage-assumptions.json": "bdb2e7b3486b3ac74502ed0c23ca48f4ad42c27ff58d1fdb97bd184f353607c5",
+    "baggage-density.json": "15e91978b3f4dd9dc8dcd41e2c8d85bc6faa5f6b52e27f40669bb68eaa33c141",
+    "capture-baggage-assumptions.sql": "f6da34849bf51a83a763cbd54adc14758ca262c657e402e27ce7e99ea694408d",
+    "prepare.mjs": "f5b53c63c24d2568904cd9716d9836fbbb9c949dbb0c6f190a35305a5ce266a3",
+    "prepared-cases.json": "085470dc04684275e37e6d7c18048e7be4711552a605dfef609b5e7304dceafc"
+  },
+  "summary": [
+    {
+      "id": "case-01",
+      "totalPassengers": 265,
+      "baggagePieces": 265,
+      "baggageNetKg": 3975,
+      "reservedBaggageUlds": 7,
+      "coreInputDuplicateOf": null,
+      "expectedInfeasibleByCandidateCount": false
+    },
+    {
+      "id": "case-02",
+      "totalPassengers": 188,
+      "baggagePieces": 188,
+      "baggageNetKg": 2820,
+      "reservedBaggageUlds": 5,
+      "coreInputDuplicateOf": null,
+      "expectedInfeasibleByCandidateCount": false
+    },
+    {
+      "id": "case-03",
+      "totalPassengers": 165,
+      "baggagePieces": 165,
+      "baggageNetKg": 2475,
+      "reservedBaggageUlds": 4,
+      "coreInputDuplicateOf": null,
+      "expectedInfeasibleByCandidateCount": false
+    },
+    {
+      "id": "case-04",
+      "totalPassengers": 86,
+      "baggagePieces": 86,
+      "baggageNetKg": 1290,
+      "reservedBaggageUlds": 3,
+      "coreInputDuplicateOf": null,
+      "expectedInfeasibleByCandidateCount": false
+    },
+    {
+      "id": "case-05",
+      "totalPassengers": 60,
+      "baggagePieces": 60,
+      "baggageNetKg": 900,
+      "reservedBaggageUlds": 2,
+      "coreInputDuplicateOf": null,
+      "expectedInfeasibleByCandidateCount": false
+    },
+    {
+      "id": "case-06",
+      "totalPassengers": 267,
+      "baggagePieces": 267,
+      "baggageNetKg": 4005,
+      "reservedBaggageUlds": 7,
+      "coreInputDuplicateOf": "case-01",
+      "expectedInfeasibleByCandidateCount": false
+    },
+    {
+      "id": "case-07-infeasible",
+      "totalPassengers": 297,
+      "baggagePieces": 2079,
+      "baggageNetKg": 31185,
+      "reservedBaggageUlds": 42,
+      "coreInputDuplicateOf": null,
+      "expectedInfeasibleByCandidateCount": true
+    }
+  ]
+}
