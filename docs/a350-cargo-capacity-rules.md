@@ -100,10 +100,13 @@ returned witnesses are independently validated. These are rule unit tests, not
 the seven frozen passenger-case comparisons or performance benchmarks.
 
 The frozen version-1 flight inputs and passenger scenarios remain unchanged.
-They lack some version-2 weight, tare, hierarchy and Bulk-reservation fields.
-Before Step 3, create an explicitly sourced, versioned enrichment for both
-components, preserving the original snapshots and checksums. Missing values must
-be resolved from configuration, not defaulted or silently upgraded.
+Their separately sourced version-2 enrichment is now sealed in
+`tests/fixtures/cargo-capacity/passenger-scenarios-v2`. Its manifest identifies
+the new capture timestamps, field provenance, explicit synthetic reservation
+scope and identical input file for each component. Preparation checks original
+aircraft/ULD/footprint data for drift and validates all seven packages without
+running either capacity calculation. See that pack's README for reproduction
+and the remaining execution-budget/reference scalability decisions in Step 3.
 
 The live legacy database remains pallet-first and is **not aligned** by this
 local change. Historical prototype timings use different rules and cannot

@@ -1,0 +1,1128 @@
+{
+  "schemaVersion": 2,
+  "rulesVersion": "A350_MAX_NET_CARGO_V2",
+  "status": "Inputs prepared and validated only; no capacity result comparison or timing run",
+  "sourceCaptureAt": "2026-10-23T04:18:04.799898+00:00",
+  "verificationCaptureAt": "2026-10-23T04:18:40.754162+00:00",
+  "snapshotPolicy": "Original frozen passenger, baggage and aircraft inputs plus separately timestamped V2 enrichment; original holds/specs/positions/occupancy and master volumes verified unchanged. Not one historical database transaction.",
+  "weightProvenance": {
+    "registration": "ZZLGC",
+    "flightVersion": 4,
+    "maximumZfwKg": 195700,
+    "maximumZfwSource": "Aircraft_Limiting_Weight_Values: ALL / subtype / matching registration or generic",
+    "baseDowKg": 136804,
+    "crewAdjustmentKg": 0,
+    "pantryAdjustmentKg": 0,
+    "effectiveDowKg": 136804,
+    "passengerPlanningKg": 84,
+    "passengerSource": "Carrier_Passenger_Weights_ALLFLIGHTS.Adult; hand baggage included",
+    "cargoDensityKgPerM3": 212
+  },
+  "timeLimitPolicy": "2 seconds retained as an explicit prototype setting, not an agreed Step 3 or timing execution budget; any change requires a new input revision for both components.",
+  "sourceSha256": {
+    "source.json": "9c0e4860cc908cc65169999c707fea71dacd3b4934578d85a80bb172be430c77",
+    "capture.sql": "dd060a95e6b03228a7a83a28263c6d0f51b10c6edae7f48a14b83a061a24ffbc",
+    "verification-source.json": "5dd1df26215adedd2bf23b43d7c1b52e7ae9eb8fffb05a8d00f6bf83104ceff6",
+    "verification-capture.sql": "c2658883236537d0e14799e3a80d68f77dbc48aefe78a15322f75aae31991301",
+    "prepare.mjs": "105cf6947830d7a3e676c70477fc02bf607cd4970c15397e0491cfb5003ae7cb",
+    "README.md": "8c743065db9dc83e14e5ad02861939649225727cedc8872ed1464de228158ef6",
+    "../zz9350-2026-10-24/source.json": "1b0791723a1e9234856c993b4ff49e30367bb4f8ad0cc5a5d4c177d36dfdaa03",
+    "../passenger-scenarios/prepared-cases.json": "085470dc04684275e37e6d7c18048e7be4711552a605dfef609b5e7304dceafc",
+    "../passenger-scenarios/passenger-cases.json": "fd2158cd1bd657feffb9ec381251cbe9c7a7c3910ecd5bbdb17f2e4ce08a0ee3",
+    "../passenger-scenarios/baggage-assumptions.json": "bdb2e7b3486b3ac74502ed0c23ca48f4ad42c27ff58d1fdb97bd184f353607c5",
+    "../passenger-scenarios/baggage-density.json": "15e91978b3f4dd9dc8dcd41e2c8d85bc6faa5f6b52e27f40669bb68eaa33c141"
+  },
+  "cases": [
+    {
+      "id": "case-01",
+      "passengers": {
+        "F": 3,
+        "C": 10,
+        "W": 22,
+        "Y": 230
+      },
+      "totalPassengers": 265,
+      "passengerWeightGrams": 22260000,
+      "baggageNetWeightGrams": 3975000,
+      "baggageUldCount": 7,
+      "baggageTareWeightGrams": 700000,
+      "baggageVolumeMillilitres": 22590000,
+      "baggageUldContents": [
+        {
+          "id": "case-01:BAG:01",
+          "pieces": 13,
+          "contents": [
+            {
+              "commodityCode": "BF",
+              "pieces": 3,
+              "netWeightGrams": 45000
+            },
+            {
+              "commodityCode": "BJ",
+              "pieces": 10,
+              "netWeightGrams": 150000
+            }
+          ],
+          "netWeightGrams": 195000,
+          "volumeMillilitres": 1108200
+        },
+        {
+          "id": "case-01:BAG:02",
+          "pieces": 22,
+          "contents": [
+            {
+              "commodityCode": "BP",
+              "pieces": 22,
+              "netWeightGrams": 330000
+            }
+          ],
+          "netWeightGrams": 330000,
+          "volumeMillilitres": 1875400
+        },
+        {
+          "id": "case-01:BAG:03",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262261
+        },
+        {
+          "id": "case-01:BAG:04",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262261
+        },
+        {
+          "id": "case-01:BAG:05",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262261
+        },
+        {
+          "id": "case-01:BAG:06",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262261
+        },
+        {
+          "id": "case-01:BAG:07",
+          "pieces": 30,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 30,
+              "netWeightGrams": 450000
+            }
+          ],
+          "netWeightGrams": 450000,
+          "volumeMillilitres": 2557356
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": false,
+      "databaseInput": "inputs/case-01.json",
+      "solverInput": "inputs/case-01.json",
+      "inputRevision": "sha256:bf6ad3bae55fa9acf0e4c5eaf99569c3aa0ffbf6f992294fdbde77e1d67afb36",
+      "inputSha256": "0ad60d445a95b63ecfee413dda75a315311d1e3257e01e812feba173ef767269"
+    },
+    {
+      "id": "case-02",
+      "passengers": {
+        "F": 9,
+        "C": 25,
+        "W": 4,
+        "Y": 150
+      },
+      "totalPassengers": 188,
+      "passengerWeightGrams": 15792000,
+      "baggageNetWeightGrams": 2820000,
+      "baggageUldCount": 5,
+      "baggageTareWeightGrams": 500000,
+      "baggageVolumeMillilitres": 16020000,
+      "baggageUldContents": [
+        {
+          "id": "case-02:BAG:01",
+          "pieces": 34,
+          "contents": [
+            {
+              "commodityCode": "BF",
+              "pieces": 9,
+              "netWeightGrams": 135000
+            },
+            {
+              "commodityCode": "BJ",
+              "pieces": 25,
+              "netWeightGrams": 375000
+            }
+          ],
+          "netWeightGrams": 510000,
+          "volumeMillilitres": 2897200
+        },
+        {
+          "id": "case-02:BAG:02",
+          "pieces": 4,
+          "contents": [
+            {
+              "commodityCode": "BP",
+              "pieces": 4,
+              "netWeightGrams": 60000
+            }
+          ],
+          "netWeightGrams": 60000,
+          "volumeMillilitres": 340900
+        },
+        {
+          "id": "case-02:BAG:03",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4260634
+        },
+        {
+          "id": "case-02:BAG:04",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4260633
+        },
+        {
+          "id": "case-02:BAG:05",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4260633
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": false,
+      "databaseInput": "inputs/case-02.json",
+      "solverInput": "inputs/case-02.json",
+      "inputRevision": "sha256:0c8045c6c70a78730dba2ef99af64e14acf2cee1323954a1ead80d0224104c67",
+      "inputSha256": "895027f5a03c637bd5755da746e00719cbc870220cbae5810dee8f2a8e760407"
+    },
+    {
+      "id": "case-03",
+      "passengers": {
+        "F": 10,
+        "C": 25,
+        "W": 30,
+        "Y": 100
+      },
+      "totalPassengers": 165,
+      "passengerWeightGrams": 13860000,
+      "baggageNetWeightGrams": 2475000,
+      "baggageUldCount": 4,
+      "baggageTareWeightGrams": 400000,
+      "baggageVolumeMillilitres": 14060000,
+      "baggageUldContents": [
+        {
+          "id": "case-03:BAG:01",
+          "pieces": 35,
+          "contents": [
+            {
+              "commodityCode": "BF",
+              "pieces": 10,
+              "netWeightGrams": 150000
+            },
+            {
+              "commodityCode": "BJ",
+              "pieces": 25,
+              "netWeightGrams": 375000
+            }
+          ],
+          "netWeightGrams": 525000,
+          "volumeMillilitres": 2982400
+        },
+        {
+          "id": "case-03:BAG:02",
+          "pieces": 30,
+          "contents": [
+            {
+              "commodityCode": "BP",
+              "pieces": 30,
+              "netWeightGrams": 450000
+            }
+          ],
+          "netWeightGrams": 450000,
+          "volumeMillilitres": 2556400
+        },
+        {
+          "id": "case-03:BAG:03",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4260600
+        },
+        {
+          "id": "case-03:BAG:04",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4260600
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": false,
+      "databaseInput": "inputs/case-03.json",
+      "solverInput": "inputs/case-03.json",
+      "inputRevision": "sha256:aff2b2a7434fe84a29281215ba4ff86874ff81a599273fde1151fe221d1e0be3",
+      "inputSha256": "fd9f7ffaf662a5674266b9353075d7d572cfb976e51182f5cdfc91a8bf8d699a"
+    },
+    {
+      "id": "case-04",
+      "passengers": {
+        "F": 7,
+        "C": 4,
+        "W": 0,
+        "Y": 75
+      },
+      "totalPassengers": 86,
+      "passengerWeightGrams": 7224000,
+      "baggageNetWeightGrams": 1290000,
+      "baggageUldCount": 3,
+      "baggageTareWeightGrams": 300000,
+      "baggageVolumeMillilitres": 7329900,
+      "baggageUldContents": [
+        {
+          "id": "case-04:BAG:01",
+          "pieces": 11,
+          "contents": [
+            {
+              "commodityCode": "BF",
+              "pieces": 7,
+              "netWeightGrams": 105000
+            },
+            {
+              "commodityCode": "BJ",
+              "pieces": 4,
+              "netWeightGrams": 60000
+            }
+          ],
+          "netWeightGrams": 165000,
+          "volumeMillilitres": 937500
+        },
+        {
+          "id": "case-04:BAG:02",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261600
+        },
+        {
+          "id": "case-04:BAG:03",
+          "pieces": 25,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 25,
+              "netWeightGrams": 375000
+            }
+          ],
+          "netWeightGrams": 375000,
+          "volumeMillilitres": 2130800
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": false,
+      "databaseInput": "inputs/case-04.json",
+      "solverInput": "inputs/case-04.json",
+      "inputRevision": "sha256:54c166fe201d62c20814fa394d0a99c016f3db20fbf165bd2ceafdab2973935b",
+      "inputSha256": "364ceb11310a8e948c0ed9e22b85eb482a8f20ed9c5f3c5e829ba841d24a10dc"
+    },
+    {
+      "id": "case-05",
+      "passengers": {
+        "F": 0,
+        "C": 0,
+        "W": 30,
+        "Y": 30
+      },
+      "totalPassengers": 60,
+      "passengerWeightGrams": 5040000,
+      "baggageNetWeightGrams": 900000,
+      "baggageUldCount": 2,
+      "baggageTareWeightGrams": 200000,
+      "baggageVolumeMillilitres": 5110000,
+      "baggageUldContents": [
+        {
+          "id": "case-05:BAG:01",
+          "pieces": 30,
+          "contents": [
+            {
+              "commodityCode": "BP",
+              "pieces": 30,
+              "netWeightGrams": 450000
+            }
+          ],
+          "netWeightGrams": 450000,
+          "volumeMillilitres": 2555000
+        },
+        {
+          "id": "case-05:BAG:02",
+          "pieces": 30,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 30,
+              "netWeightGrams": 450000
+            }
+          ],
+          "netWeightGrams": 450000,
+          "volumeMillilitres": 2555000
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": false,
+      "databaseInput": "inputs/case-05.json",
+      "solverInput": "inputs/case-05.json",
+      "inputRevision": "sha256:829c42c5778ab67f01449830b8c97369adf83687f937d9317bd59fb81a78e78d",
+      "inputSha256": "a2ee1b54e1c9100053bc8d1adb348ac74f78324cc5b529770bc3993f09686b08"
+    },
+    {
+      "id": "case-06",
+      "passengers": {
+        "F": 14,
+        "C": 38,
+        "W": 15,
+        "Y": 200
+      },
+      "totalPassengers": 267,
+      "passengerWeightGrams": 22428000,
+      "baggageNetWeightGrams": 4005000,
+      "baggageUldCount": 7,
+      "baggageTareWeightGrams": 700000,
+      "baggageVolumeMillilitres": 22760100,
+      "baggageUldContents": [
+        {
+          "id": "case-06:BAG:01",
+          "pieces": 14,
+          "contents": [
+            {
+              "commodityCode": "BF",
+              "pieces": 14,
+              "netWeightGrams": 210000
+            }
+          ],
+          "netWeightGrams": 210000,
+          "volumeMillilitres": 1193400
+        },
+        {
+          "id": "case-06:BAG:02",
+          "pieces": 38,
+          "contents": [
+            {
+              "commodityCode": "BJ",
+              "pieces": 38,
+              "netWeightGrams": 570000
+            }
+          ],
+          "netWeightGrams": 570000,
+          "volumeMillilitres": 3239300
+        },
+        {
+          "id": "case-06:BAG:03",
+          "pieces": 15,
+          "contents": [
+            {
+              "commodityCode": "BP",
+              "pieces": 15,
+              "netWeightGrams": 225000
+            }
+          ],
+          "netWeightGrams": 225000,
+          "volumeMillilitres": 1278700
+        },
+        {
+          "id": "case-06:BAG:04",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262175
+        },
+        {
+          "id": "case-06:BAG:05",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262175
+        },
+        {
+          "id": "case-06:BAG:06",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262175
+        },
+        {
+          "id": "case-06:BAG:07",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4262175
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": false,
+      "databaseInput": "inputs/case-06.json",
+      "solverInput": "inputs/case-06.json",
+      "inputRevision": "sha256:2883a081a583a9420acc2aa98ad0fc4b6c35933df970e853e407764682e83f1a",
+      "inputSha256": "8968c27a65802381b0df2451b51f1c3326ce6b9ec5299a6bcd3fb1feb95d4b7b"
+    },
+    {
+      "id": "case-07-infeasible",
+      "passengers": {
+        "F": 0,
+        "C": 0,
+        "W": 0,
+        "Y": 297
+      },
+      "totalPassengers": 297,
+      "passengerWeightGrams": 24948000,
+      "baggageNetWeightGrams": 31185000,
+      "baggageUldCount": 42,
+      "baggageTareWeightGrams": 4200000,
+      "baggageVolumeMillilitres": 177190000,
+      "baggageUldContents": [
+        {
+          "id": "case-07-infeasible:BAG:01",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:02",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:03",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:04",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:05",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:06",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:07",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:08",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:09",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:10",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:11",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:12",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:13",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:14",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:15",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:16",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:17",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:18",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:19",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:20",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:21",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:22",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:23",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:24",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:25",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:26",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:27",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:28",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:29",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:30",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:31",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261424
+        },
+        {
+          "id": "case-07-infeasible:BAG:32",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:33",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:34",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:35",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:36",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:37",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:38",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:39",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:40",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:41",
+          "pieces": 50,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 50,
+              "netWeightGrams": 750000
+            }
+          ],
+          "netWeightGrams": 750000,
+          "volumeMillilitres": 4261423
+        },
+        {
+          "id": "case-07-infeasible:BAG:42",
+          "pieces": 29,
+          "contents": [
+            {
+              "commodityCode": "BY",
+              "pieces": 29,
+              "netWeightGrams": 435000
+            }
+          ],
+          "netWeightGrams": 435000,
+          "volumeMillilitres": 2471626
+        }
+      ],
+      "fixedReservationScope": "Synthetic offer baseline: all proposed baggage is in ULDs; no Bulk baggage or other reserved load. Existing flight freight and accepted accommodation are not overlaid.",
+      "expectedInfeasibleByCandidateCount": true,
+      "databaseInput": "inputs/case-07-infeasible.json",
+      "solverInput": "inputs/case-07-infeasible.json",
+      "inputRevision": "sha256:13790dd8445231e32e9dc29ad2ee97a60a981ad5f4841275dd184782c38ea949",
+      "inputSha256": "29d4dab84c9196aef9e8d11165646acb2f559ec860c1498acbbb018381d5d721"
+    }
+  ]
+}

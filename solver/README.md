@@ -41,8 +41,10 @@ unknown. A feasible witness alone does not establish the maximum.
 `reference/max_net_cargo_v2.sql` is an offline database reference installed only
 in isolated PGlite rule tests. It is not a migration or an exposed production
 function. Both implementations use the same validated version-2 input contract.
-The frozen version-1 flight/scenario artifacts remain immutable and need explicit,
-sourced enrichment before the next scenario-comparison stage.
+The frozen version-1 flight/scenario artifacts remain immutable. Their sourced
+enrichment is sealed in `tests/fixtures/cargo-capacity/passenger-scenarios-v2`;
+both components receive the same input file per case. Input preparation and
+validation have completed without running the scenario comparisons or timings.
 
 The server-only adapter admits at most two active capacity workers per process,
 bounds input/output and execution, forwards no database credentials, and checks
