@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createStagingCapacityEndpoint } from "../src/infrastructure/capacity/staging-endpoint";
-import type { CapacityTestRunner } from "../src/infrastructure/capacity/staging-worker";
+import { CapacityTestDeadlineError, type CapacityTestRunner } from "../src/infrastructure/capacity/staging-worker";
 const env = { WAB_DEPLOYMENT_ENV: "staging", WAB_CAPACITY_TESTS_ENABLED: "true", WAB_CAPACITY_TEST_TOKEN: "test-only-operator-token-01234567890123456789" };
 const request = (body: unknown = { caseId: "case-01", engine: "DATABASE" }, token = env.WAB_CAPACITY_TEST_TOKEN) => new Request("https://staging.example/api/internal/a350-capacity", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
 const saved = JSON.parse(readFileSync("solver/verification/a350-v2-seven-scenarios-2026-10-23/final/case-01.json", "utf8"));
@@ -66,4 +66,16 @@ test("profiling is restricted to Case 3 solver and returned only when requested"
   const response = await endpoint(request({caseId:"case-03",engine:"SOLVER",profileCase3:true}));
   assert.equal(response.status,200);
   assert.equal((await response.json()).searchProfile.version,"CASE3_INCUMBENTS_V1");
+});
+
+
+test("six-second publication is solver-only, validates before publishing and labels unproved results", async()=>{
+  const run:CapacityTestRunner=async job=>{assert.equal(job.totalBudgetMilliseconds,6000);assert(Number.isFinite(job.deadlineMilliseconds));return {...measured(),engine:"SOLVER",result:{...saved.database.result,status:"FEASIBLE"}};};
+  const endpoint=createStagingCapacityEndpoint({env,run});
+  for(const body of [{caseId:"case-01",engine:"DATABASE",totalBudgetMilliseconds:6000},{caseId:"case-01",engine:"SOLVER",totalBudgetMilliseconds:5000}])assert.equal((await endpoint(request(body))).status,400);
+  const response=await endpoint(request({caseId:"case-01",engine:"SOLVER",totalBudgetMilliseconds:6000}));
+  const body=await response.json();assert.equal(body.publication.state,"VALID_UNPROVEN");assert.equal(body.validation,"PASS");assert.equal(body.outcome,"INCONCLUSIVE");
+  const expired=createStagingCapacityEndpoint({env,run:async()=>{throw new CapacityTestDeadlineError();}});
+  const incomplete=await (await expired(request({caseId:"case-01",engine:"SOLVER",totalBudgetMilliseconds:6000}))).json();
+  assert.equal(incomplete.result,null);assert.equal(incomplete.publication.state,"NO_VALID_RESULT");
 });

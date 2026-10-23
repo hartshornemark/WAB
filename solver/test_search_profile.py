@@ -35,6 +35,18 @@ class SearchProfileTests(unittest.TestCase):
         self.assertGreaterEqual(report['processCpuMilliseconds'], 0)
         self.assertTrue(all(a['netWeightGrams'] < b['netWeightGrams'] for a,b in zip(report['improvements'], report['improvements'][1:])))
 
+    def test_narrowed_budget_preserves_the_sealed_input_and_handles_no_search(self):
+        problem = json.loads((Path(__file__).parent / 'verification/a350-v2-seven-scenarios-2026-10-23/final/inputs/case-03.json').read_text())
+        observer = SearchProfile()
+        result = solve_capacity(problem, observer=observer, time_budget_seconds=0.000001)
+        report = observer.report(result)
+        self.assertEqual(problem['timeLimitSeconds'], 10)
+        self.assertEqual(result['status'], 'UNKNOWN')
+        self.assertIsNone(report['bestFoundMilliseconds'])
+        self.assertIsNone(report['proofMilliseconds'])
+        for budget in [0, 11, False, float('nan')]:
+            with self.assertRaises(ValueError): solve_capacity(problem, time_budget_seconds=budget)
+
     def test_unproved_result_never_gets_a_proof_time(self):
         observer = SearchProfile()
         observer.events = [{'netWeightGrams': 10, 'calculationMilliseconds': 2}]

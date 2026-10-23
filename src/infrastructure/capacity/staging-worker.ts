@@ -4,11 +4,12 @@ import { join } from "node:path";
 import { performance } from "node:perf_hooks";
 import type { CargoCapacityProblem } from "@/domain/cargo-capacity";
 
-export type CapacityTestJob = { caseId: string; engine: "DATABASE" | "SOLVER"; inputSha256: string; problem: CargoCapacityProblem; profileCase3?: true };
+export type CapacityTestJob = { caseId: string; engine: "DATABASE" | "SOLVER"; inputSha256: string; problem: CargoCapacityProblem; profileCase3?: true; totalBudgetMilliseconds?: 6000; deadlineMilliseconds?: number };
 export type CapacityTestMeasurement = {
   engine: string; inputSha256: string; result: unknown; calculationMilliseconds: number;
-  workerStartupMilliseconds?: number; deployment?: unknown; searchProfile?: unknown;
+  workerStartupMilliseconds?: number; deployment?: unknown; searchProfile?: unknown; executionBudget?: unknown;
 };
+export class CapacityTestDeadlineError extends Error { constructor() { super("Test request deadline reached; no validated result available"); } }
 export type CapacityTestRunner = (job: CapacityTestJob) => Promise<CapacityTestMeasurement>;
 
 export function createStagingCapacityWorker(options: { env?: Readonly<Record<string, string | undefined>>; root?: string } = {}): CapacityTestRunner {
@@ -20,7 +21,11 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
       childEnv.CAPACITY_DATABASE_URL = env.CAPACITY_DATABASE_URL;
       if (env.CAPACITY_DATABASE_CA_FILE) childEnv.CAPACITY_DATABASE_CA_FILE = env.CAPACITY_DATABASE_CA_FILE;
     }
-    const raw = JSON.stringify(job);
+    const { deadlineMilliseconds, ...wireJob } = job;
+    const timed = job.totalBudgetMilliseconds === 6000;
+    const deadline = deadlineMilliseconds ?? performance.now() + 5500;
+    if (timed && (job.engine !== "SOLVER" || !Number.isFinite(deadline) || deadline <= performance.now())) throw new CapacityTestDeadlineError();
+    const raw = JSON.stringify(wireJob);
     if (Buffer.byteLength(raw) > 256_000) throw Error("Oversized benchmark job");
     return new Promise((resolve, reject) => {
       const started = performance.now();
@@ -39,7 +44,7 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
       };
       // Give imports a separate bounded startup budget. The model's sealed
       // search budget starts after readiness, not when the OS process launches.
-      let timer = setTimeout(() => finish(Error("Benchmark startup execution limit; no maximum confirmed")), job.engine === "SOLVER" ? 15_000 : 68_000);
+      let timer = setTimeout(() => finish(timed ? new CapacityTestDeadlineError() : Error("Benchmark startup execution limit; no maximum confirmed")), timed ? Math.max(1, deadline - performance.now()) : job.engine === "SOLVER" ? 15_000 : 68_000);
       child.stdout.on("data", (chunk: Buffer) => {
         stdoutBytes += chunk.length;
         if (stdoutBytes > 1_000_000) { finish(Error("Benchmark output limit")); return; }
@@ -50,7 +55,11 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
             try {
               if (JSON.parse(pending.split("\n")[0]).ready === true) {
                 readyAt = performance.now();
-                if (job.engine === "SOLVER") {
+                if (timed) {
+                  const remaining = Math.floor(Math.min(job.problem.timeLimitSeconds * 1000, deadline - performance.now() - 250));
+                  if (remaining <= 0) { finish(new CapacityTestDeadlineError()); return; }
+                  child.stdin.end(JSON.stringify({ calculationBudgetMilliseconds: remaining }) + "\n");
+                } else if (job.engine === "SOLVER") {
                   clearTimeout(timer);
                   timer = setTimeout(() => finish(Error("Benchmark calculation execution limit; no maximum confirmed")), (job.problem.timeLimitSeconds + 2) * 1000);
                 }
@@ -64,7 +73,7 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
       child.on("error", () => finish(Error("Benchmark worker could not start")));
       child.stdin.on("error", () => finish(Error("Benchmark input failed")));
       child.on("close", code => finish(code === 0 ? undefined : Error("Benchmark worker failed; no maximum confirmed")));
-      child.stdin.end(raw);
+      if (timed) child.stdin.write(raw + "\n"); else child.stdin.end(raw);
     });
   };
 }

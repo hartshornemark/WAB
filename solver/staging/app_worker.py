@@ -19,8 +19,10 @@ ROLE = 'capacity_benchmark'
 
 
 def fixed_case(body):
-    if not isinstance(body, dict) or set(body) not in ({'caseId', 'engine', 'inputSha256', 'problem'}, {'caseId', 'engine', 'inputSha256', 'problem', 'profileCase3'}):
+    if not isinstance(body, dict) or not {'caseId', 'engine', 'inputSha256', 'problem'} <= set(body) or set(body) - {'caseId', 'engine', 'inputSha256', 'problem', 'profileCase3', 'totalBudgetMilliseconds'}:
         raise ValueError('Invalid fixed-case request')
+    if 'totalBudgetMilliseconds' in body and (type(body['totalBudgetMilliseconds']) is not int or body['totalBudgetMilliseconds'] != 6000 or body['engine'] != 'SOLVER'):
+        raise ValueError('Only the six-second SOLVER test budget is allowed')
     if 'profileCase3' in body and (body['profileCase3'] is not True or body['caseId'] != 'case-03' or body['engine'] != 'SOLVER'):
         raise ValueError('Profiling is restricted to the Case 3 solver')
     if body['engine'] not in ('DATABASE', 'SOLVER'):
@@ -68,9 +70,17 @@ def database_ready(conn):
     return row[1]
 
 
+def read_budget():
+    control = json.loads(sys.stdin.buffer.readline(129))
+    if not isinstance(control, dict) or set(control) != {'calculationBudgetMilliseconds'} or type(control['calculationBudgetMilliseconds']) is not int or not 0 < control['calculationBudgetMilliseconds'] <= 6000:
+        raise ValueError('Invalid request deadline budget')
+    return control['calculationBudgetMilliseconds']
+
+
 def calculate(body):
     problem = fixed_case(body)
     deployment = {'revision': os.environ.get('CAPACITY_RELEASE_ID', 'unlabelled'),
+                  'instance': os.uname().nodename, 'architecture': os.uname().machine,
                   'topology': 'existing-app-local-worker', 'pythonVersion': sys.version.split()[0],
                   'ortoolsVersion': importlib.metadata.version('ortools'), 'workerMode': 'one-shot',
                   'admission': 'one test per app process; serial caller required across replicas',
@@ -83,8 +93,9 @@ def calculate(body):
             from staging.search_profile import SearchProfile
             observer = SearchProfile()
         print(json.dumps({'ready': True}), flush=True)
+        budget_ms = read_budget() if body.get('totalBudgetMilliseconds') else None
         started = time.perf_counter_ns()
-        result = solve_capacity(problem, observer=observer)
+        result = solve_capacity(problem, observer=observer, time_budget_seconds=None if budget_ms is None else budget_ms / 1000)
         measured = {'result': result, 'calculationMilliseconds': (time.perf_counter_ns() - started) / 1_000_000}
     else:
         print(json.dumps({'ready': True}), flush=True)
@@ -92,6 +103,8 @@ def calculate(body):
             deployment['postgresVersion'] = database_ready(conn)
             measured = conn.execute('select capacity_reference.timed_offer(%s::jsonb)', (json.dumps(problem),)).fetchone()[0]
         deployment['databaseEngine'] = 'current Supabase native PostgreSQL'
+    if body.get('totalBudgetMilliseconds'):
+        measured['executionBudget'] = {'testingOnly': True, 'totalTargetMilliseconds': 6000, 'calculationBudgetMilliseconds': budget_ms}
     if body.get('profileCase3'):
         measured['searchProfile'] = observer.report(result)
     return {**measured, 'engine': body['engine'], 'inputSha256': body['inputSha256'], 'deployment': deployment}
@@ -100,7 +113,7 @@ def calculate(body):
 if __name__ == '__main__':
     try:
         # A pipe request is bounded even if invoked outside the HTTP adapter.
-        raw = sys.stdin.buffer.read(256_001)
+        raw = sys.stdin.buffer.readline(256_001)
         if len(raw) > 256_000:
             raise ValueError('Oversized input')
         print(json.dumps(calculate(json.loads(raw))), flush=True)

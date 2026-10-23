@@ -42,6 +42,14 @@ class SearchProfile(cp_model.CpSolverSolutionCallback):
         self.branches = solver.num_branches
         self.conflicts = solver.num_conflicts
 
+    def finish_without_search(self):
+        self.ended_ms = (time.perf_counter() - self.started) * 1000
+        self.cpu_ms = (time.process_time() - self.cpu_started) * 1000
+        self.status = cp_model.UNKNOWN
+        self.upper_bound = None
+        self.solver_wall_ms = self.final_deterministic_time = 0
+        self.branches = self.conflicts = 0
+
     def report(self, result):
         final_net = (result.get('arrangement') or {}).get('cargoNetWeightGrams')
         reached = next((e for e in self.events if e['netWeightGrams'] == final_net), None)

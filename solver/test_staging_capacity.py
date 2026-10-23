@@ -23,6 +23,10 @@ class StagingCapacityTests(unittest.TestCase):
             bad = copy.deepcopy(b); change(bad)
             with self.assertRaises(ValueError): worker.fixed_case(bad)
         with self.assertRaises(ValueError): worker.fixed_case({**b, 'arbitrary': 1})
+        self.assertEqual(worker.fixed_case({**b, 'totalBudgetMilliseconds': 6000}), b['problem'])
+        for value in [5000, 6000.0, True, '6000']:
+            with self.assertRaises(ValueError): worker.fixed_case({**b, 'totalBudgetMilliseconds': value})
+        with self.assertRaises(ValueError): worker.fixed_case({**body('DATABASE'), 'totalBudgetMilliseconds': 6000})
         for value in [True, False, 1, 'true']:
             with self.assertRaises(ValueError): worker.fixed_case({**b, 'profileCase3': value})
 

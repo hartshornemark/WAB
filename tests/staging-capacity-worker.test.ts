@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { performance } from "node:perf_hooks";
 import { createStagingCapacityWorker, type CapacityTestJob } from "../src/infrastructure/capacity/staging-worker";
 const row = JSON.parse(readFileSync("solver/verification/a350-v2-seven-scenarios-2026-10-23/final/case-07-infeasible.json", "utf8"));
 const job: CapacityTestJob = { engine: "SOLVER", caseId: "case-07-infeasible", inputSha256: row.inputSha256, problem: JSON.parse(readFileSync("solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs/case-07-infeasible.json", "utf8")) };
@@ -56,4 +57,30 @@ test("post-readiness execution timeout kills a stalled solver worker", async () 
   try {
     await assert.rejects(createStagingCapacityWorker({ env: { WAB_SOLVER_PYTHON: process.execPath }, root: worker.root })({ ...job, problem: { ...job.problem, timeLimitSeconds: 0.01 } }), /calculation execution limit/);
   } finally { worker.close(); }
+});
+
+test("total request budget includes startup and sends only the remaining calculation allowance", async () => {
+  const worker = fakeWorker(`const readline=require('node:readline');let n=0;readline.createInterface({input:process.stdin}).on('line',line=>{if(n++===0){setTimeout(()=>console.log(JSON.stringify({ready:true})),300);}else{const control=JSON.parse(line);console.log(JSON.stringify({engine:'SOLVER',inputSha256:'test',result:control,calculationMilliseconds:0}));}});`);
+  try {
+    const result = await createStagingCapacityWorker({env:{WAB_SOLVER_PYTHON:process.execPath},root:worker.root})({...job,totalBudgetMilliseconds:6000,deadlineMilliseconds:performance.now()+1500});
+    const budget = (result.result as {calculationBudgetMilliseconds:number}).calculationBudgetMilliseconds;
+    assert(budget>0 && budget<1100);
+    assert(result.workerStartupMilliseconds!>=300);
+  } finally { worker.close(); }
+});
+
+test("total deadline terminates startup rather than allowing a separate import allowance", async () => {
+  const worker = fakeWorker(`process.stdin.resume();setInterval(()=>{},1000);`);
+  try {
+    const started=performance.now();
+    await assert.rejects(createStagingCapacityWorker({env:{WAB_SOLVER_PYTHON:process.execPath},root:worker.root})({...job,totalBudgetMilliseconds:6000,deadlineMilliseconds:started+120}),/request deadline/);
+    assert(performance.now()-started<1000);
+  } finally { worker.close(); }
+});
+
+test("real six-second worker handshake returns a validated fixed input without changing it", {skip:!process.env.WAB_TEST_PYTHON}, async()=>{
+  const result=await createStagingCapacityWorker({env:{WAB_SOLVER_PYTHON:process.env.WAB_TEST_PYTHON,PATH:process.env.PATH}})({...job,totalBudgetMilliseconds:6000});
+  assert.equal((result.result as {status:string}).status,"INFEASIBLE");
+  assert.equal(job.problem.timeLimitSeconds,10);
+  assert.equal((result.executionBudget as {testingOnly:boolean}).testingOnly,true);
 });

@@ -81,11 +81,14 @@ def ancestors(group_id, groups):
     return result
 
 
-def solve_capacity(p, *, observer=None):
+def solve_capacity(p, *, observer=None, time_budget_seconds=None):
     started = time.perf_counter()
     if observer is not None:
         observer.begin_calculation(started)
     validate_problem(p)
+    budget = p["timeLimitSeconds"] if time_budget_seconds is None else time_budget_seconds
+    if type(budget) not in (int, float) or not math.isfinite(budget) or not 0 < budget <= p["timeLimitSeconds"]:
+        raise ValueError("Invalid narrowed execution budget.")
     model = cp_model.CpModel()
     groups = {g["id"]: g for g in p["groups"]}
     positions = p["positions"]
@@ -164,13 +167,15 @@ def solve_capacity(p, *, observer=None):
     solver.parameters.random_seed = 0
     if observer is not None:
         observer.begin_search(model)
-    remaining = p["timeLimitSeconds"] - (time.perf_counter() - started)
+    remaining = budget - (time.perf_counter() - started)
     status = cp_model.UNKNOWN
     if remaining > 0:
         solver.parameters.max_time_in_seconds = remaining
         status = solver.solve(model) if observer is None else solver.solve(model, observer)
         if observer is not None:
             observer.finish_search(solver, status)
+    elif observer is not None:
+        observer.finish_without_search()
     names = {cp_model.OPTIMAL: "OPTIMAL", cp_model.FEASIBLE: "FEASIBLE", cp_model.INFEASIBLE: "INFEASIBLE"}
     witness = None
     if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
