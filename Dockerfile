@@ -69,6 +69,9 @@ COPY --from=application-builder --chown=nextjs:nodejs /app/public ./public
 # These files are opened by absolute paths derived from process.cwd() at
 # runtime, so they must remain at the same project-relative locations.
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/cp_sat_solver.py ./solver/cp_sat_solver.py
+COPY --from=application-builder --chown=nextjs:nodejs /app/solver/cargo_capacity.py ./solver/cargo_capacity.py
+COPY --from=application-builder --chown=nextjs:nodejs /app/solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs ./solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs
+COPY --from=application-builder --chown=nextjs:nodejs /app/solver/verification/a350-v2-seven-scenarios-2026-10-23/final/results.json ./solver/verification/a350-v2-seven-scenarios-2026-10-23/final/results.json
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/requirements.txt ./solver/requirements.txt
 COPY --from=application-builder --chown=nextjs:nodejs /app/src/infrastructure/aircraft-layouts ./src/infrastructure/aircraft-layouts
 COPY --from=application-builder --chown=nextjs:nodejs /app/src/assets/aircraft-layouts ./src/assets/aircraft-layouts

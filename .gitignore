@@ -13,3 +13,5 @@ tmp/pdfs/
 supabase/.temp/
 solver/.venv/
 solver/__pycache__/
+
+solver/**/__pycache__/
