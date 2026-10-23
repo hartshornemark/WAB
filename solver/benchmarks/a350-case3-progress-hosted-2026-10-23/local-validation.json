@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "rows": 8,
+  "allNetCargoGrams": 40701000,
+  "scope": "Local one-shot worker; not hosted request timings"
+}

@@ -1,0 +1,167 @@
+{
+  "passed": true,
+  "startedAt": "2026-10-23T08:39:20.177Z",
+  "finishedAt": "2026-10-23T08:44:27.889Z",
+  "summaries": {
+    "control": {
+      "count": 10,
+      "proven": 0,
+      "calculationMilliseconds": {
+        "count": 10,
+        "min": 10003.928808,
+        "median": 10007.682539,
+        "max": 10010.743819
+      },
+      "workerStartupMilliseconds": {
+        "count": 10,
+        "min": 3149.454715,
+        "median": 3379.476033500003,
+        "max": 5000.925197999983
+      },
+      "completeRequestMilliseconds": {
+        "count": 10,
+        "min": 13408.973958999995,
+        "median": 13702.07968750002,
+        "max": 15273.695666999993
+      }
+    },
+    "profile": {
+      "count": 10,
+      "proven": 0,
+      "calculationMilliseconds": {
+        "count": 10,
+        "min": 10002.558797,
+        "median": 10006.1294985,
+        "max": 10013.541289
+      },
+      "workerStartupMilliseconds": {
+        "count": 10,
+        "min": 3234.7115660000127,
+        "median": 3489.1498009999923,
+        "max": 4333.431122000009
+      },
+      "completeRequestMilliseconds": {
+        "count": 10,
+        "min": 13605.673666999995,
+        "median": 13815.909042,
+        "max": 14803.265667000003
+      },
+      "firstValidMilliseconds": {
+        "count": 10,
+        "min": 44.619721000003665,
+        "median": 52.72438500000476,
+        "max": 91.6549990000135
+      },
+      "bestFoundMilliseconds": {
+        "count": 10,
+        "min": 79.23811599999908,
+        "median": 92.85402099999374,
+        "max": 141.1950670000124
+      },
+      "proofMilliseconds": {
+        "count": 0,
+        "min": null,
+        "median": null,
+        "max": null
+      },
+      "proofCensoredAtMilliseconds": {
+        "count": 10,
+        "min": 10001.150369999976,
+        "median": 10005.224767999991,
+        "max": 10011.887306000006
+      },
+      "processCpuMilliseconds": {
+        "count": 10,
+        "min": 9270,
+        "median": 9320,
+        "max": 9340
+      },
+      "solverWallMilliseconds": {
+        "count": 10,
+        "min": 9972.087109,
+        "median": 9985.0698825,
+        "max": 9988.514556
+      },
+      "relativeGap": {
+        "count": 10,
+        "min": 0.004431463600402938,
+        "median": 0.004431463600402938,
+        "max": 0.004431463600402938
+      },
+      "absoluteGapGrams": {
+        "count": 10,
+        "min": 180365,
+        "median": 180365,
+        "max": 180365
+      },
+      "deterministicTime": {
+        "count": 10,
+        "min": 2.1792963528503675,
+        "median": 2.8816232372902126,
+        "max": 3.0113994701511
+      },
+      "branches": {
+        "count": 10,
+        "min": 57731,
+        "median": 79756,
+        "max": 87732
+      },
+      "conflicts": {
+        "count": 10,
+        "min": 21921,
+        "median": 30779,
+        "max": 32682
+      },
+      "cpuToElapsedRatio": {
+        "count": 10,
+        "min": 0.9265897093197779,
+        "median": 0.9315874362642244,
+        "max": 0.9338925678006802
+      }
+    }
+  },
+  "local": {
+    "count": 3,
+    "bestFoundMilliseconds": {
+      "count": 3,
+      "min": 21.0844170069322,
+      "median": 21.086750086396933,
+      "max": 21.15104196127504
+    },
+    "proofMilliseconds": {
+      "count": 3,
+      "min": 3127.10512499325,
+      "median": 3146.1403330322355,
+      "max": 3150.067792041227
+    },
+    "processCpuMilliseconds": {
+      "count": 3,
+      "min": 3124.072,
+      "median": 3142.853,
+      "max": 3146.584
+    },
+    "modelProtoMatches": true
+  },
+  "diagnostic": {
+    "scope": "Separate console diagnostic, not part of the repeated ten-second benchmark or HTTP latency comparison",
+    "count": 3,
+    "bestFoundMilliseconds": {
+      "count": 3,
+      "min": 118.7599349999573,
+      "median": 121.94981600009669,
+      "max": 145.74664600002052
+    },
+    "proofMilliseconds": {
+      "count": 3,
+      "min": 15203.48758600005,
+      "median": 15213.217781000025,
+      "max": 15512.519751000014
+    },
+    "processCpuMilliseconds": {
+      "count": 3,
+      "min": 14130.000000000002,
+      "median": 14149.999999999998,
+      "max": 14450
+    }
+  }
+}

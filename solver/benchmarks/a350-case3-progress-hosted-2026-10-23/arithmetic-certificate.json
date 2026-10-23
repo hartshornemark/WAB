@@ -1,0 +1,85 @@
+{
+  "scope": "Read-only arithmetic certificate for frozen Case 3; no solver or database.\n\nRelax compartment weight limits while retaining saved footprint exclusivity,\nULD limits, Bulk caps and the aircraft gross limit. A maximum of this relaxed\nproblem bounds the real problem. A validated real witness attains that bound.\nThis analysis is not wired into the operational or benchmark solver.\n",
+  "payloadHeadroomKg": 45036.0,
+  "baggageNetKg": 2475.0,
+  "baggageTareKg": 400.0,
+  "cargoGrossCeilingKg": 42161.0,
+  "palletGrossKg": 4626.0,
+  "palletTareKg": 110.0,
+  "containerGrossKg": 1587.0,
+  "containerTareKg": 100.0,
+  "bulkUpperBoundKg": 2780.0,
+  "groupPackingCounts": {
+    "COMPARTMENT:LOWER:ALA:4": {
+      "0": 10,
+      "1": 6,
+      "2": 2
+    },
+    "COMPARTMENT:LOWER:ALF:3": {
+      "0": 6,
+      "1": 2
+    },
+    "COMPARTMENT:LOWER:FLA:2": {
+      "0": 12,
+      "1": 8,
+      "2": 4
+    },
+    "COMPARTMENT:LOWER:FLF:1": {
+      "0": 6,
+      "1": 4,
+      "2": 0
+    }
+  },
+  "upperBounds": [
+    {
+      "pallets": 0,
+      "maxCargoContainersAfterBaggage": 30,
+      "bestUpperBoundNetKg": 39661.0,
+      "cargoContainersAtBestBound": 25
+    },
+    {
+      "pallets": 1,
+      "maxCargoContainersAfterBaggage": 28,
+      "bestUpperBoundNetKg": 39851.0,
+      "cargoContainersAtBestBound": 22
+    },
+    {
+      "pallets": 2,
+      "maxCargoContainersAfterBaggage": 24,
+      "bestUpperBoundNetKg": 40041.0,
+      "cargoContainersAtBestBound": 19
+    },
+    {
+      "pallets": 3,
+      "maxCargoContainersAfterBaggage": 20,
+      "bestUpperBoundNetKg": 40131.0,
+      "cargoContainersAtBestBound": 17
+    },
+    {
+      "pallets": 4,
+      "maxCargoContainersAfterBaggage": 16,
+      "bestUpperBoundNetKg": 40321.0,
+      "cargoContainersAtBestBound": 14
+    },
+    {
+      "pallets": 5,
+      "maxCargoContainersAfterBaggage": 12,
+      "bestUpperBoundNetKg": 40511.0,
+      "cargoContainersAtBestBound": 11
+    },
+    {
+      "pallets": 6,
+      "maxCargoContainersAfterBaggage": 8,
+      "bestUpperBoundNetKg": 40701.0,
+      "cargoContainersAtBestBound": 8
+    },
+    {
+      "pallets": 7,
+      "maxCargoContainersAfterBaggage": 4,
+      "bestUpperBoundNetKg": 40340.0,
+      "cargoContainersAtBestBound": 4
+    }
+  ],
+  "maximumUpperBoundNetKg": 40701.0,
+  "achievableDatabaseNetKg": 40701.0
+}

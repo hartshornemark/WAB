@@ -1,0 +1,22 @@
+Case 3 — discovery versus optimality proof, hosted staging
+
+One excluded warm-up per mode, then alternating serial control/profile pairs. Same sealed 10-second input; no database requests.
+Measured requests: 20; independently audited warm-ups and measured requests: 22; audit passed: true.
+Sealed cargo objective: 40,701 kg. All final arrangements independently validated against the frozen input.
+Source revision: e0ed3c3523e8e3c00d37b0cc1939a65e5872da34
+
+Profiled runs: 10; optimality proved: 0/10.
+First valid arrangement: median 0.053 s.
+Best returned objective first found: median 0.093 s; range 0.079–0.141 s.
+Proof observed at solve return: 0 proved runs; median unproved s; range unproved–unproved s.
+Unproved/censored: 10; median stop observation 10.005 s. These are not proof times.
+
+Ordinary control: 0/10 proved; all-response median calculation 10.008 s, complete request 13.702 s.
+Profiled: all-response median calculation 10.006 s, complete request 13.816 s.
+Process CPU median 9.320 s; CPU/elapsed median 0.932. See summary.json for bounds, gaps and search effort.
+
+Discovery/proof clocks include validation/model construction and exclude imports. Complete request includes startup and HTTPS. Proof observation includes solver return overhead. Only OPTIMAL contributes a proof time. Profile callbacks add some overhead; paired controls are descriptive observations, not a causal overhead estimate.
+No rules, frozen inputs, seed, search workers or ten-second limit changed. No operational fallback was enabled. Best-found arrangements are not labelled proven maxima solely because they match the prior reference.
+Local check (3 profiled runs): best objective median 0.021 s; proof median 3.146 s; process CPU median 3.143 s. Identical model-proto hash locally and hosted: true.
+Separate longer diagnostic: three fresh models/solvers in one interpreter on one staging instance, with a 30-second calculation ceiling and 35-second hard stop per run. All three proved optimal; best-found median 0.122 s, proof median 15.213 s (range 15.203–15.513 s), CPU median 14.150 s. These are not ten-second benchmark samples or complete HTTP request timings. Only the diagnostic time parameter was intercepted in that process; the original model and saved input remained unchanged.
+No exact hosting slowdown cause can be established from CPU and search counters alone.

@@ -1,0 +1,21 @@
+{
+  "deploymentCommit": "e0ed3c3",
+  "sourceFiles": {
+    "solver/cargo_capacity.py": "667e1be3a5b254e72fdeb14e676c8c48b71b6c8220f46f685966e93a34cc492d",
+    "solver/staging/app_worker.py": "5cf92151d31210273e215b9001932043a78526b49d02b36e7a648dd3e4f50e08",
+    "solver/staging/search_profile.py": "2b0bfdba01a59322709c5168480159e2d7acf9f7a5c18bb1e0bf7d5dd0fee627",
+    "solver/run_case3_progress.mjs": "90f9f51dab0603366041912662874bfa93091451be997e3943d1263ad10691e4",
+    "solver/report_case3_progress.mjs": "b5f0b56adf3bc31adf70c11dc90f76e45a6fb1aec2ebae2300c0b023f17aab48",
+    "src/infrastructure/capacity/staging-endpoint.ts": "25277d5b7ddfe520f771204ea192000ef3e1a6da889dded245e4ec446f32f7c1",
+    "src/infrastructure/capacity/staging-worker.ts": "e95fef7da636ced33ccbb457e913a50a01be978d3e0300b34fdbf7b21c1844c6",
+    "Dockerfile": "247737d0790cf5f9330f2a4976921dca7dc3f8118a2ac177df111a0c11bc21d9"
+  },
+  "scope": "Case 3 passive profiling only; no operational fallback; no database changes",
+  "inputFile": "solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs/case-03.json",
+  "analysisFiles": {
+    "solver/report_case3_progress.mjs": "b5f0b56adf3bc31adf70c11dc90f76e45a6fb1aec2ebae2300c0b023f17aab48",
+    "solver/diagnose_case3_proof.py": "6b254c0393bdc6df6cd5f091629b5c940adc7238f6bf286e49cee99161a8a732",
+    "solver/certify_case3_bound.py": "60fadcdb2346e9a75b7e1c155147e468119bc02b08530976d66a9c0f9a2eb064"
+  },
+  "note": "Analysis and diagnostic harnesses ran separately; only the deployed app files belong to runtime commit e0ed3c3."
+}

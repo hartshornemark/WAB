@@ -1,0 +1,45 @@
+Case 3 arithmetic — saved benchmark data, kg
+
+Aircraft traffic gross ceiling = MZFW - DOW - passengers
+= 195,700 - 136,804 - 13,860 = 45,036
+Baggage contents = 525 + 450 + 750 + 750 = 2,475
+Baggage ULD tare = 4 x 100 = 400
+Cargo gross ceiling = 45,036 - 2,475 - 400 = 42,161
+
+One independently validated arrangement from the database reference:
+6 pallets x 4,626 gross = 27,756
+8 containers x 1,587 gross = 12,696
+Bulk cargo = 1,709
+Cargo gross = 42,161
+Cargo ULD tare = 6 x 110 + 8 x 100 = 1,460
+Cargo net = 42,161 - 1,460 = 40,701
+
+Why this arrangement is maximum, not just feasible:
+For each pallet count P and cargo-container count C, a conservative net upper bound is:
+min(4,516P + 1,487C + 2,780, 42,161 - 110P - 100C).
+The first term is ULD plus Bulk capacity; the second is aircraft gross headroom less cargo tare.
+Saved footprint overlaps determine which counts fit after the four baggage containers.
+Compartment weight constraints are relaxed here, making the bound conservative.
+Maximise this upper bound across allowed container counts for each pallet count:
+
+Pallets | Maximum cargo containers after baggage | Greatest net upper bound
+0       | 30                                     | 39,661
+1       | 28                                     | 39,851
+2       | 24                                     | 40,041
+3       | 20                                     | 40,131
+4       | 16                                     | 40,321
+5       | 12                                     | 40,511
+6       |  8                                     | 40,701
+7       |  4                                     | 40,340
+Eight pallets do not fit the saved non-overlapping footprints.
+
+Every valid arrangement is bounded above by 40,701 kg; the validated reference attains it.
+The certificate is reproduced by solver/certify_case3_bound.py and arithmetic-certificate.json.
+This bound has NOT been added to the solver; no calculation rule was changed.
+
+Minimum tare first is not equivalent to maximum net cargo:
+7 pallets + 4 cargo containers: tare 1,170; gross capacity with Bulk 41,510; net 40,340.
+6 pallets + 8 cargo containers: tare 1,460; gross capacity with Bulk 43,232; capped gross offer 42,161; net 40,701.
+
+The observed CP-SAT bound 40,881.365 is a looser internal upper bound, not a valid extra load.
+Its gap to the incumbent is 40,881.365 - 40,701 = 180.365 kg.

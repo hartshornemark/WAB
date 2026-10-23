@@ -1,0 +1,33 @@
+{
+  "app": "wabiqa-app",
+  "origin": "https://demo.wabiqa.com",
+  "region": "sgp",
+  "resourceAllocation": "2 x apps-s-1vcpu-1gb (unchanged)",
+  "branch": "fix/a350-solver-cargo-capacity",
+  "runtimeCommit": "e0ed3c3",
+  "initialOffDeployment": "5e7a8388-e869-459f-a03c-35ef5024e8f5",
+  "enabledDeployment": "eac25727-4a60-4d50-b507-9788d429acc3",
+  "tenSecondLimitUnchanged": true,
+  "databaseChanged": false,
+  "operationalFallbackEnabled": false,
+  "merged": false,
+  "existingOperatorCredentialReused": true,
+  "temporarySecretRemoved": true,
+  "testingDisabledAfterRun": true,
+  "postTestDisabledDeployment": "9ea0892e-5624-4ad6-a7d9-f08f3e927bac",
+  "normalLoginStatus": 200,
+  "diagnostic": {
+    "runs": 3,
+    "calculationCeilingSeconds": 30,
+    "perRunHardCeilingSeconds": 35,
+    "scope": "Separate console process; no app files, database or environment modified"
+  },
+  "verification": {
+    "typescriptTestsPassed": 942,
+    "pythonTestsPassed": 22,
+    "productionBuild": "PASS",
+    "typecheck": "PASS",
+    "changedFilesLint": "PASS",
+    "hostedArrangementsAndProgressAudit": "PASS"
+  }
+}

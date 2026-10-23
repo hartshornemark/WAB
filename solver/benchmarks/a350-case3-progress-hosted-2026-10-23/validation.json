@@ -1,0 +1,187 @@
+{
+  "passed": true,
+  "sourceMatches": true,
+  "revisions": [
+    "e0ed3c3523e8e3c00d37b0cc1939a65e5872da34"
+  ],
+  "modelHashes": [
+    "667e1be3a5b254e72fdeb14e676c8c48b71b6c8220f46f685966e93a34cc492d"
+  ],
+  "protoHashes": [
+    "3d27c7a17ce1bbeca3432d46039e5599a3472314d014f94cb1d973043b38417b"
+  ],
+  "audit": [
+    {
+      "mode": "control",
+      "repetition": 0,
+      "phase": "warmup",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 0,
+      "phase": "warmup",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 1,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 1,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 2,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 2,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 3,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 3,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 4,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 4,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 5,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 5,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 6,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 6,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 7,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 7,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 8,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 8,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 9,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 9,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "control",
+      "repetition": 10,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    },
+    {
+      "mode": "profile",
+      "repetition": 10,
+      "phase": "measured",
+      "passed": true,
+      "error": null
+    }
+  ],
+  "diagnosticPassed": true,
+  "diagnosticAudit": [
+    {
+      "repetition": 1,
+      "passed": true,
+      "error": null
+    },
+    {
+      "repetition": 2,
+      "passed": true,
+      "error": null
+    },
+    {
+      "repetition": 3,
+      "passed": true,
+      "error": null
+    }
+  ]
+}

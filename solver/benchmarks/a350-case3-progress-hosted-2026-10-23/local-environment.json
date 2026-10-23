@@ -1,0 +1,5 @@
+{
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "architecture": "arm64",
+  "note": "Local result backend records the solver Python and OR-Tools versions. Local complete time is one-shot process time, not hosted HTTPS."
+}
