@@ -1,0 +1,752 @@
+{
+  "scope": "Offline captured A350 configuration; not live RPC or browser timings",
+  "environment": {
+    "python": "3.12.14",
+    "ortools": "9.14.6206",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "workersPerSolve": 1,
+    "timeLimitSeconds": 2
+  },
+  "cases": [
+    {
+      "case": "baggage-0",
+      "samples": 10,
+      "medianMs": 368.04,
+      "p95Ms": 480.33,
+      "worstMs": 480.33,
+      "statuses": [
+        "OPTIMAL"
+      ],
+      "measurements": [
+        {
+          "totalMs": 347.6,
+          "solveMilliseconds": 6,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 345.86,
+          "solveMilliseconds": 6,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 480.33,
+          "solveMilliseconds": 7,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 386.47,
+          "solveMilliseconds": 7,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 395.12,
+          "solveMilliseconds": 7,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 402.13,
+          "solveMilliseconds": 7,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 388.95,
+          "solveMilliseconds": 6,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 345.88,
+          "solveMilliseconds": 6,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 349.61,
+          "solveMilliseconds": 6,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 346.32,
+          "solveMilliseconds": 6,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        }
+      ],
+      "witnesses": [
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 8,
+          "baggageContainers": 0
+        }
+      ]
+    },
+    {
+      "case": "baggage-5",
+      "samples": 10,
+      "medianMs": 352.35,
+      "p95Ms": 358.16,
+      "worstMs": 358.16,
+      "statuses": [
+        "OPTIMAL"
+      ],
+      "measurements": [
+        {
+          "totalMs": 350.4,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 352.38,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 350.65,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 350.43,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 356.38,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 356.0,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 358.16,
+          "solveMilliseconds": 13,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 356.13,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 352.31,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 352.26,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        }
+      ],
+      "witnesses": [
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        }
+      ]
+    },
+    {
+      "case": "baggage-34",
+      "samples": 10,
+      "medianMs": 345.73,
+      "p95Ms": 351.01,
+      "worstMs": 351.01,
+      "statuses": [
+        "OPTIMAL"
+      ],
+      "measurements": [
+        {
+          "totalMs": 345.21,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 344.46,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 344.72,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 344.74,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 343.41,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 346.25,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 351.01,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 350.6,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 348.74,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 348.43,
+          "solveMilliseconds": 5,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        }
+      ],
+      "witnesses": [
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        },
+        {
+          "pallets": 0,
+          "cargoContainers": 0,
+          "baggageContainers": 34
+        }
+      ]
+    },
+    {
+      "case": "baggage-35",
+      "samples": 10,
+      "medianMs": 347.25,
+      "p95Ms": 366.64,
+      "worstMs": 366.64,
+      "statuses": [
+        "INFEASIBLE"
+      ],
+      "measurements": [
+        {
+          "totalMs": 343.08,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 355.28,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 362.51,
+          "solveMilliseconds": 4,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 366.64,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 360.93,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 348.83,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 345.68,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 345.48,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 343.37,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        },
+        {
+          "totalMs": 342.56,
+          "solveMilliseconds": 3,
+          "status": "INFEASIBLE",
+          "provedObjectives": []
+        }
+      ],
+      "witnesses": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "case": "two-concurrent-workers-baggage-5",
+      "samples": 10,
+      "medianMs": 381.2,
+      "p95Ms": 400.31,
+      "worstMs": 400.31,
+      "statuses": [
+        "OPTIMAL"
+      ],
+      "measurements": [
+        {
+          "totalMs": 383.93,
+          "solveMilliseconds": 13,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 380.87,
+          "solveMilliseconds": 13,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 377.65,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 379.68,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 379.33,
+          "solveMilliseconds": 13,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 382.23,
+          "solveMilliseconds": 13,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 381.53,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 379.4,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 400.31,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        },
+        {
+          "totalMs": 397.13,
+          "solveMilliseconds": 12,
+          "status": "OPTIMAL",
+          "provedObjectives": [
+            "PALLETS",
+            "CONTAINERS",
+            "NET_WEIGHT"
+          ]
+        }
+      ],
+      "witnesses": [
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        },
+        {
+          "pallets": 7,
+          "cargoContainers": 3,
+          "baggageContainers": 5
+        }
+      ]
+    }
+  ]
+}

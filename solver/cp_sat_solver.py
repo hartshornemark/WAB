@@ -250,7 +250,13 @@ def retained_result(best: dict[str, Any] | None, started: float, message: str) -
 
 if __name__ == "__main__":
     try:
-        print(json.dumps(solve(json.load(sys.stdin)), separators=(",", ":")))
+        problem = json.load(sys.stdin)
+        if problem.get("mode") == "CARGO_CAPACITY":
+            from cargo_capacity import solve_capacity
+            output = solve_capacity(problem)
+        else:
+            output = solve(problem)
+        print(json.dumps(output, separators=(",", ":")))
     except Exception as error:
         print(json.dumps({"error": str(error)}, separators=(",", ":")))
         raise SystemExit(1)
