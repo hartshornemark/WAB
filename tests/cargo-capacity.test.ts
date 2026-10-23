@@ -15,6 +15,7 @@ test("offline database reference follows the agreed small rule-unit examples", a
   const db = new PGlite();
   try {
     await db.exec(readFileSync("solver/reference/max_net_cargo_v2.sql", "utf8"));
+    await db.exec(readFileSync("solver/reference/frontier_net_cargo_v2.sql", "utf8"));
     for (const c of cases.cases) await t.test(c.name, async () => {
       const p = validateCargoCapacityProblem(c.input);
       const r = (await db.query<{ result: CargoCapacityResult }>("select capacity_reference.max_net_cargo_v2($1::jsonb) result", [JSON.stringify(p)])).rows[0].result;

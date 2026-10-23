@@ -114,7 +114,7 @@ end $$;
 -- Exhaustive, intentionally simple database reference; no pallet-count priority.
 -- Execution timeout is owned by the comparison harness. No partial maximum is
 -- returned after cancellation. Call only in the isolated benchmark database.
-create or replace function capacity_reference.max_net_cargo_v2(p jsonb)
+create or replace function capacity_reference.exhaustive_net_cargo_v2(p jsonb)
 returns jsonb language plpgsql immutable as $$
 declare candidate record;answer jsonb;best jsonb;blocked text[];
 begin

@@ -38,9 +38,14 @@ callers must supply applicable, versioned configuration and prepared baggage
 requirements. Results distinguish proven optimum, feasible, infeasible and
 unknown. A feasible witness alone does not establish the maximum.
 
-`reference/max_net_cargo_v2.sql` is an offline database reference installed only
-in isolated PGlite rule tests. It is not a migration or an exposed production
-function. Both implementations use the same validated version-2 input contract.
+The offline database reference loads `reference/max_net_cargo_v2.sql` first
+(retained exhaustive oracle and flow evaluator), then
+`reference/frontier_net_cargo_v2.sql` (optimized public entry point within the
+isolated reference schema). It rejects obvious impossibilities and combines
+exact, reduced compartment/hold capacity regions. No migration or production
+function is installed. Both implementations use the same validated V2 inputs.
+[Exactness and preparation status](../docs/a350-capacity-reference-exactness.md)
+describes the small-case oracle checks and resource/configuration error guards.
 The frozen version-1 flight/scenario artifacts remain immutable. Their sourced
 enrichment is sealed in `tests/fixtures/cargo-capacity/passenger-scenarios-v2`;
 both components receive the same input file per case. Input preparation and
@@ -55,7 +60,7 @@ cache or migration in this stage.
 Run unit checks with:
 
 ```sh
-node --conditions=react-server --import tsx --test tests/cargo-capacity.test.ts
+node --conditions=react-server --import tsx --test tests/cargo-capacity.test.ts tests/cargo-capacity-frontier.test.ts
 solver/.venv/bin/python -m unittest discover -s solver -p 'test_*.py' -v
 ```
 

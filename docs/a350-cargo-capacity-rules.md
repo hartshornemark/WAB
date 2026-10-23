@@ -74,12 +74,15 @@ validated, rather than inferred from a drawing or an aircraft-wide ULD count.
 
 - `solver/cargo_capacity.py` models the constraints in CP-SAT with one net-weight
   objective and a bounded solve deadline. The ordinary AUTOLOAD path is separate.
-- `solver/reference/max_net_cargo_v2.sql` is an **offline database reference**,
-  not a migration. Tests install it only in isolated PGlite. It enumerates
-  compatible arrangements and evaluates residual weight/volume capacity using
-  integral maximum flow. Callers must validate the input contract first. Its
-  execution timeout belongs to the future comparison harness; a timeout must
-  remain an error, never an asserted optimum.
+- The **offline database reference** is installed only in isolated PGlite.
+  Load `solver/reference/max_net_cargo_v2.sql` (retained exhaustive oracle and
+  integral-flow evaluator), then `solver/reference/frontier_net_cargo_v2.sql`
+  (the optimized `max_net_cargo_v2` entry point). The new search rejects obvious
+  impossibilities, reduces local alternatives exactly, and combines capacity
+  regions through the saved hierarchy. See `docs/a350-capacity-reference-exactness.md`
+  for the proof argument, tests, ownership guard and explicit state limit.
+  Callers must validate inputs and enforce statement timeouts. Neither file
+  is a migration; resource/timeout errors never establish an optimum.
 - The TypeScript validator independently checks either implementation's complete
   witness, reservations, footprint exclusivity, tare, totals and all limits.
   Feasibility validation alone does not prove optimality.
@@ -106,7 +109,8 @@ the new capture timestamps, field provenance, explicit synthetic reservation
 scope and identical input file for each component. Preparation checks original
 aircraft/ULD/footprint data for drift and validates all seven packages without
 running either capacity calculation. See that pack's README for reproduction
-and the remaining execution-budget/reference scalability decisions in Step 3.
+and the remaining comparison execution-budget decision. The optimized reference
+preparation is complete; the seven scenario comparisons have not started.
 
 The live legacy database remains pallet-first and is **not aligned** by this
 local change. Historical prototype timings use different rules and cannot
