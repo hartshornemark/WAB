@@ -1,5 +1,6 @@
--- Install ONLY in a separate empty staging-reference database, after the two
--- versioned reference SQL files. Not a Supabase/shared application migration.
+-- Private benchmark wrapper on the current Supabase database. Install after the
+-- two unchanged reference SQL files inside the reviewed single transaction.
+-- Reads only the supplied fixed JSON input; no operational tables or plan writes.
 create or replace function capacity_reference.timed_offer(p jsonb)
 returns jsonb language plpgsql as $$
 declare started timestamptz; result jsonb; elapsed numeric;

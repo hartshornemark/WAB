@@ -131,3 +131,20 @@ node --import tsx solver/measure_cargo_capacity.mjs --run \
   --python /absolute/path/to/python-with-ortools --samples 10 --cold 3
 node solver/report_cargo_capacity_measurement.mjs /absolute/path/to/new-measurement-directory
 ```
+
+## Hosted comparison preparation: reuse the existing app runtime
+
+The staging-only fixed-case endpoint now launches `staging/app_worker.py` inside
+`wab`, using the existing `WAB_SOLVER_PYTHON` runtime. No additional solver service
+or reference database is proposed. DATABASE uses a restricted connection to a
+private benchmark schema on the current Supabase project; SOLVER receives no
+application/database credentials. Both engines retain the seven sealed inputs
+and independent witness validation. The operational adapters remain unchanged.
+
+See [the reviewed deployment preparation](../deploy/digitalocean/README.md) for
+private SQL installation, gates, serial execution across the two existing
+replicas, timing boundaries and rollback. Automatic deployment is disabled in
+the proposed review patch and testing starts OFF. Nothing is installed or
+deployed by this preparation. Ongoing operational reuse requires shared job
+admission across AUTOLOAD and capacity calculations; a serial benchmark is not
+proof of production concurrency capacity.

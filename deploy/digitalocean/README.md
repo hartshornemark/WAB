@@ -1,157 +1,140 @@
-# A350 staging integration — DigitalOcean App Platform
+# A350 hosted comparison — existing DigitalOcean app and Supabase database
 
-Preparation only. No app, database, secret, deployment, GitHub branch or hosting
-resource has been changed. The operational cargo calculation, board, tray and
-AUTOLOAD call sites remain as before. This package exposes **only seven fixed
-A350/359 test cases**, never an arbitrary aircraft, flight, payload or placement.
+Preparation only. Nothing has been pushed, deployed, provisioned or installed in
+Supabase. This replaces the earlier proposal for a separate private service and
+separate reference database. The operational cargo calculation, AUTOLOAD, board,
+tray and other aircraft are unchanged.
 
-## Prepared components
+## Confirmed target and prepared configuration
 
-- Existing Next.js app: `POST /api/internal/a350-capacity` is absent (404) unless
-  both staging environment and the explicit test flag are set. It requires a
-  server-only operator bearer token, accepts only `{caseId, engine}`, loads the
-  sealed Step 3 inputs, verifies their hashes and independently validates returned
-  arrangements. Requests are serially admitted per app process and never cached.
-- New private `a350-capacity` service: `solver/staging/Dockerfile`, Python 3.12,
-  pinned OR-Tools 9.14.6206 and psycopg 3.3.6. A separate backend token protects
-  `/v1/capacity`. It accepts only byte-equivalent verified cases, launches a
-  bounded single-use solver or calls native PostgreSQL, and reports timings.
-  One calculation is admitted per service process. Deploy **one replica** for
-  the controlled test. This is not deployment-wide production admission control.
-- Native PostgreSQL reference: exact versioned SQL in a **separate empty database
-  named `capacity_staging_reference`**, using a non-admin `capacity_reader` role
-  with schema usage/function execution only and read-only connections. `/healthz`
-  refuses readiness if the role/database/function requirements are missing.
-- The main Dockerfile now packages the required capacity module and seven fixture
-  inputs explicitly; standalone tracing alone cannot discover dynamic file reads.
-- `solver/run_hosted_capacity_measurements.mjs` sends serial authenticated staging
-  requests, alternates engine order, records warm-ups/results/transport timings,
-  and never prints tokens. It does not change an operational plan.
+User-supplied App Spec: `wabiqa-app`, `https://demo.wabiqa.com`, region `sgp`;
+service `wab`, port 3000, two `apps-s-1vcpu-1gb` instances. It builds
+`hartshornemark/WAB` branch `staging` with `deploy_on_push: true`.
 
-The App Platform component fragment is **not a complete app specification**.
-Merge it into a saved copy of the existing staging spec. Do not submit it as a
-replacement spec: it omits the current app, routes, domains and existing services.
-No public route or `http_port` is assigned to the backend. Automatic deployment
-for that component is disabled. Its healthcheck uses internal port 8080.
+Python and OR-Tools already run as child processes inside the app container.
+The new gated benchmark route launches `solver/staging/app_worker.py` locally.
+There is no new service, port, route to another backend, instance or database.
+The existing image adds the pinned psycopg driver for the DATABASE test path.
+Each request selects only one of seven sealed A350 cases and DATABASE or SOLVER.
+It cannot select flights, load plans or arbitrary inputs. Both engines receive
+the same sealed input; the app independently validates arrangements and compares
+proven results with the sealed Step 3 maxima/infeasibility.
 
-## Information still required before a deployment decision
+`wabiqa-app.capacity-review.patch` is a review patch against the supplied upload,
+not a directly submittable App Spec. It changes the app's source to
+`fix/a350-solver-cargo-capacity`, disables automatic deployment, and adds the
+settings below with testing OFF. It preserves the existing two app instances,
+region, domain, ingress and public Supabase variables. It contains no existing
+Supabase key. The earlier separate-service fragment, container and HTTP service
+have been removed so they cannot accidentally be used as the current plan.
 
-The user confirmed the DigitalOcean App Platform app name as `wabiqa-app` and
-the staging origin as `https://demo.wabiqa.com` on 23 October 2026. These identify
-the intended app; they do not confirm its current deployment or enable the test
-endpoint.
+Re-export the live App Spec before applying the patch to a local copy. Reconcile
+intervening changes and retain the original spec, deployed commit and rollback
+ID. Do not push to `staging`, which currently triggers deployment automatically.
+The reviewed preparation branch must be pushed before hosting can build it;
+push and deployment require explicit approval.
 
-The supplied `wabiqa-app.yaml` confirms region `sgp`, the `wab` service on port
-3000, two `apps-s-1vcpu-1gb` instances, and GitHub branch `staging` with automatic
-deployment enabled. It defines the existing public ingress and Supabase public
-build/runtime variables. It does not identify the deployed commit or a separate
-capacity database.
-
-`wabiqa-app.capacity-review.patch` is a **review draft against that exact upload**,
-not a spec to submit. It changes `wab` to the preparation branch and disables
-automatic deployment, adds the disabled test settings, and appends the private
-backend. It preserves existing domain, ingress, public variables, region and app
-instance settings. The patch contains no copy of the existing Supabase key.
-The backend proposes one instance of the same `apps-s-1vcpu-1gb` size as the app;
-this is an additional paid component requiring approval, not a provisioned
-resource or a validated solver memory budget. Measure memory and record the final
-size before benchmarking. Secret placeholders must be replaced through the
-hosting secret store, with the same backend secret on both services and a
-different operator secret. Do not submit placeholder values.
-
-Before use, apply the patch to a local copy of the uploaded spec and inspect the
-result. Re-export the live spec first and reconcile any intervening changes.
-Keep the original spec and current deployment ID for rollback. The preparation
-branch must be reviewed and pushed separately before it can be built by hosting.
-Do not push to `staging`: the supplied spec currently deploys that branch
-automatically. No branch switch, resource creation or deployment has been made.
-
-1. Current deployed commit/rollback deployment and exact app ID from the hosting
-   account before any deployment action.
-2. Approval of the proposed backend CPU/RAM size and confirmation of region,
-   recorded for testing.
-   No paid database/service or resource size has been invented/provisioned.
-3. Approved isolated native PostgreSQL host, region/tier and database credentials.
-   The app currently uses Supabase. **Do not assume a new DigitalOcean PostgreSQL
-   host represents that existing database's performance.** Match the intended
-   database location/resources, or explicitly label the test as a different hosted
-   reference. This package does not install anything in the shared Supabase
-   `postgres` database. The schema/name guard deliberately prevents that.
-4. Separate operator/backend secrets (32+ characters), kept in runtime encrypted
-   variables. Neither goes in Git, NEXT_PUBLIC variables, a browser, an app spec
-   committed with real values, shell history or results/logs.
-
-## Staging-only variables
-
-Existing app, runtime variables:
+## Runtime settings on existing `wab` service
 
 | Name | Value |
 | --- | --- |
 | `WAB_DEPLOYMENT_ENV` | `staging` |
-| `WAB_CAPACITY_TESTS_ENABLED` | initially `false`, enable only for the approved test |
-| `WAB_CAPACITY_TEST_TOKEN` | operator secret |
-| `WAB_CAPACITY_SERVICE_TOKEN` | different backend secret |
-| `WAB_CAPACITY_SERVICE_URL` | `http://a350-capacity:8080` |
+| `WAB_CAPACITY_TESTS_ENABLED` | initially `false` |
+| `WAB_CAPACITY_TEST_TOKEN` | operator secret, 32+ characters |
+| `CAPACITY_DATABASE_URL` | restricted `capacity_benchmark` connection to the current Supabase project |
+| `CAPACITY_DATABASE_CA_FILE` | optional mounted CA bundle path if system trust cannot verify the database certificate |
+| `CAPACITY_RELEASE_ID` | `${_self.COMMIT_HASH}` |
 
-Backend, runtime variables:
+Replace secret placeholders in the hosting secret store; never submit them as
+real configuration. Do not paste passwords/tokens into chat, Git, shell history,
+results or NEXT_PUBLIC variables. No backend service token/URL is needed.
 
-| Name | Value |
-| --- | --- |
-| `WAB_DEPLOYMENT_ENV` | `staging` |
-| `PORT` | `8080` |
-| `CAPACITY_SERVICE_TOKEN` | same backend secret as app; never operator token |
-| `CAPACITY_DATABASE_NAME` | `capacity_staging_reference` |
-| `CAPACITY_DATABASE_URL` | native PostgreSQL URL for restricted runtime role; use TLS and the provider CA settings |
-| `CAPACITY_RELEASE_ID` | `${_self.COMMIT_HASH}` (App Platform build commit) |
+Database URL: direct `db.ffmadtrcirrzywdqahbu.supabase.co` with user
+`capacity_benchmark`, or the project's actual session pooler hostname with user
+`capacity_benchmark.ffmadtrcirrzywdqahbu`, port 5432. Database name is `postgres`.
+Get the actual endpoint from Supabase Connect; do not invent its region hostname.
+Use a URL-encoded password and no query-string options. The worker enforces TLS
+certificate/hostname validation, a five-second connection timeout, read-only
+sessions, a 60-second statement timeout and one-second lock timeout. Transaction
+pooling on port 6543 is rejected. Verify the provider CA/hostname against the
+chosen direct/session endpoint during the approved hosted smoke test.
 
-Do not replace the existing app's public Supabase build/runtime variables.
-The new database URL belongs only to the backend. The model subprocess receives
-neither token nor any database credential. No service-role key is used.
+The SOLVER child receives no database URL, operator token or app credentials.
+Only the DATABASE child receives the restricted database URL/optional CA path.
+Neither gets the complete app environment. No Supabase service-role key is used.
 
-## Concrete deployment sequence — not executed
+## Private benchmark SQL — installation prepared, not executed
 
-1. Export/review the current staging spec and record its rollback deployment.
-   Preserve all current app configuration. Confirm that pushing the preparation
-   branch will not trigger an unintended deployment of an existing component.
-2. Review the proposed commit, resources, secrets and isolated database target.
-   **Get explicit approval before pushing, creating resources, applying SQL or
-   deploying.** User authorization so far is preparation, not these actions.
-3. Have the database administrator create the isolated database and a NORMAL,
-   non-owner/non-superuser `capacity_reader` account. Its password is entered
-   through the database/hosting secret store; do not paste it into SQL files.
-4. As the owner of that isolated database, install all files in a single
-   transaction. `CAPACITY_REFERENCE_OWNER_URL` is an operator-only environment
-   secret and is never given to a service or committed:
+The existing database is acceptable to the user. Its shared CPU/memory is not a
+blocker. Benchmark objects live exclusively in `capacity_reference`, outside
+operational functions/tables. Do not expose this schema through the Data API.
 
-   ```sh
-   psql "$CAPACITY_REFERENCE_OWNER_URL" --single-transaction -v ON_ERROR_STOP=1 \
-     -f solver/reference/max_net_cargo_v2.sql \
-     -f solver/reference/frontier_net_cargo_v2.sql \
-     -f solver/staging/timed_offer.sql \
-     -f solver/staging/runtime_grants.sql
-   ```
+Before installation, confirm the connected project is
+`ffmadtrcirrzywdqahbu`, record its Postgres version/compute/region and inspect
+existing schema/role names and Data API exposure. The prepared preflight aborts
+if `capacity_reference` or `capacity_benchmark` already exists; do not overwrite
+unknown objects or bypass that check. The database name alone does not identify
+a Supabase project, so the operator must confirm the project endpoint.
 
-   The grants script refuses any other database name or an elevated runtime
-   role. A failure rolls back the entire installation. No operational table is
-   read or changed. Verify with the runtime URL: transaction_read_only is on,
-   current_database is correct, and capacity_reference.timed_offer exists.
-5. Build the app's existing Dockerfile and the backend Dockerfile from the same
-   reviewed commit. Create/merge the backend component into the existing staging
-   app without a public route. Keep the app test flag off initially. Retain the
-   reviewed branch/source and disable automatic deployment during the experiment.
-6. Check backend `/healthz` internally. Confirm native PostgreSQL version,
-   restricted role, expected release and seven fixture hashes. Check that the
-   public app endpoint returns 404 while off, 401 without the operator token when
-   enabled, and that an invalid case cannot execute a calculation.
-7. Enable the flag on **staging only** and run one smoke pair (case 7) before the
-   repeated measurement. The runner stops immediately on disabled/auth errors:
+After explicit approval, an administrator runs these five files in ONE
+transaction using a securely supplied operator-only connection URL:
+
+```sh
+psql "$CAPACITY_REFERENCE_OWNER_URL" --single-transaction -v ON_ERROR_STOP=1 \
+  -f solver/staging/preflight.sql \
+  -f solver/reference/max_net_cargo_v2.sql \
+  -f solver/reference/frontier_net_cargo_v2.sql \
+  -f solver/staging/timed_offer.sql \
+  -f solver/staging/runtime_grants.sql
+```
+
+The two reference files are the unchanged versions proven in Step 3. Their
+historical offline-only comments describe their original use; this reviewed
+wrapper now prepares installation in a private schema on current Supabase.
+Functions calculate only from supplied JSON, without querying flight records.
+The installation creates a NOLOGIN, NOINHERIT role with no elevated privileges or
+memberships, revokes schema/function access from PUBLIC and API roles, and grants
+only schema usage/function execution to `capacity_benchmark`. It changes no
+operational table, function or default privileges for unrelated future objects.
+All installation changes roll back on failure.
+
+In a secure administrator session, enable LOGIN for this new role and set its
+password using a secure interactive/password-management method; do not put the
+password into a committed SQL file. Set the resulting restricted URL in the
+existing app's encrypted runtime variables. The worker checks its actual current
+role/database, read-only status, absence of elevated privileges/memberships,
+absence of public-schema CREATE and ownership of benchmark functions before
+running any reference calculation. If these checks fail, investigate; do not
+relax operational schema permissions to make the test pass. Run Supabase security
+advisors after the approved installation and verify API roles cannot access the
+schema/functions. No shared-database migration has been applied by preparation.
+
+## Test execution after approved deployment
+
+1. Record the current spec/rollback deployment. Review and approve the source,
+   SQL install, secrets and deployment. No new resources or paid component.
+2. Build the existing Dockerfile from the reviewed branch. Deploy the existing
+   app with the test flag OFF and the required runtime variables. Confirm 404
+   while off, then enable staging testing and confirm 401 without the token.
+3. Agree a quiet AUTOLOAD window and send requests serially across BOTH replicas.
+   The endpoint admits only one test per Node process; it is not a distributed
+   lock and does not block AUTOLOAD. No operational scheduling logic is changed.
+   If AUTOLOAD is needed, pause the test caller first. Record the number of
+   replicas, CPU/RAM, image commit, Python/OR-Tools/Postgres versions, database
+   resources, client location, background activity and provider timeout limits.
+4. Run the infeasible case smoke pair with `WAB_CAPACITY_TEST_TOKEN` in the
+   caller's environment (never on the command line):
 
    ```sh
    node solver/run_hosted_capacity_measurements.mjs --run --smoke \
      --cases case-07-infeasible --url https://demo.wabiqa.com \
      --output /absolute/path/to/new-smoke-results
    ```
-8. From a fixed client location, run the seven cases, one request at a time:
+
+   This checks authenticated routing, local Python/driver packaging, database
+   TLS/permissions, reference installation, fixed-input integrity and validation.
+   Inspect per-instance memory, CPU, restarts/OOM and normal app responsiveness.
+5. Only after smoke passes, run the seven cases:
 
    ```sh
    node solver/run_hosted_capacity_measurements.mjs --run \
@@ -159,58 +142,62 @@ neither token nor any database credential. No service-role key is used.
      --output /absolute/path/to/new-results --samples 10
    ```
 
-   Set `WAB_CAPACITY_TEST_TOKEN` in the caller's environment. Do not put it on the
-   command line. Record commit, resources, database version/tier/region, client
-   location, time, instance count and any platform timeout. Take a separately
-   labelled first-request-after-deployment/inactivity sample with `--first-request`; this runner's
-   first request is saved as a warm-up and is not an OS-cold measurement. Do not
-   restart services automatically or simulate cold hosting by guessing a delay.
-9. Revalidate the saved arrangements and compare with the existing proven net
-   offers. Separate calculation-only, backend round-trip, app handler and complete
-   external request latency. Complete request includes the actual HTTPS path to
-   the staging app and its internal service/database transport. Timeouts,
-   unproved results and failures remain exceptions, never successful optima.
-10. Disable the flag after the test. The operational workflow has never switched.
+   The caller alternates engines and saves warm-ups separately. Use
+   `--first-request` for a separately labelled sample after an actual deployment
+   or observed inactivity. It does not simulate cold hosting or restart services.
+6. Revalidate results and report calculation-only, worker startup, app-to-worker
+   execution round trip and complete external HTTPS latency separately. DATABASE
+   execution includes connection/TLS/readiness/database transport; its SQL core
+   time excludes them. SOLVER startup includes imports and fixed-case verification;
+   its core includes model construction/search. Per-request validation is outside
+   each engine's core and inside the external request. These shared app resources
+   are the intended reuse topology; there is no artificial backend HTTP hop.
+7. Disable the flag after the experiment. Timeouts, unproved maxima, failures and
+   mismatches are exceptions, never successful optimal results.
 
-The frozen fixtures replace live flight-data reads and baggage preparation.
-Even after deployment, these measurements establish the **hosted fixed-input
-comparison**, not the production traffic-plan workflow or legacy SQL turnaround.
-A genuine live end-to-end replacement needs a separately reviewed input adapter
-and operational cutover; neither is enabled by this package.
+The fixture inputs replace live passenger retrieval/baggage preparation. This is
+an aligned fixed-input comparison on intended hosting, not a live operational
+cutover or a claim about the superseded legacy SQL rules. Ongoing operational
+reuse still needs shared admission across AUTOLOAD/capacity jobs and hosted
+concurrency/headroom checks. Local individual workers measured approximately
+90–93 MiB on macOS; that is not spare-memory evidence for the deployed 1GB app.
 
-## Rollback
+## Rollback and cleanup
 
-Set `WAB_CAPACITY_TESTS_ENABLED=false` and redeploy/restart the app component so
-it reads the new environment. The endpoint returns 404. Stop the private capacity
-service and revoke test tokens if retiring it. Restore the recorded staging app
-spec/deployment if needed. The normal calculation and saved flight plans have no
-new dependency on either service and require no data rollback. Do not delete an
-existing/shared database as part of rollback.
+Set the test flag false and restart/redeploy the existing app so it rereads the
+environment. Restore its saved source/spec/deployment if required. No additional
+service needs deleting. No operational workflow depends on the benchmark.
 
-## Verification and remaining deployment checks
+For database retirement, first disable role LOGIN and remove the restricted URL
+from the app, then terminate any remaining benchmark-role sessions using approved
+administrative controls. After confirming the schema/role belong solely to this
+installation, drop ONLY `capacity_reference` and `capacity_benchmark`. The latter
+must have no unrelated dependencies; inspect them before cleanup. Never drop the
+`postgres` database or use broad cleanup against public/operational schemas.
 
-Prepared unit tests cover route feature gates, tokens, allowed cases, bounded
-bodies, stale/malformed witnesses, unproved statuses, admission and backend URL
-restrictions; Python tests cover sealed inputs, read-only connection options,
-child timings and error redaction. Next's production build checks the route.
+## Validation boundary
 
-This workstation has no Docker or DigitalOcean CLI installed. The staging app
-name, URL and exported spec are supplied; the isolated database target and current
-deployment identity remain outstanding. Therefore **container builds,
-native PostgreSQL connectivity/grants, App Platform spec validation, healthcheck
-and hosted smoke/latency tests remain unexecuted**. Do not describe this as a
-verified or deployed hosting environment. No new hosted timing claims are made.
+Local checks exercise feature/auth gates, sealed-input restrictions, independent
+witness validation, admission/error recovery, sanitized child environments,
+bounded worker I/O, native connection options and role/readiness rejection.
+The existing app production build must package the one-shot worker, model,
+fixtures and pinned PostgreSQL driver. Local SQL tests check private-schema
+permissions and calculation under the restricted role where supported.
 
-References checked for this preparation:
+No Docker engine or DigitalOcean CLI is available on this workstation. Container
+builds, live Supabase install/TLS/role checks, DigitalOcean validation, actual
+headroom and hosted smoke/latency measurements remain deployment-time checks.
+Do not describe local preparation as a verified hosted deployment.
 
-- [DigitalOcean internal routing](https://docs.digitalocean.com/products/app-platform/how-to/manage-internal-routing/)
-- [App specification](https://docs.digitalocean.com/products/app-platform/reference/app-spec/)
-- [Dockerfile builds](https://docs.digitalocean.com/products/app-platform/reference/dockerfile/)
-- [Runtime/bindable variables](https://docs.digitalocean.com/products/app-platform/how-to/use-environment-variables/)
-- [Psycopg connection options](https://www.psycopg.org/psycopg3/docs/api/connections.html)
+References:
+- [Supabase connection methods](https://supabase.com/docs/guides/database/connecting-to-postgres)
+- [Supabase roles](https://supabase.com/docs/guides/database/postgres/roles)
+- [DigitalOcean App Spec](https://docs.digitalocean.com/products/app-platform/reference/app-spec/)
 
-Local preparation checks completed on 23 October 2026: 933 TypeScript tests,
-20 Python tests, TypeScript checking, changed-file lint and the production Next.js
-build passed. The new route is present in the build and remains disabled by
-default. Original sealed scenario inputs still reproduce unchanged. These checks
-do not substitute for the unexecuted container/native-database/provider checks.
+Local verification on 23 October 2026: 938 TypeScript tests (including the real
+one-shot solver smoke), 20 Python tests, TypeScript checking, changed-file lint
+and the production Next.js build passed. The seven sealed V2 inputs reproduce
+unchanged. The review patch was applied to a redacted reconstruction of the
+supplied App Spec and parsed as YAML: one existing service and its original
+resource allocation remain. Local SQL tests use PGlite, not the live Supabase
+server. Native TLS, provider permissions and container build remain unexecuted.

@@ -25,7 +25,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
 # NEXT_PUBLIC values are compiled into the browser bundle by Next.js. They are
-# intentionally public configuration, not secrets. Railway supplies them from
+# intentionally public configuration, not secrets. The hosting platform supplies
 # service variables during the image build and again at runtime.
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
@@ -41,10 +41,11 @@ RUN apt-get update \
     && apt-get install --yes --no-install-recommends python3 python3-venv ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY solver/requirements.txt /tmp/solver-requirements.txt
+COPY solver/requirements.txt /tmp/requirements.txt
+COPY solver/staging/requirements.txt /tmp/staging/requirements.txt
 
 RUN python3 -m venv /opt/wabiqa-solver \
-    && /opt/wabiqa-solver/bin/pip install --no-cache-dir --requirement /tmp/solver-requirements.txt
+    && /opt/wabiqa-solver/bin/pip install --no-cache-dir --requirement /tmp/staging/requirements.txt
 
 
 FROM node:22-bookworm-slim AS runner
@@ -70,6 +71,7 @@ COPY --from=application-builder --chown=nextjs:nodejs /app/public ./public
 # runtime, so they must remain at the same project-relative locations.
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/cp_sat_solver.py ./solver/cp_sat_solver.py
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/cargo_capacity.py ./solver/cargo_capacity.py
+COPY --from=application-builder --chown=nextjs:nodejs /app/solver/staging/app_worker.py ./solver/staging/app_worker.py
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs ./solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/verification/a350-v2-seven-scenarios-2026-10-23/final/results.json ./solver/verification/a350-v2-seven-scenarios-2026-10-23/final/results.json
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/requirements.txt ./solver/requirements.txt
@@ -80,5 +82,5 @@ USER nextjs
 
 EXPOSE 3000
 
-# Railway supplies PORT at runtime; Next.js standalone server.js reads it.
+# The hosting platform supplies PORT; Next.js standalone server.js reads it.
 CMD ["node", "server.js"]
