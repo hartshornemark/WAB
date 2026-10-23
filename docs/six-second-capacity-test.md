@@ -35,3 +35,9 @@ excluded warm-up and three measured requests. Preserve deadline misses,
 incomplete results and suboptimal valid offers. Independently validate every
 returned arrangement and compare net cargo, proof state and actual total time
 with the frozen reference. Disable testing again afterwards.
+
+Execution on 23 October 2026: all 21 measured requests (three per case) returned
+within six seconds and matched the reference outcome/net cargo. Four were valid
+but unproved: three Case 3 and one Case 5. Longest measured request: 5.601 s.
+All returned arrangements passed independent validation. Testing was disabled
+again; operational planning remains unchanged. See the [full test report](../solver/benchmarks/a350-six-second-total-hosted-2026-10-23/REPORT.txt).

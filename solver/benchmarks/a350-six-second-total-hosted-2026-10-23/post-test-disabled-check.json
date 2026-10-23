@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-23T09:35:36.252Z",
+  "rows": [
+    {
+      "authenticated": false,
+      "status": 404,
+      "body": {
+        "error": "Not found."
+      }
+    },
+    {
+      "authenticated": true,
+      "status": 404,
+      "body": {
+        "error": "Not found."
+      }
+    },
+    {
+      "authenticated": false,
+      "status": 404,
+      "body": {
+        "error": "Not found."
+      }
+    },
+    {
+      "authenticated": true,
+      "status": 404,
+      "body": {
+        "error": "Not found."
+      }
+    }
+  ],
+  "loginStatus": 200,
+  "deployment": "a8578737-4966-49ed-b4ba-40e2008dbfcd"
+}

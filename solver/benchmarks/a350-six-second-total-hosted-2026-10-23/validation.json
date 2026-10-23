@@ -1,0 +1,258 @@
+{
+  "validationPassed": true,
+  "complete": true,
+  "audit": [
+    {
+      "caseId": "case-01",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-01",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-01",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-01",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-02",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-02",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-02",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-02",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-03",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-03",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-03",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-03",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-04",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-04",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-04",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-04",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-05",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-05",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-05",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-05",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-06",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-06",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-06",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-06",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "repetition": 0,
+      "phase": "warmup",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "repetition": 1,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "repetition": 2,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "repetition": 3,
+      "phase": "measured",
+      "testOutcome": "RETURNED",
+      "arrangementValidated": true,
+      "passed": true,
+      "error": null
+    }
+  ]
+}

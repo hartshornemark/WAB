@@ -1,0 +1,41 @@
+{
+  "app": "wabiqa-app",
+  "origin": "https://demo.wabiqa.com",
+  "region": "sgp",
+  "resourceAllocation": "2 x apps-s-1vcpu-1gb (unchanged)",
+  "branch": "fix/a350-solver-cargo-capacity",
+  "runtimeCommit": "4e05580e0415ccddaa7787396957322ebcb580eb",
+  "initialOffDeployment": "41c9bbce-f7c7-416c-8359-5ba6a5db36a0",
+  "testingOnly": true,
+  "operationalPublicationEnabled": false,
+  "calculationRulesChanged": false,
+  "frozenInputsChanged": false,
+  "databaseChanged": false,
+  "merged": false,
+  "temporarySecretRemoved": true,
+  "testingDisabledAfterRun": true,
+  "checks": {
+    "typescriptTestsPassed": 946,
+    "pythonTestsPassed": 23,
+    "productionBuild": "PASS",
+    "typecheck": "PASS",
+    "changedFilesLint": "PASS",
+    "localAllSevenRealWorkerSmoke": "PASS"
+  },
+  "enabledDeployment": "f3107063-56a7-441a-8e13-e3e116fe241a",
+  "measurements": {
+    "startedAt": "2026-10-23T09:29:30.449Z",
+    "finishedAt": "2026-10-23T09:31:45.854Z",
+    "measuredRequests": 21,
+    "warmups": 7,
+    "returnedWithinSixSeconds": 21,
+    "referenceMatchedMeasured": 21,
+    "proved": 17,
+    "validUnproved": 4,
+    "clientDeadlines": 0,
+    "errors": 0,
+    "independentAuditPassed": true
+  },
+  "postTestDisabledDeployment": "a8578737-4966-49ed-b4ba-40e2008dbfcd",
+  "normalLoginStatus": 200
+}

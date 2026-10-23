@@ -1,0 +1,1006 @@
+{
+  "scope": "Local Request/Response handler and real worker; no HTTPS network",
+  "rows": [
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "inputSha256": "71d3b1abdbb971832252ce6626cb9f8a188d9c3d4486ac6201d147d6c42d7ff3",
+      "inputRevision": "sha256:89b6b79a0397ff0852bae230407853af809ef7f14837b328dda77b8f02f90ae0",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:89b6b79a0397ff0852bae230407853af809ef7f14837b328dda77b8f02f90ae0",
+        "status": "OPTIMAL",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 236,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+              "netWeightGrams": 4354000
+            },
+            {
+              "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 4516000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-01:BAG:07",
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84"
+            },
+            {
+              "loadId": "case-01:BAG:02",
+              "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116"
+            },
+            {
+              "loadId": "case-01:BAG:03",
+              "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d"
+            },
+            {
+              "loadId": "case-01:BAG:06",
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+            },
+            {
+              "loadId": "case-01:BAG:01",
+              "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b"
+            },
+            {
+              "loadId": "case-01:BAG:04",
+              "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6"
+            },
+            {
+              "loadId": "case-01:BAG:05",
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 31201000,
+          "cargoTareWeightGrams": 760000,
+          "cargoGrossWeightGrams": 31961000
+        }
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 236.311416,
+        "workerStartupMilliseconds": 735.3580420000001,
+        "executionRoundTripMilliseconds": 1009.779,
+        "inputMilliseconds": 1.9717080000000067,
+        "validationMilliseconds": 0.6623329999999896,
+        "handlerMilliseconds": 1014.552458
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_MAXIMUM",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4510
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 1026.566458
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "inputSha256": "5c6d2a01531b697f229b9a0fb0e14b3016e3d235b1297b0eecfab499570e9def",
+      "inputRevision": "sha256:83666aacbbf8bf9e403f0bdd2cd41fae782dd5311ed20812770b27029fcd9f1e",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:83666aacbbf8bf9e403f0bdd2cd41fae782dd5311ed20812770b27029fcd9f1e",
+        "status": "OPTIMAL",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 74,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+              "netWeightGrams": 1348000
+            },
+            {
+              "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ec96ea87-acbb-4e22-8532-0b04ea33656d",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 4516000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-02:BAG:05",
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84"
+            },
+            {
+              "loadId": "case-02:BAG:03",
+              "positionId": "39745564-e732-4f3f-8d94-5b773a08431b"
+            },
+            {
+              "loadId": "case-02:BAG:01",
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4"
+            },
+            {
+              "loadId": "case-02:BAG:04",
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+            },
+            {
+              "loadId": "case-02:BAG:02",
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 38714000,
+          "cargoTareWeightGrams": 1070000,
+          "cargoGrossWeightGrams": 39784000
+        }
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 73.900791,
+        "workerStartupMilliseconds": 352.74916600000006,
+        "executionRoundTripMilliseconds": 462.0569579999999,
+        "inputMilliseconds": 0.9442919999999049,
+        "validationMilliseconds": 0.23029199999996308,
+        "handlerMilliseconds": 463.2762500000001
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_MAXIMUM",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4896
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 463.60291700000016
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "inputSha256": "1827daf5b0c9c40fc0956e110dd433a0adcbe8a7ae68b2d95855a947d27607b1",
+      "inputRevision": "sha256:fc986770c5e8dfd39d7d463e0bd146c04845fc57757b0c080630ad29a49f8e8c",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:fc986770c5e8dfd39d7d463e0bd146c04845fc57757b0c080630ad29a49f8e8c",
+        "status": "OPTIMAL",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 3198,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+              "netWeightGrams": 3445000
+            },
+            {
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 4516000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-03:BAG:02",
+              "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e"
+            },
+            {
+              "loadId": "case-03:BAG:03",
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e"
+            },
+            {
+              "loadId": "case-03:BAG:01",
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4"
+            },
+            {
+              "loadId": "case-03:BAG:04",
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 40701000,
+          "cargoTareWeightGrams": 1460000,
+          "cargoGrossWeightGrams": 42161000
+        }
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 3198.580667,
+        "workerStartupMilliseconds": 353.06158300000016,
+        "executionRoundTripMilliseconds": 3588.1175,
+        "inputMilliseconds": 0.9622079999999187,
+        "validationMilliseconds": 0.2185410000001866,
+        "handlerMilliseconds": 3589.355417
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_MAXIMUM",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4895
+      },
+      "searchProfile": {
+        "version": "CASE3_INCUMBENTS_V1",
+        "clock": "milliseconds from calculation start, excluding worker imports",
+        "proofObservation": "OPTIMAL returned by solve; includes solver return overhead",
+        "modelProtoSha256": "3d27c7a17ce1bbeca3432d46039e5599a3472314d014f94cb1d973043b38417b",
+        "preparationMilliseconds": 4.4860419584438205,
+        "firstValidMilliseconds": 17.159749986603856,
+        "bestFoundMilliseconds": 21.909791976213455,
+        "bestFoundNetWeightGrams": 40701000,
+        "proofMilliseconds": 3198.178166989237,
+        "proofCensoredAtMilliseconds": null,
+        "finalUpperBoundGrams": 40701000,
+        "absoluteGapGrams": 0,
+        "relativeGap": 0,
+        "processCpuMilliseconds": 3180.0730000000003,
+        "solverWallMilliseconds": 3191.692,
+        "deterministicTime": 3.142869925667685,
+        "branches": 101485,
+        "conflicts": 36156,
+        "improvements": [
+          {
+            "calculationMilliseconds": 17.159749986603856,
+            "searchMilliseconds": 10.819,
+            "netWeightGrams": 38853000,
+            "upperBoundGrams": 40949979
+          },
+          {
+            "calculationMilliseconds": 19.40229197498411,
+            "searchMilliseconds": 13.085,
+            "netWeightGrams": 40340000,
+            "upperBoundGrams": 40949979
+          },
+          {
+            "calculationMilliseconds": 21.909791976213455,
+            "searchMilliseconds": 15.588000000000001,
+            "netWeightGrams": 40701000,
+            "upperBoundGrams": 40881365
+          }
+        ]
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 3589.7663330000005
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "inputSha256": "83d36adac6f1ecf63ab0a853cc29a8412e2b71e7ab9e9380711df809e4685d7d",
+      "inputRevision": "sha256:d6a61373f7bddadcf4bb89cf93481889a8e044b33d46758e7e7d9ec81f20516c",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:d6a61373f7bddadcf4bb89cf93481889a8e044b33d46758e7e7d9ec81f20516c",
+        "status": "OPTIMAL",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 165,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "a655c82e-4189-410b-a055-82c1599bb735",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "aa64cdae-e5ae-4220-81ac-3250b02e82d3",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "bc305f17-e4fd-474f-b8e1-a60c145d5acb",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "d16bc12e-dcf4-4176-a6fd-6aaeaffe7242",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "eeea52d5-101b-4e3b-a5f0-a1e4a46fdb0d",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+              "netWeightGrams": 1487000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-04:BAG:03",
+              "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48"
+            },
+            {
+              "loadId": "case-04:BAG:01",
+              "positionId": "9c557e25-7f6b-40a8-9438-c314bf0bbb8a"
+            },
+            {
+              "loadId": "case-04:BAG:02",
+              "positionId": "e69f3eca-ba04-4ff9-b090-5379d2461e96"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 47555000,
+          "cargoTareWeightGrams": 2430000,
+          "cargoGrossWeightGrams": 49985000
+        }
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 165.2225,
+        "workerStartupMilliseconds": 349.8374160000003,
+        "executionRoundTripMilliseconds": 550.1564579999995,
+        "inputMilliseconds": 1.5305420000004233,
+        "validationMilliseconds": 0.19808299999931478,
+        "handlerMilliseconds": 551.9285
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_MAXIMUM",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4898
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 552.2577080000001
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "inputSha256": "a6724fb7f70cbb561b91b44805d96e2c3e3270142a0a521fc6a3b86b937266f7",
+      "inputRevision": "sha256:c78af4e807956572243d6c247ef618b9f54ff77f92f069922d0e032c54c02b40",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:c78af4e807956572243d6c247ef618b9f54ff77f92f069922d0e032c54c02b40",
+        "status": "OPTIMAL",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 511,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "253243e7-e231-4eca-82d5-99b452bd87b5",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39e81267-0536-4dc0-8b6a-ab973940fb1b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "50a8b779-6450-4ea3-9755-ab26a89a005e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "7b09835b-7526-49c3-82ae-87d530c4b724",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "a655c82e-4189-410b-a055-82c1599bb735",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 3978000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-05:BAG:01",
+              "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238"
+            },
+            {
+              "loadId": "case-05:BAG:02",
+              "positionId": "e69f3eca-ba04-4ff9-b090-5379d2461e96"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 49936000,
+          "cargoTareWeightGrams": 2820000,
+          "cargoGrossWeightGrams": 52756000
+        }
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 511.079375,
+        "workerStartupMilliseconds": 357.8450409999996,
+        "executionRoundTripMilliseconds": 905.1069580000003,
+        "inputMilliseconds": 3.759291999999732,
+        "validationMilliseconds": 0.21925000000010186,
+        "handlerMilliseconds": 909.1791250000006
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_MAXIMUM",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4888
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 909.5816249999998
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "inputSha256": "130e63f20d3adf4994497e7c877535da657b5dcf4df976da084cb7af67979331",
+      "inputRevision": "sha256:cf90bcbd30c14226a22fbcdf5db1797e1d453c59c7df35549a2495b93badb2f6",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:cf90bcbd30c14226a22fbcdf5db1797e1d453c59c7df35549a2495b93badb2f6",
+        "status": "OPTIMAL",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 192,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+              "netWeightGrams": 4156000
+            },
+            {
+              "positionId": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 4516000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-06:BAG:01",
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84"
+            },
+            {
+              "loadId": "case-06:BAG:07",
+              "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c"
+            },
+            {
+              "loadId": "case-06:BAG:02",
+              "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7"
+            },
+            {
+              "loadId": "case-06:BAG:06",
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e"
+            },
+            {
+              "loadId": "case-06:BAG:04",
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4"
+            },
+            {
+              "loadId": "case-06:BAG:05",
+              "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f"
+            },
+            {
+              "loadId": "case-06:BAG:03",
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 31003000,
+          "cargoTareWeightGrams": 760000,
+          "cargoGrossWeightGrams": 31763000
+        }
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 192.153459,
+        "workerStartupMilliseconds": 356.09612500000003,
+        "executionRoundTripMilliseconds": 583.6434999999992,
+        "inputMilliseconds": 1.5570000000006985,
+        "validationMilliseconds": 0.1946670000006634,
+        "handlerMilliseconds": 585.4314159999994
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_MAXIMUM",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4892
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 585.6955000000007
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "inputSha256": "187f4639d19ce738b035fe13b0362ce4ec48eeada31f18913a4e87f2155e4b86",
+      "inputRevision": "sha256:043e2fe9ff586a287f3101ee96b21a09987319c66cfe2cd9f4f434b100d8f3ee",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:043e2fe9ff586a287f3101ee96b21a09987319c66cfe2cd9f4f434b100d8f3ee",
+        "status": "INFEASIBLE",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 60,
+        "arrangement": null
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 60.052709,
+        "workerStartupMilliseconds": 350.89229200000045,
+        "executionRoundTripMilliseconds": 456.2822499999993,
+        "inputMilliseconds": 1.9760409999998956,
+        "validationMilliseconds": 0.3406249999998181,
+        "handlerMilliseconds": 458.6421249999994
+      },
+      "backend": {
+        "revision": "local-4e05580",
+        "instance": "Ms-MacBook-Air.local",
+        "architecture": "arm64",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.12.14",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80"
+      },
+      "publication": {
+        "testingOnly": true,
+        "state": "PROVEN_INFEASIBLE",
+        "targetTotalMilliseconds": 6000,
+        "serverBudgetMilliseconds": 5500,
+        "message": "Calculation completed."
+      },
+      "executionBudget": {
+        "testingOnly": true,
+        "totalTargetMilliseconds": 6000,
+        "calculationBudgetMilliseconds": 4896
+      },
+      "httpStatus": 200,
+      "localHandlerRequestMilliseconds": 458.8825830000005
+    }
+  ]
+}

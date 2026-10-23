@@ -1,0 +1,232 @@
+{
+  "scope": "Serial seven-case test, one excluded warm-up then measured requests per case. Six-second client timeout includes HTTPS, startup, calculation and validation. No operational publication.",
+  "targetTotalMilliseconds": 6000,
+  "validationPassed": true,
+  "measuredRequests": 21,
+  "returnedWithinSixSeconds": 21,
+  "validOrProvenResults": 21,
+  "proved": 17,
+  "unproved": 4,
+  "incomplete": 0,
+  "clientDeadlines": 0,
+  "errors": 0,
+  "cases": [
+    {
+      "caseId": "case-01",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 3,
+      "unproved": 0,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        31201
+      ],
+      "referenceNetCargoKg": 31201,
+      "completeRequestMilliseconds": {
+        "min": 4439.343167000001,
+        "median": 4712.227292,
+        "max": 4905.6963749999995
+      },
+      "startupMilliseconds": {
+        "min": 3662.53947399999,
+        "median": 3748.996671000001,
+        "max": 3795.61178799998
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 1441,
+        "median": 1490,
+        "max": 1567
+      }
+    },
+    {
+      "caseId": "case-02",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 3,
+      "unproved": 0,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        38714
+      ],
+      "referenceNetCargoKg": 38714,
+      "completeRequestMilliseconds": {
+        "min": 4093.504791000003,
+        "median": 4404.882167000003,
+        "max": 5234.682583000002
+      },
+      "startupMilliseconds": {
+        "min": 3589.554232000024,
+        "median": 3782.883276000037,
+        "max": 4466.837228999997
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 770,
+        "median": 1459,
+        "max": 1648
+      }
+    },
+    {
+      "caseId": "case-03",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 0,
+      "unproved": 3,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        40701
+      ],
+      "referenceNetCargoKg": 40701,
+      "completeRequestMilliseconds": {
+        "min": 5470.573292000001,
+        "median": 5511.291833000003,
+        "max": 5601.214166999998
+      },
+      "startupMilliseconds": {
+        "min": 3576.6515570000047,
+        "median": 3616.5149819999933,
+        "max": 3777.8399180000415
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 1464,
+        "median": 1624,
+        "max": 1660
+      }
+    },
+    {
+      "caseId": "case-04",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 3,
+      "unproved": 0,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        47555
+      ],
+      "referenceNetCargoKg": 47555,
+      "completeRequestMilliseconds": {
+        "min": 4412.837833000012,
+        "median": 4501.408374999999,
+        "max": 4801.0922500000015
+      },
+      "startupMilliseconds": {
+        "min": 3813.7500979999895,
+        "median": 3832.4373309999937,
+        "max": 3969.8730820000055
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 1271,
+        "median": 1405,
+        "max": 1423
+      }
+    },
+    {
+      "caseId": "case-05",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 2,
+      "unproved": 1,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        49936
+      ],
+      "referenceNetCargoKg": 49936,
+      "completeRequestMilliseconds": {
+        "min": 5166.15445799999,
+        "median": 5479.118000000002,
+        "max": 5574.690708000009
+      },
+      "startupMilliseconds": {
+        "min": 3552.991936999955,
+        "median": 3741.488764999958,
+        "max": 4178.464648999972
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 1058,
+        "median": 1490,
+        "max": 1681
+      }
+    },
+    {
+      "caseId": "case-06",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 3,
+      "unproved": 0,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        31003
+      ],
+      "referenceNetCargoKg": 31003,
+      "completeRequestMilliseconds": {
+        "min": 4510.575375,
+        "median": 4609.455709000002,
+        "max": 4914.258042000001
+      },
+      "startupMilliseconds": {
+        "min": 3618.2793350000284,
+        "median": 3627.077783000015,
+        "max": 3689.919785999984
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 1551,
+        "median": 1616,
+        "max": 1620
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "samples": 3,
+      "returnedWithinSixSeconds": 3,
+      "returned": 3,
+      "proved": 3,
+      "unproved": 0,
+      "incomplete": 0,
+      "clientDeadlines": 0,
+      "errors": 0,
+      "referenceMatched": 3,
+      "netCargoKg": [
+        null
+      ],
+      "referenceNetCargoKg": null,
+      "completeRequestMilliseconds": {
+        "min": 3991.212041999999,
+        "median": 4112.494917000004,
+        "max": 4709.748083000013
+      },
+      "startupMilliseconds": {
+        "min": 3487.709612000035,
+        "median": 3683.923972999968,
+        "max": 4005.344097000023
+      },
+      "calculationBudgetMilliseconds": {
+        "min": 1229,
+        "median": 1550,
+        "max": 1749
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "runtimeCommit": "4e05580e0415ccddaa7787396957322ebcb580eb",
+  "sourceFiles": {
+    "solver/cargo_capacity.py": "94f9d8854945d7e6345dded1e27a190dcd08c7a99c12756e2a7bed7b9f340f80",
+    "solver/staging/app_worker.py": "53aa79ccea1cf954d666738182c1943273d6e36056c284b0998548bf397c3e49",
+    "solver/staging/search_profile.py": "de0b0c6b434a5161ae3cc5ce9bf16ea05b35d79e51cdbc739db378d185bfd49b",
+    "src/infrastructure/capacity/staging-worker.ts": "33bf6c3a5116b0c92a041f3e54bbbac29d49a4e0ea98b7deaab894a6efb4e134",
+    "src/infrastructure/capacity/staging-endpoint.ts": "e12d7810cad279a7afc2eefa42e44736aff63912a1b843b2b748cd86531c82c3",
+    "solver/run_six_second_tests.mjs": "53a6319be27ccbe796200ba86f0aa6ad4f1009b09039dc34893ea6e6ede5e952",
+    "Dockerfile": "247737d0790cf5f9330f2a4976921dca7dc3f8118a2ac177df111a0c11bc21d9"
+  },
+  "analysisSourceFile": "solver/report_six_second_tests.mjs",
+  "analysisSourceSha256": "d39383d9061e90cdc9f1b354f1349ea5a3da15233aa63b38c7f2a94859ba2714"
+}

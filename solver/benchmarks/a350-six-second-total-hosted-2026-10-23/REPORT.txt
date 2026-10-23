@@ -1,0 +1,21 @@
+Six-second TOTAL request experiment — staging only
+
+Serial seven-case test, one excluded warm-up then measured requests per case. Six-second client timeout includes HTTPS, startup, calculation and validation. No operational publication.
+Target: 6 seconds including HTTPS, startup, calculation, validation and response. Server budget 5.5 seconds, including a 0.25 second return/validation reserve; 0.5 second margin for transport. Actual network timing is measured, not guaranteed.
+
+Measured requests: 21; valid/proven results returned within six seconds: 21; proved: 17; valid but unproved: 4; incomplete: 0; client deadlines: 0; errors: 0.
+Independent audit passed: true. All attempts retained; one warm-up per case excluded from the measured totals.
+
+Case | Result by 6s | Proven | Matches reference outcome/net | Net kg returned | Complete median / max s
+case-01 | 3/3 | 3/3 | 3/3 | 31201 | 4.712 / 4.906
+case-02 | 3/3 | 3/3 | 3/3 | 38714 | 4.405 / 5.235
+case-03 | 3/3 | 0/3 | 3/3 | 40701 | 5.511 / 5.601
+case-04 | 3/3 | 3/3 | 3/3 | 47555 | 4.501 / 4.801
+case-05 | 3/3 | 2/3 | 3/3 | 49936 | 5.479 / 5.575
+case-06 | 3/3 | 3/3 | 3/3 | 31003 | 4.609 / 4.914
+case-07-infeasible | 3/3 | 3/3 | 3/3 | INFEASIBLE | 4.112 / 4.710
+
+An unproved arrangement is independently validated but is not labelled a confirmed maximum, even when its cargo total matches the known reference. Missing/incomplete responses do not become zero-capacity offers. Only testing was changed: no operational flight planning, AUTOLOAD, board, tray, calculation rules, saved inputs or database was altered. No merge was performed.
+These are three measured requests per case, a practical test rather than a production latency guarantee.
+
+Testing disabled after measurement: true. Normal login page status: 200. No operational STOP/PUBLISH policy was enabled.
