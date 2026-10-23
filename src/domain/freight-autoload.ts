@@ -41,6 +41,8 @@ const buildPairs=(h1:AircraftH1Snapshot)=>{const pairs:SolverIncompatibility[]=[
 
 const allocatePassengers=(flight:OperationalFlightDetail,d9:AircraftD9Snapshot|undefined):PassengerAutoloadPlan|null=>{
  if(!flight.passengerBooking?.applicable)return null;
+ const baggageIssues=[...(flight.freightPlanning.baggagePlanningNotes??[]),...(flight.freightPlanning.baggageAccommodationNotes??[])];
+ if(baggageIssues.length)throw new LoadPlanningProblemInvalid(baggageIssues[0]);
  const finalTraffic=flight.finalTraffic?.status!=="EMPTY"?flight.finalTraffic:null,passengerClasses=finalTraffic?.classes??flight.passengerBooking.classes.map(row=>({...row,final:row.booked})),seated=passengerClasses.reduce((sum,row)=>sum+row.final,0),booked=finalTraffic?seated+finalTraffic.passengerCounts.infant:seated,configuration:D9Configuration|undefined=d9?.configurations.find(row=>row.code===flight.aircraftConfiguration)??d9?.configurations.find(row=>row.isDefault)??d9?.configurations[0];
  if(booked>0&&!configuration)throw new LoadPlanningProblemInvalid("Configure the passenger cabin distribution on D9 before AUTOLOAD.");
  const passengerWeight=finalTraffic?finalTraffic.passengerWeight:flight.passengerBooking.classes.reduce((sum,row)=>sum+row.booked*(row.planningWeight??0),0),configuredAreas=(configuration?.rows??[]).map((row,index)=>({row,index,seats:row.classSeats.reduce<number>((sum,value)=>sum+(value??0),0)})).filter(item=>item.seats>0),totalSeats=configuredAreas.reduce((sum,item)=>sum+item.seats,0);

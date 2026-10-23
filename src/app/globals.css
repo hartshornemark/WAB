@@ -1341,7 +1341,7 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .operational-traffic-plan-body .passenger-offer-flow>b{align-self:center;color:var(--muted);font-size:18px}.operational-traffic-plan-body .passenger-offer-flow .remaining{background:#fff3d8;color:#765414}.operational-traffic-plan-body .passenger-offer-flow .available{background:#e1f2e7;color:#216841}
 .operational-traffic-plan-body .passenger-offer-flow small{color:inherit}.operational-traffic-plan-body .passenger-offer-flow strong{font-size:15px;white-space:nowrap}.operational-traffic-plan-body .passenger-offer-flow span{align-self:end;color:inherit;font-size:9px;white-space:nowrap}
 .operational-traffic-plan-body .passenger-offer-holds{display:none}.operational-traffic-plan-body .passenger-cargo-offer>.operational-collapsible-body>.field-error{grid-column:1/-1;margin:0 20px 20px}
-.operational-traffic-plan-body .passenger-booking-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;overflow:visible;border:0}.operational-traffic-plan-body .passenger-booking-grid-head{display:none}.operational-traffic-plan-body .passenger-booking-row{box-sizing:border-box;display:grid;grid-template-columns:1fr;gap:5px;min-height:var(--traffic-detail-card-height);padding:12px;border:0;border-radius:7px;background:#eef3fc}.operational-traffic-plan-body .passenger-booking-row+.passenger-booking-row{border:0}.operational-traffic-plan-body .passenger-booking-row strong{display:grid;grid-template-columns:auto 1fr}.operational-traffic-plan-body .passenger-booking-row strong b{height:auto;min-width:0;background:transparent}.operational-traffic-plan-body .passenger-booking-row>span:nth-of-type(1){font-size:17px}.operational-traffic-plan-body .passenger-booking-row>span:nth-of-type(2){display:none}
+.operational-traffic-plan-body .passenger-booking-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;overflow:visible;border:0}.operational-traffic-plan-body .passenger-booking-grid-head{display:none}.operational-traffic-plan-body .passenger-booking-row{box-sizing:border-box;display:grid;grid-template-columns:1fr;gap:5px;min-height:var(--traffic-detail-card-height);padding:12px;border:0;border-radius:7px;background:#eef3fc}.operational-traffic-plan-body .passenger-booking-row+.passenger-booking-row{border:0}.operational-traffic-plan-body .passenger-booking-row strong{display:grid;grid-template-columns:auto 1fr}.operational-traffic-plan-body .passenger-booking-row strong b{height:auto;min-width:0;background:transparent}.operational-traffic-plan-body .passenger-booking-row>.passenger-booking-count{font-size:17px}.operational-traffic-plan-body .passenger-booking-row>.passenger-booking-planning-weight{display:none}
 .operational-traffic-plan-body .baggage-accommodation-form{margin-top:0;column-gap:12px;row-gap:20px}
 .operational-traffic-plan-body .baggage-accommodation-form>label{box-sizing:border-box;grid-template-rows:18px 1fr var(--control-height);height:var(--traffic-detail-card-height)}
 .operational-traffic-plan-body .passenger-booking-forecast{margin-top:10px;padding-top:10px}.operational-traffic-plan-body .passenger-booking-forecast>header,.operational-traffic-plan-body .passenger-booking-forecast>p{display:none}.operational-traffic-plan-body .passenger-cabin-plan{gap:8px}.operational-traffic-plan-body .passenger-cabin-plan article{position:relative;grid-template-rows:20px 24px;min-height:62px;padding:8px 10px}.operational-traffic-plan-body .passenger-cabin-plan article>div{display:flex;align-items:center;justify-content:space-between}.operational-traffic-plan-body .passenger-cabin-plan article>div strong{color:var(--muted);font-size:9px}.operational-traffic-plan-body .passenger-cabin-plan article>b{font-size:14px}.operational-traffic-plan-body .passenger-cabin-plan article>span{display:none}
@@ -1748,14 +1748,14 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-plan-workbench{gap:18px;margin-top:0}
 .load-plan-board-surface{padding:10px;border:1px solid #c5d3e6;border-radius:9px;background:#f6f9fd}
 .load-plan-board-surface .load-plan-aircraft{padding:0;border:0;border-radius:7px;background:#eef3fa}
-.load-plan-tray{margin-top:4px;padding:18px;border:1px solid #c5d3e6;border-radius:9px;background:#fff}
-.load-plan-tray>header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:13px;border-bottom:1px solid var(--line)}
-.load-plan-tray>header h3{margin:3px 0 4px;font-size:22px}
-.load-plan-tray>header p:last-child{margin:0;color:var(--muted);font-size:11px}
-.load-plan-tray>header>div:last-child{display:grid;grid-auto-flow:column;gap:8px}
-.load-plan-tray>header>div:last-child>span{display:grid;gap:3px;min-width:120px;padding:9px 11px;border-radius:7px;background:#e1f2e7;color:#216841}
-.load-plan-tray>header>div:last-child>span.attention{background:#fff3d8;color:#765414}
-.load-plan-tray>header small{font-size:8px;font-weight:900}.load-plan-tray>header strong{font-size:12px}
+:is(.load-plan-tray,.compact-load-tray){margin-top:4px;padding:18px;border:1px solid #c5d3e6;border-radius:9px;background:#fff}
+:is(.load-plan-tray,.compact-load-tray)>header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:13px;border-bottom:1px solid var(--line)}
+:is(.load-plan-tray,.compact-load-tray)>header h3{margin:3px 0 4px;font-size:22px}
+:is(.load-plan-tray,.compact-load-tray)>header p:last-child{margin:0;color:var(--muted);font-size:11px}
+:is(.load-plan-tray,.compact-load-tray)>header>div:last-child{display:grid;grid-auto-flow:column;gap:8px}
+:is(.load-plan-tray,.compact-load-tray)>header>div:last-child>span{display:grid;gap:3px;min-width:120px;padding:9px 11px;border-radius:7px;background:#e1f2e7;color:#216841}
+:is(.load-plan-tray,.compact-load-tray)>header>div:last-child>span.attention{background:#fff3d8;color:#765414}
+:is(.load-plan-tray,.compact-load-tray)>header small{font-size:8px;font-weight:900}:is(.load-plan-tray,.compact-load-tray)>header strong{font-size:12px}
 .load-plan-tray .load-plan-unallocated,.load-plan-assigned{margin:14px 0 0;padding:0;border:0;background:transparent;box-shadow:none}
 .load-plan-tray .load-plan-unallocated>header,.load-plan-assigned>header{display:block;margin:0 0 8px;padding:0}
 .load-plan-tray .load-plan-unallocated h4,.load-plan-assigned h4{margin:2px 0 0;font-size:13px}
@@ -1766,4 +1766,165 @@ button.csv-help-icon:focus-visible{outline:3px solid var(--accent);outline-offse
 .load-plan-assigned{padding-top:13px;border-top:1px solid var(--line)}
 .load-plan-assigned .load-plan-card{border-color:#9bc7aa;border-left-color:#3b9862;background:#eff9f2}
 @media(max-width:1200px){.load-plan-tray .load-plan-unallocated>div,.load-plan-assigned>div{grid-template-columns:repeat(5,minmax(100px,1fr))}}
-@media(max-width:850px){.load-plan-graphic>header,.load-plan-tray>header{align-items:stretch;flex-direction:column}.load-plan-layout-controls{align-items:stretch}.load-plan-layout-controls .load-plan-deck-tabs{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}.load-plan-layout-controls .load-plan-deck-tabs button{min-width:0}.load-plan-tray .load-plan-unallocated>div,.load-plan-assigned>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.load-plan-graphic>header,:is(.load-plan-tray,.compact-load-tray)>header{align-items:stretch;flex-direction:column}.load-plan-layout-controls{align-items:stretch}.load-plan-layout-controls .load-plan-deck-tabs{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}.load-plan-layout-controls .load-plan-deck-tabs button{min-width:0}.load-plan-tray .load-plan-unallocated>div,.load-plan-assigned>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Compact physical hold renderer. Enabled for A350 only during validation. */
+.compact-load-plan{border:1px solid #bdcfea;background:#fff}
+.compact-load-plan>.load-plan-board-surface{padding:0;border:0;background:#fff}
+.compact-load-plan .load-plan-aircraft{background:#fff}
+.compact-hold-board{container-type:inline-size;min-width:0;color:#2d4264;background:#fff}
+.compact-hold-direction{display:flex;align-items:center;gap:10px;margin:0 0 1cqw;color:#6d80a0;font-size:clamp(5px,.55cqw,9px);font-weight:800}
+.compact-hold-direction i{height:1px;flex:1;background:#c3d2e9}
+.compact-hold-line{display:grid;gap:.3cqw;width:100%;padding:0 .1cqw;box-sizing:border-box}
+.compact-hold-group{position:relative;min-width:0;box-sizing:border-box;height:15.3cqw;padding:2.65cqw .35cqw 1.5cqw;border:2px solid #a9bedf;border-radius:.6cqw;background:#f0f4fb}
+.compact-hold-group h4{position:absolute;top:.55cqw;left:.4cqw;max-width:calc(100% - .8cqw);margin:0;overflow:hidden;color:#324b71;font-size:clamp(5px,.65cqw,11px);font-weight:850;line-height:1;white-space:nowrap;text-overflow:ellipsis}
+.compact-hold-cells{position:relative;width:100%;height:100%}
+.compact-hold-cell{position:absolute;box-sizing:border-box;padding:.65cqw .42cqw;border:1px solid #9eb5d8;border-radius:.4cqw;background:#fff;box-shadow:inset 0 0 0 1px #dce5f3;overflow:hidden}
+.compact-hold-cell>strong{display:block;color:#2c4265;font-size:clamp(6px,.86cqw,14px);font-weight:850;line-height:1}
+.compact-cell-state{position:absolute;bottom:.55cqw;left:.42cqw;color:#6f83a5;font-size:clamp(4px,.46cqw,8px);font-weight:900;line-height:1}
+.compact-hold-cell.occupied{background:#d7e5ff;border-color:#759bd9}
+.compact-hold-cell.can-place{border-color:#287a4b;box-shadow:inset 0 0 0 1px #287a4b}
+.compact-cell-loads{position:absolute;inset:1.65cqw .2cqw .15cqw;display:flex;flex-direction:column;gap:.15cqw;overflow:auto}
+.compact-hold-caption{position:absolute;top:calc(100% + .85cqw);left:0;right:0;color:#6f83a5;font-size:clamp(3px,.42cqw,7px);font-weight:800;text-align:center;white-space:nowrap}
+.compact-hold-group.bulk .compact-cell-state{left:0;right:0;text-align:center}
+.compact-footprint{position:absolute;box-sizing:border-box;z-index:2;pointer-events:none;border:1px dashed #5e8ad0;border-radius:.3cqw}
+.compact-footprint.pair{inset-block:0;border:1px dotted #d3a744}
+.compact-footprint-label{position:absolute;top:calc(-.9cqw - var(--label-level)*.55cqw);left:0;box-sizing:border-box;min-width:0;min-height:0;height:auto;padding:0 .15cqw;border:0;border-radius:0;background:#f0f4fb;color:#587fb4;font-size:clamp(4px,.5cqw,9px);font-weight:900;line-height:1;pointer-events:auto}
+.compact-footprint.pair .compact-footprint-label{top:auto;bottom:-.22cqw;left:auto;right:.15cqw;background:#fff;color:#ad8b3b;font-size:clamp(3px,.4cqw,7px)}
+.compact-footprint-label:disabled{opacity:1;cursor:default}
+.compact-footprint.can-place{border-width:2px;border-color:#287a4b;pointer-events:auto;z-index:3}
+.compact-footprint.can-place .compact-footprint-label{background:#287a4b;color:#fff;cursor:pointer}
+.compact-footprint-loads{position:absolute;inset:1.8cqw .3cqw 1cqw;display:flex;pointer-events:auto}
+.compact-place{position:absolute;right:.15cqw;bottom:.15cqw;min-height:0;height:auto;padding:.2cqw .3cqw;border:0;border-radius:2px;background:#287a4b;color:#fff;font-size:clamp(4px,.46cqw,8px);line-height:1;z-index:4}
+:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card{display:flex;flex:1;flex-direction:column;align-items:flex-start;justify-content:center;gap:calc(var(--compact-card-unit,1cqw) * .2);width:100%;min-width:0;min-height:0;box-sizing:border-box;padding:calc(var(--compact-card-unit,1cqw) * .25);border:1px solid #8aaadd;border-radius:calc(var(--compact-card-unit,1cqw) * .25);background:#e8f0ff;overflow:hidden;white-space:normal}
+:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card>*{position:static;max-width:100%;overflow:hidden;font-size:clamp(4px,calc(var(--compact-card-unit,1cqw) * .53),9px);line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
+:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card .load-plan-card-commodity,:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card .load-plan-card-route,:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card .load-plan-card-special,:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card .load-plan-card-badge-special{display:none}
+:is(.compact-hold-board,.compact-tray-card-surface) .load-plan-card.selected{outline:2px solid #315da7;outline-offset:-2px}
+.compact-hold-legend{display:flex;align-items:center;gap:5.8cqw;margin-top:3cqw;padding:1cqw 1.2cqw;border:1px solid #dce5f3;border-radius:.4cqw;background:#f6f8fc;color:#6f83a5;font-size:clamp(4px,.5cqw,8px);font-weight:850;white-space:nowrap}
+.compact-hold-legend span:nth-child(2){color:#a78846}.compact-hold-legend span:nth-child(3){color:#5d82bd}.compact-hold-legend span:last-child{margin-left:auto}
+.compact-hold-note{margin:.5cqw 0 0;color:#6d80a0;font-size:clamp(6px,.6cqw,10px)}
+@media(max-width:850px){.compact-load-plan>header{flex-direction:row;align-items:flex-start}.compact-load-plan .load-plan-layout-controls .load-plan-deck-tabs{grid-auto-flow:column;grid-template-columns:none}.compact-load-plan .load-plan-layout-controls .load-plan-deck-tabs button{min-width:0;padding:5px 8px;font-size:7px}.compact-load-plan>header h3{font-size:16px}}
+.compact-footprint.alternative{border-color:#9aacc7;border-style:dotted}
+.compact-loaded-position{position:absolute;top:-.85cqw;left:0;padding:0 .15cqw;background:#d7e5ff;color:#324b71;font-size:clamp(4px,.55cqw,9px);line-height:1}
+.compact-load-plan>header .eyebrow{margin:0;font-size:clamp(6px,.75vw,10px)}
+.compact-load-plan>header h3{font-size:clamp(14px,1.45vw,22px);line-height:1.3}
+.compact-load-plan>header>div>p:not(.eyebrow){font-size:clamp(7px,.65vw,10px)}
+.compact-load-plan .load-plan-layout-controls .load-plan-deck-tabs button{min-width:clamp(75px,8.5vw,140px);height:clamp(24px,2.4vw,38px);padding:4px 8px;font-size:clamp(6px,.6vw,9px)}
+
+/* D4 door chrome is outside the group frame; bay geometry stays unchanged. */
+.compact-hold-door{position:absolute;z-index:5;display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:clamp(24px,3cqw,48px);height:clamp(9px,1cqw,15px);padding:0 .25cqw;border:2px solid #3268b8;border-radius:.25cqw;background:#e8f0ff;color:#234e91;font-size:clamp(5px,.55cqw,9px);font-weight:900;line-height:1;white-space:nowrap;pointer-events:none}
+.compact-hold-door.top{bottom:calc(100% + 2px);transform:translateX(-50%);border-bottom:0;border-radius:.25cqw .25cqw 0 0}
+.compact-hold-door.bottom{top:calc(100% + 2px);transform:translateX(-50%);border-top:0;border-radius:0 0 .25cqw .25cqw}
+.compact-hold-door.tail,.compact-hold-door.nose{top:50%;width:clamp(9px,1cqw,15px);min-width:0;min-height:clamp(24px,3cqw,48px);height:auto;padding:.25cqw 0;writing-mode:vertical-rl;transform:translateY(-50%)}
+.compact-hold-door.tail{right:calc(100% + 2px);border-right:0}.compact-hold-door.nose{left:calc(100% + 2px);border-left:0}
+.compact-hold-group:has(>.compact-hold-door.bottom)>.compact-hold-caption{top:calc(100% + 1.55cqw)}
+
+/* Assigned-load content inside the existing A350 compact cells/footprints. */
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load{display:flex;flex:1 0 auto;flex-direction:column;align-items:stretch;justify-content:center;gap:calc(var(--compact-card-unit,1cqw) * .08);min-height:0;padding:calc(var(--compact-card-unit,1cqw) * .12) calc(var(--compact-card-unit,1cqw) * .18);color:#243d67;text-align:left}
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load .compact-board-load-identity{display:block;flex:none;min-width:0;max-width:100%;font-size:clamp(5px,calc(var(--compact-card-unit,1cqw) * .65),10px);font-weight:900;line-height:1.05;white-space:normal;overflow-wrap:anywhere;text-overflow:clip}
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load .compact-board-load-meta{display:flex;flex:none;align-items:baseline;justify-content:space-between;gap:calc(var(--compact-card-unit,1cqw) * .1);min-width:0;font-size:clamp(4px,calc(var(--compact-card-unit,1cqw) * .55),9px);font-weight:800;line-height:1.05;white-space:nowrap;overflow:visible}
+.compact-board-load-meta>span{display:block;flex:none;max-width:100%;font-size:inherit;line-height:inherit;color:#324b71;white-space:nowrap}
+.compact-hold-group.bulk .occupied>strong{position:absolute;top:calc(var(--compact-card-unit,1cqw) * .25);left:calc(var(--compact-card-unit,1cqw) * .42);font-size:clamp(4px,calc(var(--compact-card-unit,1cqw) * .65),10px)}
+.compact-hold-group.bulk .compact-cell-loads{inset:calc(var(--compact-card-unit,1cqw) * 1.1) calc(var(--compact-card-unit,1cqw) * .15) calc(var(--compact-card-unit,1cqw) * .15);gap:calc(var(--compact-card-unit,1cqw) * .08)}
+:is(.compact-hold-group.bulk,.compact-tray-bulk) .compact-board-load{padding:calc(var(--compact-card-unit,1cqw) * .05) calc(var(--compact-card-unit,1cqw) * .1);gap:0}
+:is(.compact-hold-group.bulk,.compact-tray-bulk) .compact-board-load .compact-board-load-identity,:is(.compact-hold-group.bulk,.compact-tray-bulk) .compact-board-load .compact-board-load-meta{font-size:clamp(3px,calc(var(--compact-card-unit,1cqw) * .42),7px)}
+.compact-footprint-loads>.compact-board-load{flex:1;align-self:stretch;padding:calc(var(--compact-card-unit,1cqw) * .4);gap:calc(var(--compact-card-unit,1cqw) * .3)}
+.compact-footprint-loads>.compact-board-load .compact-board-load-identity{font-size:clamp(6px,calc(var(--compact-card-unit,1cqw) * .8),12px)}
+.compact-footprint-loads>.compact-board-load .compact-board-load-meta{font-size:clamp(5px,calc(var(--compact-card-unit,1cqw) * .7),10px)}
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load:is(.special-load,.dangerous){padding-left:calc(var(--compact-card-unit,1cqw) * .55)}:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load:is(.special-load,.dangerous)::before{width:calc(var(--compact-card-unit,1cqw) * .35)}
+.compact-hold-group.bulk .compact-cell-loads:has(>.compact-board-load+ .compact-board-load){gap:0}
+.compact-hold-group.bulk .compact-cell-loads:has(>.compact-board-load+ .compact-board-load)>.compact-board-load{padding:0;border:0}
+.compact-hold-group.bulk .compact-cell-loads:has(>.compact-board-load+ .compact-board-load) .compact-board-load-identity,.compact-hold-group.bulk .compact-cell-loads:has(>.compact-board-load+ .compact-board-load) .compact-board-load-meta{font-size:clamp(3px,calc(var(--compact-card-unit,1cqw) * .42),7px)}
+
+/* ULD cards: one line each for identity, destination and weight. */
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load.uld .compact-board-load-identity{white-space:nowrap;overflow-wrap:normal;overflow:hidden;text-overflow:ellipsis}
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load.uld .compact-board-load-meta{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:calc(var(--compact-card-unit,1cqw) * .08);overflow:hidden}
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load.uld .compact-board-load-meta>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:is(.compact-hold-board,.compact-tray-card-surface) .compact-board-load.uld .compact-board-load-identity.split{text-overflow:clip}
+.compact-board-load-identity.split>span{display:block;min-width:0;max-width:100%;font:inherit;line-height:inherit;white-space:nowrap;overflow:hidden;text-overflow:clip}
+
+/* A350 tray: categories use available space; cards retain measured board dimensions. */
+.compact-load-tray .compact-tray-summary{display:flex;flex-wrap:wrap;justify-content:flex-end}
+.compact-load-tray .compact-tray-summary>span{min-width:110px}
+.compact-load-tray .compact-tray-summary>.conflict{background:#fbe9eb;color:#a62020}
+.compact-tray-toolbar{display:flex;align-items:center;gap:12px;margin:14px 0 18px}
+.compact-tray-toolbar>div{display:flex;gap:6px}
+.compact-tray-toolbar button{min-height:30px;padding:7px 13px;font-size:10px}
+.compact-tray-toolbar>span{margin-left:auto;color:var(--muted);font-size:10px}
+.compact-tray-columns{display:grid;grid-template-columns:repeat(var(--tray-columns),minmax(0,1fr));gap:18px;min-height:140px}
+.compact-tray-category{min-width:0;padding-right:16px;border-right:1px solid var(--line)}
+.compact-tray-category:last-child{padding-right:0;border-right:0}
+.compact-tray-category h4{margin:0;padding-bottom:9px;border-bottom:1px solid var(--line);color:var(--accent);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.compact-tray-category>p{margin:9px 0 14px;color:var(--muted);font-size:10px;font-weight:800}
+.compact-tray-items{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.compact-tray-item{position:relative;flex:none;max-width:100%}
+.compact-tray-card-surface{flex:none;position:relative;max-width:100%}
+.compact-load-tray .compact-tray-card-surface>.compact-board-load{height:100%;flex:none}
+.compact-tray-card-surface>.compact-footprint-loads{position:static;inset:auto;width:100%;height:100%}
+.compact-load-tray .compact-tray-card-surface .compact-board-load{box-shadow:0 2px 6px #192c4d12;cursor:grab}
+.compact-load-tray .compact-tray-card-surface .compact-board-load:active{cursor:grabbing}
+.compact-load-tray .compact-tray-card-surface .compact-board-load:is(.special-load,.dangerous)::before{inset:0 auto 0 0;height:auto;border-radius:0}
+.compact-tray-conflict{position:absolute;right:-6px;top:-6px;display:grid;place-items:center;width:13px;height:13px;border-radius:50%;background:#a62020;color:#fff;font-size:9px;font-weight:900}
+.compact-tray-empty{grid-column:1/-1;align-self:center;text-align:center;color:var(--muted);font-size:11px;font-weight:800}
+.compact-tray-unmapped{max-width:180px;color:#a62020;font-size:10px}
+.compact-tray-unmapped>small{display:block;margin-top:5px}
+@media(max-width:900px){.compact-load-tray>header{align-items:flex-start;flex-direction:column}.compact-tray-toolbar{flex-wrap:wrap}.compact-tray-toolbar>span{display:none}.compact-tray-columns{gap:12px}}
+@media(max-width:600px){.compact-tray-columns{grid-template-columns:repeat(2,minmax(0,1fr))}.compact-tray-category{padding-right:8px}.compact-tray-category h4{font-size:10px}}
+
+@media(max-width:600px){.compact-tray-columns:has(>.compact-tray-category:only-child){grid-template-columns:1fr}}
+
+/* Keep all passenger classes on aligned scan lines, including edit mode. */
+.operational-traffic-plan-body .passenger-booking-grid{grid-template-columns:repeat(var(--booking-class-count),minmax(132px,1fr));overflow-x:auto}
+.operational-traffic-plan-body .passenger-booking-row{container-type:inline-size;grid-template-rows:24px 46px 24px;align-content:space-between;align-items:center;min-width:0}
+.operational-traffic-plan-body .passenger-booking-row strong{grid-template-columns:1.1em minmax(0,1fr);gap:6px;min-width:0;font-size:clamp(10px,9cqw,14px);line-height:1.2;white-space:nowrap}
+.operational-traffic-plan-body .passenger-booking-class-name{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.operational-traffic-plan-body .passenger-booking-row>.passenger-booking-planning-weight{display:none}
+.operational-traffic-plan-body .passenger-booking-row>.passenger-booking-passenger-weight{display:none}
+.operational-traffic-plan-body .passenger-booking-row>.passenger-booking-count,.operational-traffic-plan-body .passenger-booking-row>input{grid-row:2}
+.operational-traffic-plan-body .passenger-booking-row>input{box-sizing:border-box;min-width:0;max-width:100%;width:100%}
+
+/* Compact cabin labels keep the cabin forecast on the same scan row. */
+.operational-traffic-plan-body .passenger-booking-forecast .passenger-cabin-plan{grid-template-columns:repeat(var(--booking-cabin-count),minmax(132px,1fr));overflow-x:auto}
+.operational-traffic-plan-body .passenger-booking-forecast .passenger-cabin-plan article{min-width:0}
+.operational-traffic-plan-body .passenger-booking-forecast .passenger-cabin-plan article>div{gap:6px;white-space:nowrap}
+.operational-traffic-plan-body .passenger-booking-forecast .passenger-cabin-plan article small,.operational-traffic-plan-body .passenger-booking-forecast .passenger-cabin-plan article strong{white-space:nowrap}
+
+/* Baggage class badges plus Bulk Spill share one compact scan row. */
+.operational-traffic-plan-body .traffic-baggage-summary{grid-template-columns:repeat(var(--baggage-badge-count),minmax(100px,1fr));gap:6px;overflow-x:auto}
+.operational-traffic-plan-body .traffic-baggage-summary>span{container-type:inline-size;min-width:0;padding:12px 8px;grid-template-rows:24px 46px 24px;align-content:space-between;align-items:center;gap:5px}
+.operational-traffic-plan-body .traffic-baggage-summary>span>small,.operational-traffic-plan-body .traffic-baggage-summary>span>em{font-size:clamp(7px,8cqw,10px);line-height:1.2;white-space:nowrap}
+.operational-traffic-plan-body .traffic-baggage-summary>span>strong{font-size:clamp(10px,14cqw,17px);line-height:1.2;white-space:nowrap}
+
+/* Match summary cards to the cabin cards; retain the existing edit controls. */
+.operational-traffic-plan-body .passenger-booking-row:not(:has(>input)){height:68px;min-height:68px;padding-block:8px;grid-template-rows:auto auto;gap:2px}
+.operational-traffic-plan-body .traffic-baggage-summary>span{height:68px;min-height:68px;padding-block:6px;grid-template-rows:auto auto auto;gap:2px}
+
+/* Keep each planned baggage load and its commodity totals on one scan line. */
+.baggage-planning-grid{overflow-x:auto}
+.baggage-planning-grid>div{min-width:590px;grid-template-columns:minmax(max-content,1fr) 90px 110px;align-items:start;gap:10px}
+.baggage-planning-load-line{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.baggage-planning-load-line>strong{flex:none}
+.baggage-planning-load-line>.baggage-planning-uld-number{width:112px;min-width:0;height:36px;flex:none;text-transform:uppercase;font-size:13px;font-weight:700;color:var(--ink)}
+.baggage-planning-load-line .baggage-commodity-breakdown{display:block;margin:0}
+.baggage-planning-load-line .baggage-commodity-breakdown>small{display:none}
+.baggage-planning-load-line .baggage-commodity-chips{flex-wrap:nowrap}
+.baggage-planning-grid>div>strong{display:flex;align-items:center;justify-content:flex-end;min-height:36px;white-space:nowrap}
+.baggage-planning-grid>.head>span:last-child{text-align:right}
+
+/* Align the baggage forecast inputs with the 68px cabin cards opposite. */
+.operational-traffic-plan-body .baggage-accommodation-form>label{height:167px;grid-template-rows:18px 1fr 68px}
+.operational-traffic-plan-body .baggage-accommodation-form>label>input{box-sizing:border-box;height:68px}
+.operational-traffic-plan-body .baggage-accommodation-form::after{top:177px}
+
+/* Use the baggage-card title treatment for booked passenger classes. */
+.operational-traffic-plan-body .passenger-booking-row>strong{grid-template-columns:minmax(0,1fr);gap:0;color:var(--muted);font-size:clamp(7px,8cqw,10px);font-weight:900;line-height:1.2}
+.operational-traffic-plan-body .passenger-booking-row>strong>b{display:none}
+
+/* Preserve the baggage card's three scan lines when changing content order. */
+.operational-traffic-plan-body .passenger-booking-row:not(:has(>input)),.operational-traffic-plan-body .traffic-baggage-summary>span:not(.bulk){grid-template-rows:12px 20.4px 12px;row-gap:5.8px;align-content:center;align-items:center}
+.operational-traffic-plan-body .passenger-booking-row>strong,.operational-traffic-plan-body .traffic-baggage-summary>span:not(.bulk)>small{grid-row:1;font-size:10px;font-weight:900;line-height:12px;color:var(--muted)}
+.operational-traffic-plan-body .passenger-booking-row:not(:has(>input))>.passenger-booking-count,.operational-traffic-plan-body .traffic-baggage-summary>span:not(.bulk)>strong{grid-row:3;font-size:17px;line-height:20.4px}
+.operational-traffic-plan-body .traffic-baggage-summary>span:not(.bulk)>em{grid-row:2}
+
+/* Planned-content guidance follows the standard muted remark typography. */
+.baggage-planning-contents>header h4,.baggage-accommodation .baggage-planning-contents>header p{color:var(--muted);font-size:12px;font-weight:400}

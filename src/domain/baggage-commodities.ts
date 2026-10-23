@@ -75,10 +75,12 @@ export function mixedBaggageContents(classes:OperationalBaggageClass[],uldPieceT
  return contents;
 }
 
-export function baggageContentsForUldCount(classes:OperationalBaggageClass[],uldCount:number,uldCode:string|null,pieceCapacity:number|null){
+export function baggageContentsForUldCount(classes:OperationalBaggageClass[],uldCount:number,uldCode:string|null,pieceCapacity:number|null,pieceTargets?:readonly number[]){
  const active=classes.filter(row=>row.plannedPieces>0),totalPieces=active.reduce((sum,row)=>sum+Math.max(0,row.plannedPieces),0),count=Math.max(0,Math.floor(uldCount)),capacity=pieceCapacity&&pieceCapacity>0?pieceCapacity:null;
  const separated=capacity?active.flatMap(row=>{let remaining=row.plannedPieces;return Array.from({length:Math.ceil(remaining/capacity)},()=>{const pieces=Math.min(capacity,remaining);remaining-=pieces;return pieces})}):split(totalPieces,count);
- const targets=capacity?Array.from({length:count},(_,index)=>separated[index]??0):separated;
+ // The A350 planning service supplies targets checked against pieces, gross
+ // weight and volume, including a shared BF/BJ ULD. Other aircraft retain their policy.
+ const targets=pieceTargets?Array.from({length:count},(_,index)=>pieceTargets[index]??0):capacity?Array.from({length:count},(_,index)=>separated[index]??0):separated;
  return mixedBaggageContents(classes,targets,uldCode);
 }
 

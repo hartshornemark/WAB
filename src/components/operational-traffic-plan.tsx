@@ -10,7 +10,8 @@ export function OperationalTrafficPlan({passengers,planning,children}:{passenger
  const passengerSplit=passengers.classes.filter(row=>row.booked>0).map(row=>`${row.code}${row.booked.toLocaleString()}`).join(" · ")||"—";
  const baggageSplit=(planning.baggageClasses??[]).filter(row=>row.plannedPieces>0||row.plannedWeight>0).map(row=>row.commodityCode).filter((value,index,rows)=>rows.indexOf(value)===index).join(" · ")||"B";
  const baggageUlds=planning.baggageAccommodation?.contents.filter(row=>row.kind==="ULD").reduce<Record<string,number>>((totals,row)=>{const code=row.commodities?.map(item=>item.commodityCode).join("/")||row.commodityCode||"B";totals[code]=(totals[code]??0)+1;return totals},{});
- const baggageAllocation=baggageUlds&&Object.keys(baggageUlds).length?Object.entries(baggageUlds).map(([code,count])=>`${code} ${count} ${planning.uldCode??"ULD"}`).join(" · "):`${planning.plannedBaggageUldPositions??0} ${planning.uldCode??"ULD"}`;
+ const baggageAllocation=baggageUlds&&Object.keys(baggageUlds).length?Object.entries(baggageUlds).map(([code,count])=>`${code} ${count} ${planning.uldCode??"ULD"}`).join(" · "):`${planning.baggageCapacityBasis&&planning.baggageAccommodation?planning.baggageAccommodation.uldCount:planning.plannedBaggageUldPositions??0} ${planning.uldCode??"ULD"}`;
+ const bulkSummary=planning.baggageCapacityBasis?`BULK (${planning.baggageAccommodation?planning.baggageAccommodation.contents.filter(row=>row.kind==="BULK").reduce((sum,row)=>sum+row.pieces,0).toLocaleString():"—"} PCS)`:"BULK (0)";
  const cargoPositions=(planning.cargoUldAllocations??[]).map(row=>`${row.positionCount} ${row.uldCode}`).join(" · ")||"BULK";
  return <details className={`operational-traffic-plan operational-collapsible${freighter?" traffic-plan-freighter":""}`}>
   <summary className="operational-collapsible-summary">
@@ -23,7 +24,7 @@ export function OperationalTrafficPlan({passengers,planning,children}:{passenger
      <span className="offer"><small>CARGO OFFER</small><strong>{kg(planning.cargoOfferWeight)}</strong><b>{planning.ready?"AVAILABLE FOR UPLIFT · READY":"COMPLETE THE MISSING AIRCRAFT DATA"}</b></span>
     </>:<>
      <span><small>BOOKED PASSENGERS</small><strong>{passengerSplit}</strong><b>{passengers.totalBooked.toLocaleString()} PAX TOTAL</b><em>PLANNING WEIGHT</em><i>{kg(passengers.totalPassengerWeight)}</i></span>
-     <span><small>FORECAST BAGGAGE</small><strong>{baggageSplit}</strong><b>FORECAST BY TYPE</b><em>ULD ALLOCATION</em><i>{baggageAllocation} · BULK (0)</i></span>
+     <span><small>FORECAST BAGGAGE</small><strong>{baggageSplit}</strong><b>FORECAST BY TYPE</b><em>ULD ALLOCATION</em><i>{baggageAllocation} · {bulkSummary}</i></span>
      <span className="remaining"><small>REMAINING PAYLOAD</small><strong>{kg(planning.remainingPayload)}</strong><em>MAXIMUM PAYLOAD</em><i>{kg(planning.maximumPayload)}</i></span>
      <span className="offer"><small>CARGO OFFER</small><strong>{kg(planning.cargoOfferWeight)} / {volume(planning.availableBulkVolume,planning.availableBulkVolumeUnit)}</strong><b>{cargoPositions}</b></span>
     </>}
