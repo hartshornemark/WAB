@@ -36,8 +36,11 @@ for that component is disabled. Its healthcheck uses internal port 8080.
 
 ## Information still required before a deployment decision
 
-1. Exact staging app ID/name, URL, current app specification and deployment commit.
-   Only the provider and App Platform product have been confirmed so far.
+The user confirmed the staging origin as `https://demo.wabiqa.com` on
+23 October 2026, hosted on DigitalOcean App Platform. This identifies the public
+app; it does not confirm its current deployment or enable the test endpoint.
+
+1. Exact staging app ID/name, current app specification and deployment commit.
 2. The backend's intended CPU/RAM instance size and region, recorded for testing.
    No paid database/service or resource size has been invented/provisioned.
 3. Approved isolated native PostgreSQL host, region/tier and database credentials.
@@ -117,14 +120,14 @@ neither token nor any database credential. No service-role key is used.
 
    ```sh
    node solver/run_hosted_capacity_measurements.mjs --run --smoke \
-     --cases case-07-infeasible --url https://STAGING-APP-ORIGIN \
+     --cases case-07-infeasible --url https://demo.wabiqa.com \
      --output /absolute/path/to/new-smoke-results
    ```
 8. From a fixed client location, run the seven cases, one request at a time:
 
    ```sh
    node solver/run_hosted_capacity_measurements.mjs --run \
-     --url https://STAGING-APP-ORIGIN \
+     --url https://demo.wabiqa.com \
      --output /absolute/path/to/new-results --samples 10
    ```
 
