@@ -19,8 +19,10 @@ ROLE = 'capacity_benchmark'
 
 
 def fixed_case(body):
-    if not isinstance(body, dict) or set(body) != {'caseId', 'engine', 'inputSha256', 'problem'}:
+    if not isinstance(body, dict) or set(body) not in ({'caseId', 'engine', 'inputSha256', 'problem'}, {'caseId', 'engine', 'inputSha256', 'problem', 'profileCase3'}):
         raise ValueError('Invalid fixed-case request')
+    if 'profileCase3' in body and (body['profileCase3'] is not True or body['caseId'] != 'case-03' or body['engine'] != 'SOLVER'):
+        raise ValueError('Profiling is restricted to the Case 3 solver')
     if body['engine'] not in ('DATABASE', 'SOLVER'):
         raise ValueError('Invalid engine')
     rows = json.loads((FIXTURES / 'results.json').read_text())['rows']
@@ -76,9 +78,13 @@ def calculate(body):
     if body['engine'] == 'SOLVER':
         sys.path.insert(0, str(ROOT))
         from cargo_capacity import solve_capacity
+        observer = None
+        if body.get('profileCase3'):
+            from staging.search_profile import SearchProfile
+            observer = SearchProfile()
         print(json.dumps({'ready': True}), flush=True)
         started = time.perf_counter_ns()
-        result = solve_capacity(problem)
+        result = solve_capacity(problem, observer=observer)
         measured = {'result': result, 'calculationMilliseconds': (time.perf_counter_ns() - started) / 1_000_000}
     else:
         print(json.dumps({'ready': True}), flush=True)
@@ -86,6 +92,8 @@ def calculate(body):
             deployment['postgresVersion'] = database_ready(conn)
             measured = conn.execute('select capacity_reference.timed_offer(%s::jsonb)', (json.dumps(problem),)).fetchone()[0]
         deployment['databaseEngine'] = 'current Supabase native PostgreSQL'
+    if body.get('profileCase3'):
+        measured['searchProfile'] = observer.report(result)
     return {**measured, 'engine': body['engine'], 'inputSha256': body['inputSha256'], 'deployment': deployment}
 
 

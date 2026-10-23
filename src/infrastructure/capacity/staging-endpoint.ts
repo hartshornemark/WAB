@@ -32,10 +32,11 @@ export function createStagingCapacityEndpoint(options: { env?: Readonly<Record<s
     if (request.method !== "POST") return reply({ error: "POST required." }, 405);
     if (!request.headers.get("content-type")?.startsWith("application/json")) return reply({ error: "JSON required." }, 415);
     if (active >= 1) return reply({ error: "Capacity test is busy. Retry serially." }, 429);
-    let body: { caseId?: string; engine?: string };
+    let body: { caseId?: string; engine?: string; profileCase3?: boolean };
     try { body = await boundedJson(request.body, 1024); }
     catch { return reply({ error: "Invalid or oversized request." }, 400); }
-    if (!body || !caseIds.has(body.caseId ?? "") || !["DATABASE", "SOLVER"].includes(body.engine ?? "") || Object.keys(body).some(k => !["caseId", "engine"].includes(k))) return reply({ error: "Select one of the seven A350 test cases and an engine." }, 400);
+    if (!body || !caseIds.has(body.caseId ?? "") || !["DATABASE", "SOLVER"].includes(body.engine ?? "") || Object.keys(body).some(k => !["caseId", "engine", "profileCase3"].includes(k))) return reply({ error: "Select one of the seven A350 test cases and an engine." }, 400);
+    if ("profileCase3" in body && (body.profileCase3 !== true || body.caseId !== "case-03" || body.engine !== "SOLVER")) return reply({ error: "Profiling is restricted to the Case 3 solver." }, 400);
     // Recheck after reading the body: two concurrent uploads must not pass admission.
     if (active >= 1) return reply({ error: "Capacity test is busy. Retry serially." }, 429);
     active++;
@@ -49,7 +50,7 @@ export function createStagingCapacityEndpoint(options: { env?: Readonly<Record<s
       const problem = validateCargoCapacityProblem(JSON.parse(raw));
       const inputMilliseconds = performance.now() - inputStarted;
       const executionStarted = performance.now();
-      const measured = await run({ caseId: body.caseId!, engine: body.engine as "DATABASE" | "SOLVER", inputSha256: hash(raw), problem });
+      const measured = await run({ caseId: body.caseId!, engine: body.engine as "DATABASE" | "SOLVER", inputSha256: hash(raw), problem, ...(body.profileCase3 ? { profileCase3: true as const } : {}) });
       const executionRoundTripMilliseconds = performance.now() - executionStarted;
       const validationStarted = performance.now();
       if (measured.engine !== body.engine || measured.inputSha256 !== hash(raw) || !Number.isFinite(measured.calculationMilliseconds) || measured.calculationMilliseconds < 0 || measured.calculationMilliseconds > 65000) throw Error("Invalid worker response");
@@ -60,7 +61,7 @@ export function createStagingCapacityEndpoint(options: { env?: Readonly<Record<s
       const proven = ["OPTIMAL", "INFEASIBLE"].includes(result.status);
       const matches = proven && result.status === expected.solver.result.status && (result.arrangement?.cargoNetWeightGrams ?? null) === (expected.solver.result.arrangement?.cargoNetWeightGrams ?? null);
       return reply({ caseId: body.caseId, engine: body.engine, inputSha256: hash(raw), inputRevision: problem.inputRevision, result: measured.result, outcome: proven ? matches ? "VERIFIED" : "MISMATCH" : "INCONCLUSIVE", validation: "PASS",
-        timings: { calculationMilliseconds: measured.calculationMilliseconds, workerStartupMilliseconds: measured.workerStartupMilliseconds ?? null, executionRoundTripMilliseconds, inputMilliseconds, validationMilliseconds: performance.now() - validationStarted, handlerMilliseconds: performance.now() - started }, backend: measured.deployment ?? null });
+        timings: { calculationMilliseconds: measured.calculationMilliseconds, workerStartupMilliseconds: measured.workerStartupMilliseconds ?? null, executionRoundTripMilliseconds, inputMilliseconds, validationMilliseconds: performance.now() - validationStarted, handlerMilliseconds: performance.now() - started }, backend: measured.deployment ?? null, ...(body.profileCase3 ? { searchProfile: measured.searchProfile ?? null } : {}) });
     } catch { return reply({ error: "Unable to complete the staging capacity test; no maximum is confirmed." }, 503); }
     finally { active--; }
   };

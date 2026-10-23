@@ -72,6 +72,7 @@ COPY --from=application-builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/cp_sat_solver.py ./solver/cp_sat_solver.py
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/cargo_capacity.py ./solver/cargo_capacity.py
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/staging/app_worker.py ./solver/staging/app_worker.py
+COPY --from=application-builder --chown=nextjs:nodejs /app/solver/staging/search_profile.py ./solver/staging/search_profile.py
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/staging/supabase-ca.crt ./solver/staging/supabase-ca.crt
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs ./solver/verification/a350-v2-seven-scenarios-2026-10-23/final/inputs
 COPY --from=application-builder --chown=nextjs:nodejs /app/solver/verification/a350-v2-seven-scenarios-2026-10-23/final/results.json ./solver/verification/a350-v2-seven-scenarios-2026-10-23/final/results.json

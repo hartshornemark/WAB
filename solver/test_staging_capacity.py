@@ -23,6 +23,8 @@ class StagingCapacityTests(unittest.TestCase):
             bad = copy.deepcopy(b); change(bad)
             with self.assertRaises(ValueError): worker.fixed_case(bad)
         with self.assertRaises(ValueError): worker.fixed_case({**b, 'arbitrary': 1})
+        for value in [True, False, 1, 'true']:
+            with self.assertRaises(ValueError): worker.fixed_case({**b, 'profileCase3': value})
 
     def test_solver_dispatch_requires_no_database_connection(self):
         with patch.object(worker, 'connect_database', side_effect=AssertionError('must not connect')), patch('builtins.print'):

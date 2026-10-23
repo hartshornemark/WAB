@@ -4,10 +4,10 @@ import { join } from "node:path";
 import { performance } from "node:perf_hooks";
 import type { CargoCapacityProblem } from "@/domain/cargo-capacity";
 
-export type CapacityTestJob = { caseId: string; engine: "DATABASE" | "SOLVER"; inputSha256: string; problem: CargoCapacityProblem };
+export type CapacityTestJob = { caseId: string; engine: "DATABASE" | "SOLVER"; inputSha256: string; problem: CargoCapacityProblem; profileCase3?: true };
 export type CapacityTestMeasurement = {
   engine: string; inputSha256: string; result: unknown; calculationMilliseconds: number;
-  workerStartupMilliseconds?: number; deployment?: unknown;
+  workerStartupMilliseconds?: number; deployment?: unknown; searchProfile?: unknown;
 };
 export type CapacityTestRunner = (job: CapacityTestJob) => Promise<CapacityTestMeasurement>;
 

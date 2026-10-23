@@ -81,8 +81,10 @@ def ancestors(group_id, groups):
     return result
 
 
-def solve_capacity(p):
+def solve_capacity(p, *, observer=None):
     started = time.perf_counter()
+    if observer is not None:
+        observer.begin_calculation(started)
     validate_problem(p)
     model = cp_model.CpModel()
     groups = {g["id"]: g for g in p["groups"]}
@@ -160,11 +162,15 @@ def solve_capacity(p):
     solver = cp_model.CpSolver()
     solver.parameters.num_search_workers = 1
     solver.parameters.random_seed = 0
+    if observer is not None:
+        observer.begin_search(model)
     remaining = p["timeLimitSeconds"] - (time.perf_counter() - started)
     status = cp_model.UNKNOWN
     if remaining > 0:
         solver.parameters.max_time_in_seconds = remaining
-        status = solver.solve(model)
+        status = solver.solve(model) if observer is None else solver.solve(model, observer)
+        if observer is not None:
+            observer.finish_search(solver, status)
     names = {cp_model.OPTIMAL: "OPTIMAL", cp_model.FEASIBLE: "FEASIBLE", cp_model.INFEASIBLE: "INFEASIBLE"}
     witness = None
     if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):

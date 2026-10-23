@@ -54,3 +54,16 @@ test("one test per process is admitted and failures release admission without ex
   const error = await failing(request()); assert.equal(error.status, 503); assert(!JSON.stringify(await error.json()).includes("password"));
   fail = false; assert.equal((await failing(request())).status, 200);
 });
+
+
+test("profiling is restricted to Case 3 solver and returned only when requested", async () => {
+  const endpoint = createStagingCapacityEndpoint({env, run: async job => {
+    assert.equal(job.profileCase3, true);
+    const row = JSON.parse(readFileSync("solver/verification/a350-v2-seven-scenarios-2026-10-23/final/case-03.json", "utf8"));
+    return {engine:"SOLVER", inputSha256:row.inputSha256, result:row.solver.result, calculationMilliseconds:2, searchProfile:{version:"CASE3_INCUMBENTS_V1"}};
+  }});
+  for (const body of [{caseId:"case-01",engine:"SOLVER",profileCase3:true},{caseId:"case-03",engine:"DATABASE",profileCase3:true},{caseId:"case-03",engine:"SOLVER",profileCase3:false},{caseId:"case-03",engine:"SOLVER",profileCase3:1}]) assert.equal((await endpoint(request(body))).status,400);
+  const response = await endpoint(request({caseId:"case-03",engine:"SOLVER",profileCase3:true}));
+  assert.equal(response.status,200);
+  assert.equal((await response.json()).searchProfile.version,"CASE3_INCUMBENTS_V1");
+});
