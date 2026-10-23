@@ -23,9 +23,11 @@ for (const selectedId of selected) for(let i=0;i<=(values.smoke||values['first-r
   const response=await fetch(new URL('/api/internal/a350-capacity',origin),{method:'POST',redirect:'error',signal:AbortSignal.timeout(80000),headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({caseId,engine})});
   const raw=await response.text();
   if(raw.length>1_000_000)throw Error('Oversized response');
-  const body=JSON.parse(raw);
+  let body, nonJson=false;
+  try{body=JSON.parse(raw);if(!body||typeof body!=='object'||Array.isArray(body))throw Error('Invalid response');}catch{body={};nonJson=true;}
   row={caseId,engine,repetition:i,phase,httpStatus:response.status,...body,completeRequestMilliseconds:performance.now()-started};
-  if(!response.ok) row.outcome='ERROR';
+  if(nonJson){row.outcome='ERROR';row.error='Non-JSON HTTP response';}
+  else if(!response.ok) row.outcome='ERROR';
   else if(body.caseId!==caseId||body.engine!==engine||body.inputSha256!==expected.inputSha256||body.validation!=='PASS'||!['VERIFIED','INCONCLUSIVE','MISMATCH'].includes(body.outcome))row.outcome='MISMATCH';
   else if(body.outcome==='VERIFIED'&&(body.result.status!==expected.solver.result.status||(body.result.arrangement?.cargoNetWeightGrams??null)!==(expected.solver.result.arrangement?.cargoNetWeightGrams??null)))row.outcome='MISMATCH';
   row.completeRequestMilliseconds=performance.now()-started;

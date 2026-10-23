@@ -37,7 +37,9 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
           resolve({ ...JSON.parse(lines[1]), workerStartupMilliseconds: readyAt - started });
         } catch { reject(Error("Invalid benchmark worker output")); }
       };
-      const timer = setTimeout(() => finish(Error("Benchmark execution limit; no maximum confirmed")), job.engine === "SOLVER" ? 12_000 : 68_000);
+      // Give imports a separate bounded startup budget. The model's sealed
+      // search budget starts after readiness, not when the OS process launches.
+      let timer = setTimeout(() => finish(Error("Benchmark startup execution limit; no maximum confirmed")), job.engine === "SOLVER" ? 15_000 : 68_000);
       child.stdout.on("data", (chunk: Buffer) => {
         stdoutBytes += chunk.length;
         if (stdoutBytes > 1_000_000) { finish(Error("Benchmark output limit")); return; }
@@ -45,7 +47,15 @@ export function createStagingCapacityWorker(options: { env?: Readonly<Record<str
         if (readyAt === undefined) {
           pending += chunk.toString("utf8");
           if (pending.includes("\n")) {
-            try { if (JSON.parse(pending.split("\n")[0]).ready === true) readyAt = performance.now(); }
+            try {
+              if (JSON.parse(pending.split("\n")[0]).ready === true) {
+                readyAt = performance.now();
+                if (job.engine === "SOLVER") {
+                  clearTimeout(timer);
+                  timer = setTimeout(() => finish(Error("Benchmark calculation execution limit; no maximum confirmed")), (job.problem.timeLimitSeconds + 2) * 1000);
+                }
+              }
+            }
             catch { finish(Error("Invalid benchmark worker readiness")); }
           }
         }

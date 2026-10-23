@@ -214,3 +214,14 @@ unchanged. The review patch was applied to a redacted reconstruction of the
 supplied App Spec and parsed as YAML: one existing service and its original
 resource allocation remain. Local SQL tests use PGlite, not the live Supabase
 server. Native TLS, provider permissions and container build remain unexecuted.
+
+Hosted execution uncovered a harness timing issue in the initial run: solver
+imports took about four seconds, while the original 12-second process deadline
+included both imports and the sealed ten-second search budget. Initial results,
+including case-3 failures, are preserved as an interrupted attempt. The corrected
+worker allows at most 15 seconds for startup and then the unchanged search budget
+plus two seconds for result delivery (at most 12 seconds). The DATABASE process
+limit stays 68 seconds, its statement limit 60 seconds and the external caller
+limit 80 seconds. No calculation rule, input, objective or search budget changed.
+The final complete comparison must be rerun on the corrected revision; do not
+combine the interrupted attempt's timings with the final run.

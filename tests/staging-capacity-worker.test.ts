@@ -42,3 +42,18 @@ test("real packaged worker dispatches the sealed infeasible solver case", { skip
   assert.equal((result.result as { status: string }).status, "INFEASIBLE");
   assert.equal(result.inputSha256, job.inputSha256); assert.equal(result.engine, "SOLVER");
 });
+
+test("solver import startup does not consume its declared post-readiness execution allowance", async () => {
+  const worker = fakeWorker(`process.stdin.resume();setTimeout(()=>{console.log(JSON.stringify({ready:true}));setTimeout(()=>console.log(JSON.stringify({engine:'SOLVER',inputSha256:'test',result:{},calculationMilliseconds:0})),1000)},2100);`);
+  try {
+    const result = await createStagingCapacityWorker({ env: { WAB_SOLVER_PYTHON: process.execPath }, root: worker.root })({ ...job, problem: { ...job.problem, timeLimitSeconds: 0.05 } });
+    assert(result.workerStartupMilliseconds! >= 2000);
+  } finally { worker.close(); }
+});
+
+test("post-readiness execution timeout kills a stalled solver worker", async () => {
+  const worker = fakeWorker(`process.stdin.resume();console.log(JSON.stringify({ready:true}));setInterval(()=>{},1000);`);
+  try {
+    await assert.rejects(createStagingCapacityWorker({ env: { WAB_SOLVER_PYTHON: process.execPath }, root: worker.root })({ ...job, problem: { ...job.problem, timeLimitSeconds: 0.01 } }), /calculation execution limit/);
+  } finally { worker.close(); }
+});
