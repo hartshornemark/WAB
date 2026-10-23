@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "scope": "Benchmark step 1 only: frozen core capacity inputs, no calculation runs",
+  "sourceProject": "ffmadtrcirrzywdqahbu",
+  "capturedAt": "2026-10-23T03:09:54.127616+00:00",
+  "databaseStatementSnapshot": "35122684:35122684:",
+  "gitSourceCommit": "d58e838",
+  "flight": {
+    "carrier": "ZZ",
+    "flightNumber": "9350",
+    "serviceDate": "2026-10-24",
+    "aircraftType": "359",
+    "subtype": "900",
+    "configuration": "A",
+    "operationalVersion": 3,
+    "bookingVersion": 1,
+    "baggageVersion": 1
+  },
+  "summary": {
+    "bookedByClass": {
+      "C": 7,
+      "F": 3,
+      "W": 19,
+      "Y": 109
+    },
+    "totalPassengers": 138,
+    "baggagePieces": 138,
+    "baggageNetKg": 2070,
+    "reservedBaggageUlds": 5,
+    "palletCode": "PAG",
+    "containerCode": "AKE",
+    "palletCandidateCount": 12,
+    "containerCandidateCount": 38
+  },
+  "conversion": "IDs and bay-resource lists preserved; net kg multiplied by exactly 1000 to whole grams; no rounding",
+  "solverExecutionSetting": "2-second prototype search budget retained as metadata; no search executed or benchmark budget agreed",
+  "pending": "Step 2 objective alignment; Step 3 result equivalence; Steps 4-6 measurements and reporting have not been performed",
+  "sha256": {
+    "source.json": "1b0791723a1e9234856c993b4ff49e30367bb4f8ad0cc5a5d4c177d36dfdaa03",
+    "capture.sql": "940fec1016fb8c5de022a91aaaf7e7f229ca30c9e0ffb77e586235f604d9ad92",
+    "database-arguments.json": "e9a92deef8cb1502e709b1a33f44498029023062ad83837c3193d428d8b6a73d",
+    "solver-input.json": "8fb7fdfe885a56f9dd7c6c499059b571e69f16739202f2736a979b519107b9a1"
+  }
+}

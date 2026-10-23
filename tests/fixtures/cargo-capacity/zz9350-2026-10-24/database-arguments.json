@@ -1,0 +1,453 @@
+{
+  "p_pallets": [
+    {
+      "id": "4ee3631d-caf1-430b-9354-15be8fcab8c3",
+      "bays": [
+        "LOWER:FLA:25L",
+        "LOWER:FLA:25R",
+        "LOWER:FLA:26L",
+        "LOWER:FLA:26R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+      "bays": [
+        "LOWER:ALA:42L",
+        "LOWER:ALA:42R",
+        "LOWER:ALA:43L",
+        "LOWER:ALA:43R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+      "bays": [
+        "LOWER:ALF:32L",
+        "LOWER:ALF:32R",
+        "LOWER:ALF:33L",
+        "LOWER:ALF:33R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "92812c1c-b849-48ec-a62a-df71af716c52",
+      "bays": [
+        "LOWER:ALA:41L",
+        "LOWER:ALA:41R",
+        "LOWER:ALA:42L",
+        "LOWER:ALA:42R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "a30ea0f8-9c46-40ce-9393-8232a230ac50",
+      "bays": [
+        "LOWER:FLA:22L",
+        "LOWER:FLA:22R",
+        "LOWER:FLA:23L",
+        "LOWER:FLA:23R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+      "bays": [
+        "LOWER:ALA:44L",
+        "LOWER:ALA:44R",
+        "LOWER:ALA:45L",
+        "LOWER:ALA:45R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+      "bays": [
+        "LOWER:FLA:21L",
+        "LOWER:FLA:21R",
+        "LOWER:FLA:22L",
+        "LOWER:FLA:22R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+      "bays": [
+        "LOWER:FLF:14L",
+        "LOWER:FLF:14R",
+        "LOWER:FLF:15L",
+        "LOWER:FLF:15R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "ec96ea87-acbb-4e22-8532-0b04ea33656d",
+      "bays": [
+        "LOWER:ALF:31L",
+        "LOWER:ALF:31R",
+        "LOWER:ALF:32L",
+        "LOWER:ALF:32R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "eeea52d5-101b-4e3b-a5f0-a1e4a46fdb0d",
+      "bays": [
+        "LOWER:FLF:12L",
+        "LOWER:FLF:12R",
+        "LOWER:FLF:13L",
+        "LOWER:FLF:13R",
+        "LOWER:FLF:14L",
+        "LOWER:FLF:14R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+      "bays": [
+        "LOWER:FLA:24L",
+        "LOWER:FLA:24R",
+        "LOWER:FLA:25L",
+        "LOWER:FLA:25R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    },
+    {
+      "id": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+      "bays": [
+        "LOWER:FLF:11L",
+        "LOWER:FLF:11R",
+        "LOWER:FLF:12L",
+        "LOWER:FLF:12R"
+      ],
+      "uldCode": "PAG",
+      "netWeightCapacity": 4516
+    }
+  ],
+  "p_containers": [
+    {
+      "id": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+      "bays": [
+        "LOWER:ALF:33R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+      "bays": [
+        "LOWER:ALF:33L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+      "bays": [
+        "LOWER:FLA:26L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "215a1cb0-70be-4685-8b83-8ab492f9fe42",
+      "bays": [
+        "LOWER:FLF:12L",
+        "LOWER:FLF:13L",
+        "LOWER:FLF:14L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "253243e7-e231-4eca-82d5-99b452bd87b5",
+      "bays": [
+        "LOWER:ALA:44L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "263d09ba-88a6-44a9-84ec-8b1086f88183",
+      "bays": [
+        "LOWER:FLF:13L",
+        "LOWER:FLF:14L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+      "bays": [
+        "LOWER:FLA:25L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "335c0dc4-c764-4710-a703-cf014e4966e7",
+      "bays": [
+        "LOWER:ALF:31R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+      "bays": [
+        "LOWER:ALF:31L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "39745564-e732-4f3f-8d94-5b773a08431b",
+      "bays": [
+        "LOWER:FLA:23R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+      "bays": [
+        "LOWER:FLA:22L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "39e81267-0536-4dc0-8b6a-ab973940fb1b",
+      "bays": [
+        "LOWER:ALA:45L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+      "bays": [
+        "LOWER:FLA:23L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+      "bays": [
+        "LOWER:ALA:41R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+      "bays": [
+        "LOWER:FLA:25R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "50a8b779-6450-4ea3-9755-ab26a89a005e",
+      "bays": [
+        "LOWER:ALA:44R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "54db1bd3-aa46-40c5-943e-bf5d21ded116",
+      "bays": [
+        "LOWER:ALA:43L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "675496cc-11b2-483d-a4d7-0302770a28f0",
+      "bays": [
+        "LOWER:FLF:12L",
+        "LOWER:FLF:13L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "7b09835b-7526-49c3-82ae-87d530c4b724",
+      "bays": [
+        "LOWER:ALA:45R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+      "bays": [
+        "LOWER:FLA:21L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+      "bays": [
+        "LOWER:FLA:21R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+      "bays": [
+        "LOWER:FLA:24L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+      "bays": [
+        "LOWER:FLA:22R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "94d827de-e9f7-4174-991f-39cf66d9914d",
+      "bays": [
+        "LOWER:ALA:43R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "9c557e25-7f6b-40a8-9438-c314bf0bbb8a",
+      "bays": [
+        "LOWER:FLF:11R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "a257a649-6783-4418-87bd-ed9f983204dd",
+      "bays": [
+        "LOWER:FLF:12R",
+        "LOWER:FLF:13R",
+        "LOWER:FLF:14R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "a655c82e-4189-410b-a055-82c1599bb735",
+      "bays": [
+        "LOWER:ALF:32L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "a75699e9-336f-4332-8146-569650a9dd07",
+      "bays": [
+        "LOWER:FLA:26R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "aa64cdae-e5ae-4220-81ac-3250b02e82d3",
+      "bays": [
+        "LOWER:FLF:11L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "b624506a-f84c-4b03-bc9d-1819e7dde005",
+      "bays": [
+        "LOWER:FLF:13R",
+        "LOWER:FLF:14R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "bc305f17-e4fd-474f-b8e1-a60c145d5acb",
+      "bays": [
+        "LOWER:FLF:15L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "c7e95fd9-c522-4263-aed6-0efd2d6d23ff",
+      "bays": [
+        "LOWER:FLF:12R",
+        "LOWER:FLF:13R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b",
+      "bays": [
+        "LOWER:ALA:42R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "d16bc12e-dcf4-4176-a6fd-6aaeaffe7242",
+      "bays": [
+        "LOWER:FLF:15R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "e69f3eca-ba04-4ff9-b090-5379d2461e96",
+      "bays": [
+        "LOWER:ALF:32R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+      "bays": [
+        "LOWER:FLA:24R"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "f7b83422-9e5a-4a7a-a71d-6981a8847af6",
+      "bays": [
+        "LOWER:ALA:42L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    },
+    {
+      "id": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+      "bays": [
+        "LOWER:ALA:41L"
+      ],
+      "uldCode": "AKE",
+      "netWeightCapacity": 1487
+    }
+  ],
+  "p_baggage_count": 5
+}
