@@ -117,6 +117,14 @@ test("obvious impossibilities, exact pruning and resource failure are explicit",
     ];
     const kept = (await db.query<{ result: unknown[] }>("select capacity_reference.prune_states($1::jsonb,100) result", [JSON.stringify(states)])).rows[0].result;
     assert.equal(kept.length, 3); // Preserve the ULD/Bulk trade-off and different baggage identity.
+    const nonSimple = [
+      { mask: ["A"], live: [], base: 1, u: 8, b: 8, t: 8 },
+      { mask: ["A"], live: [], base: 2, u: 9, b: 8, t: 10 },
+      { mask: ["A"], live: [], base: 3, u: 7, b: 8, t: 8 },
+    ];
+    const fallback = (await db.query<{ result: unknown[] }>("select capacity_reference.prune_states($1::jsonb,100) result", [JSON.stringify(nonSimple)])).rows[0].result;
+    assert.equal(fallback.length, 2); // Shared child limits require the general dominance fallback.
+
   } finally { await db.close(); }
 });
 
@@ -159,5 +167,27 @@ test("long overlapping footprints remain live until their last alternative is pr
     const r = await run(db, "max_net_cargo_v2", p), exhaustive = await run(db, "exhaustive_net_cargo_v2", p);
     assert.equal(r.arrangement?.cargoNetWeightGrams, 10);
     assert.equal(r.arrangement?.cargoNetWeightGrams, exhaustive.arrangement?.cargoNetWeightGrams);
+  } finally { await db.close(); }
+});
+
+test("only baggage with identical weight, volume and compatibility is interchangeable across compartments", async () => {
+  const db = new PGlite();
+  try {
+    await install(db);
+    for (let variant = 0; variant < 8; variant++) {
+      const p = smallProblem(2);
+      p.inputRevision = `baggage-symmetry-${variant}`;
+      p.maximumZeroFuelWeightGrams = 100; p.fixedLoads = []; p.bulkAreas = [];
+      p.groups.forEach(g => { g.maximumGrossWeightGrams = 100; g.maximumBulkVolumeMillilitres = null; });
+      p.positions.forEach(pos => { pos.kind = "CONTAINER"; pos.tareWeightGrams = 1; pos.maximumGrossWeightGrams = 5; pos.maximumVolumeMillilitres = 4; });
+      p.baggageUlds = [
+        { id: "FIRST", netWeightGrams: 2, volumeMillilitres: 2, compatiblePositionIds: p.positions.map(x => x.id) },
+        { id: "SECOND", netWeightGrams: variant & 1 ? 3 : 2, volumeMillilitres: variant & 2 ? 5 : 2, compatiblePositionIds: variant & 4 ? [p.positions[0].id] : p.positions.map(x => x.id).reverse() },
+      ];
+      const r = await run(db, "max_net_cargo_v2", p), old = await run(db, "exhaustive_net_cargo_v2", p);
+      assert.equal(r.status, old.status, `variant ${variant}`);
+      assert.equal(r.arrangement?.cargoNetWeightGrams ?? null, old.arrangement?.cargoNetWeightGrams ?? null, `variant ${variant}`);
+      if (r.arrangement) assert.deepEqual(r.arrangement.baggageUlds.map(b => b.loadId).sort(), ["FIRST", "SECOND"]);
+    }
   } finally { await db.close(); }
 });

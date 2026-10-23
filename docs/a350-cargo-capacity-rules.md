@@ -110,12 +110,13 @@ scope and identical input file for each component. Preparation checks original
 aircraft/ULD/footprint data for drift and validates all seven packages without
 running either capacity calculation. See that pack's README for reproduction
 and the remaining comparison execution-budget decision. The optimized reference
-preparation is complete; the seven scenario comparisons have not started.
+preparation and seven-scenario equivalence verification are complete. The sealed
+report is `solver/verification/a350-v2-seven-scenarios-2026-10-23/README.md`.
 
 The live legacy database remains pallet-first and is **not aligned** by this
 local change. Historical prototype timings use different rules and cannot
-substantiate a like-for-like speed improvement for version 2. Frozen scenario
-equivalence, timings, integration and live migration are subsequent work.
+substantiate a like-for-like speed improvement for version 2. The seven frozen scenarios now pass correctness equivalence locally; timing
+benchmarks, integration and live migration remain subsequent work.
 
 The exhaustive offline SQL reference is a correctness oracle for small cases,
 not a representative performance baseline for the existing database algorithm.

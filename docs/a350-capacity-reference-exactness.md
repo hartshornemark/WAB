@@ -1,7 +1,9 @@
 # Offline A350 database reference: exact group-frontier search
 
-Status: preparation steps 1–5 completed locally. **Step 6 has not started.**
-Neither implementation has been run on the seven frozen passenger scenarios.
+Status: preparation steps 1–5 and **Step 6 are complete locally**. Both
+implementations proved equivalent results on all seven frozen scenarios; see
+`solver/verification/a350-v2-seven-scenarios-2026-10-23/README.md` for the sealed
+results, earlier inconclusive attempts, limits and exact code snapshots.
 No performance benchmark, shared database change, application activation,
 AUTOLOAD change, push, merge or deployment is part of this work.
 
@@ -71,13 +73,30 @@ bays**, state A dominates B only if A has no greater reserved gross and no small
 U, B or T. This deliberately retains trade-offs between tare, ULD capacity and
 Bulk capacity. It does not select pallets or prune by pallet/container count.
 
-Parent merging reduces states in batches, avoiding storage of the entire
-cross-product at once. Batching does not truncate alternatives.
+A checked skyline accelerates dominance where each region has
+`T=min(U+B,K-R)` within a fixed baggage/live-bay/Bulk-bound partition. With B
+fixed, a lower R and no smaller U implies no smaller T; sorted prefix maxima
+therefore remove only dominated states. The shape is checked for every input
+state. If it does not hold, the general three-bound dominance test remains in
+use, including for shared child limits.
+
+Only baggage with identical net weight, volume and complete compatible-position
+sets is interchangeable. Such loads use a canonical ID prefix during local
+search. When children combine, right-hand IDs are rebound to unused original
+IDs in that same equivalence class, preserving exact identity-to-position
+witnesses. Loads differing in any requirement cannot be interchanged. This
+removes permutation duplicates without replacing heterogeneous baggage with a
+count or changing any reservation.
+
+Hierarchy merging computes feasible baggage-mask combinations once per mask
+pair, combines capacity summaries in a set-based query, and removes exact
+duplicate summaries before reconstructing baggage mappings. No alternatives are
+truncated. Explicit pair/state guards bound working-set growth.
 
 ### 4. Combine through the saved hierarchy
 
-Child states may combine only when their assigned baggage sets are disjoint.
-Add their reserved gross and three capacity bounds, then apply the node's
+Child states may combine only when their assigned baggage sets are disjoint
+after any fully interchangeable-ID rebinding described above. Add reserved gross and three capacity bounds, then apply the node's
 configured gross limit and residual Bulk-volume limit. For residual gross `W`
 and residual Bulk capacity `V` in grams:
 
@@ -142,6 +161,10 @@ also represented. Reconstruction omits such empty ULDs.
   alternative, and agrees with exhaustive search.
 - Guard tests check immediate count rejection, identity/ULD/Bulk-safe dominance,
   cross-group bay errors and explicit state-budget failure.
+- Eight additional baggage variants compare against exhaustive search, including
+  identical loads with reordered compatibility sets, different weight, different
+  volume and restricted compatibility. A non-simple shared-capacity region
+  explicitly exercises the general dominance fallback.
 - Every returned SQL witness is checked by the existing independent TypeScript
   validator, covering baggage fit, tare, overlaps, fixed reservations and every
   area/group/aircraft constraint.
@@ -153,18 +176,20 @@ configuration or successful turnaround on the full seven scenarios.
 ## Limits and next authorised action
 
 The retained/expanded working-state budget defaults to 20,000 per reduction,
-with an explicit optional limit for the offline harness. Exceeding it raises
+with an explicit optional limit for the offline harness. Hierarchy combination
+also has a 4,000,000-pair working-set guard. Exceeding either raises
 SQLSTATE `54000`: no optimum established. There is no best-effort `OPTIMAL` or
 false `INFEASIBLE`. The subsequent comparison harness must additionally enforce
 a statement timeout and classify timeout/resource errors as inconclusive.
 The input's Python solve limit does not itself cancel a PostgreSQL statement.
 
-The frozen inputs remain sealed and unchanged. Static checks can establish that
-their bay ownership fits this algorithm; **they have not been solved**. Full-case
-runtime/scalability remains unmeasured until Step 6 is explicitly authorised.
-That step must record feasibility, maximum net and validation for both engines,
-with honest inconclusive outcomes if a maximum is not established. Any changed
-execution budget must be recorded for both components.
+The frozen inputs remain sealed and unchanged. Step 6 has now resolved all
+seven: cases 1–6 have equal proven maxima and independently validated witnesses;
+case 7 is proven infeasible by both engines and the independent candidate-count
+bound. The report retains original input hashes and the explicitly derived
+10-second execution inputs supplied identically to both engines. Earlier
+inconclusive attempts remain recorded as such. This is correctness verification,
+not a measured performance benchmark or an operational rollout.
 
 This optimized offline reference remains separate from the live legacy database
 algorithm. Neither its old nor its new timings may be substituted for measured

@@ -48,8 +48,11 @@ function is installed. Both implementations use the same validated V2 inputs.
 describes the small-case oracle checks and resource/configuration error guards.
 The frozen version-1 flight/scenario artifacts remain immutable. Their sourced
 enrichment is sealed in `tests/fixtures/cargo-capacity/passenger-scenarios-v2`;
-both components receive the same input file per case. Input preparation and
-validation have completed without running the scenario comparisons or timings.
+both components receive the same input file per case. All seven now pass the authorised correctness comparison, with equal proven
+maxima in cases 1–6 and matching proven infeasibility in case 7. The
+[sealed results](verification/a350-v2-seven-scenarios-2026-10-23/README.md)
+record exact inputs, full validated witnesses, budgets and earlier inconclusive
+attempts. No timing benchmark or live database activation has been performed.
 
 The server-only adapter admits at most two active capacity workers per process,
 bounds input/output and execution, forwards no database credentials, and checks
@@ -89,3 +92,16 @@ explicit approval.
 Deployment packaging must include both `cp_sat_solver.py` and
 `cargo_capacity.py`, and a compatible pinned OR-Tools runtime. Normal AUTOLOAD
 requests do not import the capacity module.
+
+## Reproduce the authorised seven-case correctness check
+
+Use a new output directory; the runner never edits frozen fixtures or accesses
+the shared database. Child execution/output are bounded. These are correctness
+limits, not comparable timing measurements:
+
+```sh
+node --import tsx solver/verify_cargo_capacity.mjs --run \
+  --output /absolute/path/to/new-attempt-directory \
+  --python /absolute/path/to/python-with-ortools \
+  --solver-seconds 10 --database-seconds 60
+```

@@ -1,0 +1,17 @@
+{
+  "typescriptTests": {
+    "passed": 925,
+    "failed": 0
+  },
+  "pythonTests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "changedFilesLint": "PASS",
+  "sevenFrozenInputReproduction": "PASS",
+  "fullCaseEquivalence": "7/7",
+  "reportWitnessRevalidation": "PASS",
+  "performanceBenchmark": "NOT RUN",
+  "sharedDatabaseChanges": "NONE"
+}

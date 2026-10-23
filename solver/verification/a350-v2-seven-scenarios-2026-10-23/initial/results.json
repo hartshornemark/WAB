@@ -1,0 +1,1086 @@
+{
+  "scope": "Single-run correctness comparison; not a performance benchmark; frozen 2-second solver inputs, SQL statement limit 10 seconds, hard process limits SQL 15 seconds and solver 4 seconds",
+  "rows": [
+    {
+      "id": "case-01",
+      "inputSha256": "0ad60d445a95b63ecfee413dda75a315311d1e3257e01e812feba173ef767269",
+      "inputRevision": "sha256:bf6ad3bae55fa9acf0e4c5eaf99569c3aa0ffbf6f992294fdbde77e1d67afb36",
+      "baggageReservationHash": "1903c547bf4b2543b2299393df3cb721a47ec84db96442844e889b29fc230e6e",
+      "database": {
+        "error": {
+          "message": "Hard process deadline",
+          "code": "HARD_TIMEOUT"
+        }
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:bf6ad3bae55fa9acf0e4c5eaf99569c3aa0ffbf6f992294fdbde77e1d67afb36",
+          "status": "OPTIMAL",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 279,
+          "arrangement": {
+            "cargoUlds": [
+              {
+                "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+                "netWeightGrams": 4354000
+              },
+              {
+                "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 4516000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-01:BAG:07",
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84"
+              },
+              {
+                "loadId": "case-01:BAG:02",
+                "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116"
+              },
+              {
+                "loadId": "case-01:BAG:03",
+                "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d"
+              },
+              {
+                "loadId": "case-01:BAG:06",
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+              },
+              {
+                "loadId": "case-01:BAG:01",
+                "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b"
+              },
+              {
+                "loadId": "case-01:BAG:04",
+                "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6"
+              },
+              {
+                "loadId": "case-01:BAG:05",
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8"
+              }
+            ],
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoNetWeightGrams": 31201000,
+            "cargoTareWeightGrams": 760000,
+            "cargoGrossWeightGrams": 31961000
+          }
+        },
+        "validation": "PASS"
+      },
+      "outcome": "INCONCLUSIVE"
+    },
+    {
+      "id": "case-02",
+      "inputSha256": "895027f5a03c637bd5755da746e00719cbc870220cbae5810dee8f2a8e760407",
+      "inputRevision": "sha256:0c8045c6c70a78730dba2ef99af64e14acf2cee1323954a1ead80d0224104c67",
+      "baggageReservationHash": "dd596790e8a20fbf68784ae51e34cae07ae722df7d7e40ee0af549d4ec77a505",
+      "database": {
+        "error": {
+          "message": "Hard process deadline",
+          "code": "HARD_TIMEOUT"
+        }
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:0c8045c6c70a78730dba2ef99af64e14acf2cee1323954a1ead80d0224104c67",
+          "status": "OPTIMAL",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 87,
+          "arrangement": {
+            "cargoUlds": [
+              {
+                "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+                "netWeightGrams": 1348000
+              },
+              {
+                "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "ec96ea87-acbb-4e22-8532-0b04ea33656d",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 4516000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-02:BAG:05",
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84"
+              },
+              {
+                "loadId": "case-02:BAG:03",
+                "positionId": "39745564-e732-4f3f-8d94-5b773a08431b"
+              },
+              {
+                "loadId": "case-02:BAG:01",
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4"
+              },
+              {
+                "loadId": "case-02:BAG:04",
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+              },
+              {
+                "loadId": "case-02:BAG:02",
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8"
+              }
+            ],
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoNetWeightGrams": 38714000,
+            "cargoTareWeightGrams": 1070000,
+            "cargoGrossWeightGrams": 39784000
+          }
+        },
+        "validation": "PASS"
+      },
+      "outcome": "INCONCLUSIVE"
+    },
+    {
+      "id": "case-03",
+      "inputSha256": "fd9f7ffaf662a5674266b9353075d7d572cfb976e51182f5cdfc91a8bf8d699a",
+      "inputRevision": "sha256:aff2b2a7434fe84a29281215ba4ff86874ff81a599273fde1151fe221d1e0be3",
+      "baggageReservationHash": "7c9dcc18d03c46f2152fca4aa0b620f2a222525e07665b909e5512a645e61429",
+      "database": {
+        "error": {
+          "message": "Hard process deadline",
+          "code": "HARD_TIMEOUT"
+        }
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:aff2b2a7434fe84a29281215ba4ff86874ff81a599273fde1151fe221d1e0be3",
+          "status": "FEASIBLE",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 2002,
+          "arrangement": {
+            "cargoUlds": [
+              {
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+                "netWeightGrams": 3445000
+              },
+              {
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 4516000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-03:BAG:02",
+                "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e"
+              },
+              {
+                "loadId": "case-03:BAG:03",
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e"
+              },
+              {
+                "loadId": "case-03:BAG:01",
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4"
+              },
+              {
+                "loadId": "case-03:BAG:04",
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+              }
+            ],
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoNetWeightGrams": 40701000,
+            "cargoTareWeightGrams": 1460000,
+            "cargoGrossWeightGrams": 42161000
+          }
+        },
+        "validation": "PASS"
+      },
+      "outcome": "INCONCLUSIVE"
+    },
+    {
+      "id": "case-04",
+      "inputSha256": "364ceb11310a8e948c0ed9e22b85eb482a8f20ed9c5f3c5e829ba841d24a10dc",
+      "inputRevision": "sha256:54c166fe201d62c20814fa394d0a99c016f3db20fbf165bd2ceafdab2973935b",
+      "baggageReservationHash": "24da446764def5028d782ea9d79af1eeaf350208ded176a16d85decff450ce2a",
+      "database": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "status": "OPTIMAL",
+          "arrangement": {
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoUlds": [
+              {
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "ec96ea87-acbb-4e22-8532-0b04ea33656d",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "263d09ba-88a6-44a9-84ec-8b1086f88183",
+                "netWeightGrams": 1487000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-04:BAG:01",
+                "positionId": "b624506a-f84c-4b03-bc9d-1819e7dde005"
+              },
+              {
+                "loadId": "case-04:BAG:02",
+                "positionId": "bc305f17-e4fd-474f-b8e1-a60c145d5acb"
+              },
+              {
+                "loadId": "case-04:BAG:03",
+                "positionId": "d16bc12e-dcf4-4176-a6fd-6aaeaffe7242"
+              }
+            ],
+            "cargoNetWeightGrams": 47555000,
+            "cargoTareWeightGrams": 2430000,
+            "cargoGrossWeightGrams": 49985000
+          },
+          "diagnostics": {
+            "algorithm": "EXACT_GROUP_FRONTIER",
+            "earlyRejection": null
+          },
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:54c166fe201d62c20814fa394d0a99c016f3db20fbf165bd2ceafdab2973935b"
+        },
+        "validation": "PASS"
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:54c166fe201d62c20814fa394d0a99c016f3db20fbf165bd2ceafdab2973935b",
+          "status": "OPTIMAL",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 188,
+          "arrangement": {
+            "cargoUlds": [
+              {
+                "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a655c82e-4189-410b-a055-82c1599bb735",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "aa64cdae-e5ae-4220-81ac-3250b02e82d3",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "bc305f17-e4fd-474f-b8e1-a60c145d5acb",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "d16bc12e-dcf4-4176-a6fd-6aaeaffe7242",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "eeea52d5-101b-4e3b-a5f0-a1e4a46fdb0d",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+                "netWeightGrams": 1487000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-04:BAG:03",
+                "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48"
+              },
+              {
+                "loadId": "case-04:BAG:01",
+                "positionId": "9c557e25-7f6b-40a8-9438-c314bf0bbb8a"
+              },
+              {
+                "loadId": "case-04:BAG:02",
+                "positionId": "e69f3eca-ba04-4ff9-b090-5379d2461e96"
+              }
+            ],
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoNetWeightGrams": 47555000,
+            "cargoTareWeightGrams": 2430000,
+            "cargoGrossWeightGrams": 49985000
+          }
+        },
+        "validation": "PASS"
+      },
+      "outcome": "EQUIVALENT"
+    },
+    {
+      "id": "case-05",
+      "inputSha256": "a2ee1b54e1c9100053bc8d1adb348ac74f78324cc5b529770bc3993f09686b08",
+      "inputRevision": "sha256:829c42c5778ab67f01449830b8c97369adf83687f937d9317bd59fb81a78e78d",
+      "baggageReservationHash": "a5d2be62da03900d36fbcf1766e566ca1068d093b800d3631746870629793746",
+      "database": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "status": "OPTIMAL",
+          "arrangement": {
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 401000
+              }
+            ],
+            "cargoUlds": [
+              {
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a655c82e-4189-410b-a055-82c1599bb735",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "e69f3eca-ba04-4ff9-b090-5379d2461e96",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "263d09ba-88a6-44a9-84ec-8b1086f88183",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "b624506a-f84c-4b03-bc9d-1819e7dde005",
+                "netWeightGrams": 1487000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-05:BAG:01",
+                "positionId": "bc305f17-e4fd-474f-b8e1-a60c145d5acb"
+              },
+              {
+                "loadId": "case-05:BAG:02",
+                "positionId": "d16bc12e-dcf4-4176-a6fd-6aaeaffe7242"
+              }
+            ],
+            "cargoNetWeightGrams": 49936000,
+            "cargoTareWeightGrams": 2820000,
+            "cargoGrossWeightGrams": 52756000
+          },
+          "diagnostics": {
+            "algorithm": "EXACT_GROUP_FRONTIER",
+            "earlyRejection": null
+          },
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:829c42c5778ab67f01449830b8c97369adf83687f937d9317bd59fb81a78e78d"
+        },
+        "validation": "PASS"
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:829c42c5778ab67f01449830b8c97369adf83687f937d9317bd59fb81a78e78d",
+          "status": "OPTIMAL",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 561,
+          "arrangement": {
+            "cargoUlds": [
+              {
+                "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "253243e7-e231-4eca-82d5-99b452bd87b5",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39b42b13-2168-4fac-8eee-7051df6ac47e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "39e81267-0536-4dc0-8b6a-ab973940fb1b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "4e09d0af-16ac-45cd-94a9-2f92489ff0ab",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "50a8b779-6450-4ea3-9755-ab26a89a005e",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7b09835b-7526-49c3-82ae-87d530c4b724",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7d46ef40-70b3-4db0-857a-548f66d8445d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "7fbb501c-9873-42dc-8c6f-f50438c49180",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "8cf016ec-d0f7-4e89-b0c4-b9325423dca9",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a655c82e-4189-410b-a055-82c1599bb735",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 3978000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-05:BAG:01",
+                "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238"
+              },
+              {
+                "loadId": "case-05:BAG:02",
+                "positionId": "e69f3eca-ba04-4ff9-b090-5379d2461e96"
+              }
+            ],
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoNetWeightGrams": 49936000,
+            "cargoTareWeightGrams": 2820000,
+            "cargoGrossWeightGrams": 52756000
+          }
+        },
+        "validation": "PASS"
+      },
+      "outcome": "EQUIVALENT"
+    },
+    {
+      "id": "case-06",
+      "inputSha256": "8968c27a65802381b0df2451b51f1c3326ce6b9ec5299a6bcd3fb1feb95d4b7b",
+      "inputRevision": "sha256:2883a081a583a9420acc2aa98ad0fc4b6c35933df970e853e407764682e83f1a",
+      "baggageReservationHash": "bb8c62b42572a3fe08afbfcb8ce2a6fc2d294f8efc7187bc29e00a49209c6cb8",
+      "database": {
+        "error": {
+          "message": "Hard process deadline",
+          "code": "HARD_TIMEOUT"
+        }
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:2883a081a583a9420acc2aa98ad0fc4b6c35933df970e853e407764682e83f1a",
+          "status": "OPTIMAL",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 211,
+          "arrangement": {
+            "cargoUlds": [
+              {
+                "positionId": "37971d85-7ac1-4369-b1b4-230d1803bf48",
+                "netWeightGrams": 1487000
+              },
+              {
+                "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+                "netWeightGrams": 4156000
+              },
+              {
+                "positionId": "90a73dc0-1a2d-4b06-83c9-d2648426b71f",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+                "netWeightGrams": 4516000
+              },
+              {
+                "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+                "netWeightGrams": 4516000
+              }
+            ],
+            "baggageUlds": [
+              {
+                "loadId": "case-06:BAG:01",
+                "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84"
+              },
+              {
+                "loadId": "case-06:BAG:07",
+                "positionId": "29987bfc-b18c-4b16-a830-8925f5b7f31c"
+              },
+              {
+                "loadId": "case-06:BAG:02",
+                "positionId": "335c0dc4-c764-4710-a703-cf014e4966e7"
+              },
+              {
+                "loadId": "case-06:BAG:06",
+                "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e"
+              },
+              {
+                "loadId": "case-06:BAG:04",
+                "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4"
+              },
+              {
+                "loadId": "case-06:BAG:05",
+                "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f"
+              },
+              {
+                "loadId": "case-06:BAG:03",
+                "positionId": "a75699e9-336f-4332-8146-569650a9dd07"
+              }
+            ],
+            "bulkCargo": [
+              {
+                "areaId": "LOWER:ALB:5:51",
+                "netWeightGrams": 1841000
+              },
+              {
+                "areaId": "LOWER:ALB:5:52",
+                "netWeightGrams": 667000
+              },
+              {
+                "areaId": "LOWER:ALB:5:53",
+                "netWeightGrams": 272000
+              }
+            ],
+            "cargoNetWeightGrams": 31003000,
+            "cargoTareWeightGrams": 760000,
+            "cargoGrossWeightGrams": 31763000
+          }
+        },
+        "validation": "PASS"
+      },
+      "outcome": "INCONCLUSIVE"
+    },
+    {
+      "id": "case-07-infeasible",
+      "inputSha256": "29d4dab84c9196aef9e8d11165646acb2f559ec860c1498acbbb018381d5d721",
+      "inputRevision": "sha256:13790dd8445231e32e9dc29ad2ee97a60a981ad5f4841275dd184782c38ea949",
+      "baggageReservationHash": "3129a75f4b28569bca98b302dbf523972ae9477ede8a6602ed25700479e5ad7c",
+      "database": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "status": "INFEASIBLE",
+          "arrangement": null,
+          "diagnostics": {
+            "algorithm": "EXACT_GROUP_FRONTIER",
+            "earlyRejection": "BAGGAGE_POSITION_COUNT"
+          },
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:13790dd8445231e32e9dc29ad2ee97a60a981ad5f4841275dd184782c38ea949"
+        },
+        "validation": "PASS"
+      },
+      "solver": {
+        "result": {
+          "mode": "CARGO_CAPACITY",
+          "aircraftType": "359",
+          "rulesVersion": "A350_MAX_NET_CARGO_V2",
+          "inputRevision": "sha256:13790dd8445231e32e9dc29ad2ee97a60a981ad5f4841275dd184782c38ea949",
+          "status": "INFEASIBLE",
+          "engine": "OR-TOOLS CP-SAT",
+          "solveMilliseconds": 73,
+          "arrangement": null
+        },
+        "validation": "PASS"
+      },
+      "outcome": "EQUIVALENT"
+    }
+  ]
+}

@@ -25,6 +25,25 @@ begin
  if jsonb_array_length(states)>state_limit then
   raise exception 'Exact capacity frontier exceeded state limit; no optimum established' using errcode='54000';
  end if;
+ -- Fast exact skyline for regions T=min(U+B,K-base), independently checked
+ -- within each (baggage mask, live bays, Bulk bound) partition. Otherwise use
+ -- the general three-bound dominance test below.
+ with rows as materialized (
+  select value s,ordinality i,value->'mask' mask,value->'live' live,
+   (value->>'base')::bigint base,(value->>'u')::bigint u,
+   (value->>'b')::bigint b,(value->>'t')::bigint t
+  from jsonb_array_elements(states) with ordinality
+ ), bounds as materialized (
+  select *,max(base+t) over(partition by mask,live,b) k from rows
+ ), shapes as materialized (
+  select *,bool_and(t=least(u+b,k-base)) over() fits from bounds
+ ), dedup as materialized (
+  select distinct on(mask,live,b,base) * from shapes
+  order by mask,live,b,base,u desc,i
+ ), skyline as (
+  select *,max(u) over(partition by mask,live,b order by base rows between unbounded preceding and 1 preceding) previous_u from dedup
+ ) select case when coalesce(bool_and(fits),true) then coalesce(jsonb_agg(s order by i) filter(where previous_u is null or u>previous_u),'[]') else null end into answer from skyline;
+ if answer is not null then return answer;end if;
  with rows as materialized (
   select value s,ordinality i,value->'mask' mask,value->'live' live,
    (value->>'base')::bigint base,(value->>'u')::bigint u,
@@ -40,27 +59,67 @@ begin
  return answer;
 end $$;
 
-create or replace function capacity_reference.combine_states(left_states jsonb,right_states jsonb,gross_limit bigint,bulk_limit bigint,state_limit integer)
+
+-- Only fully interchangeable baggage is canonicalised. Each witness still maps
+-- every original load ID to a compatible physical position.
+create or replace function capacity_reference.baggage_classes(p jsonb)
+returns jsonb language sql immutable as $$
+ with bags as materialized (
+  select value->>'id' id,jsonb_build_array(value->'netWeightGrams',value->'volumeMillilitres',
+   (select jsonb_agg(x order by x) from jsonb_array_elements(value->'compatiblePositionIds') x)) signature
+  from jsonb_array_elements(p->'baggageUlds')
+ ) select coalesce(jsonb_object_agg(a.id,(select jsonb_agg(b.id order by b.id) from bags b where b.signature=a.signature)),'{}') from bags a
+$$;
+
+-- Offline exact set-based hierarchy combination. Load after the frontier file.
+create or replace function capacity_reference.merge_masks(left_mask jsonb,right_mask jsonb,classes jsonb)
 returns jsonb language plpgsql immutable as $$
-declare l jsonb;r jsonb;s jsonb;answer jsonb:='[]';mask jsonb;pending integer:=0;
+declare used jsonb;translation jsonb:='{}';id text;chosen text;mask jsonb;
 begin
- for l in select value from jsonb_array_elements(left_states) loop
-  for r in select value from jsonb_array_elements(right_states) loop
-   if exists(select 1 from jsonb_array_elements(l->'mask') x where r->'mask' @> jsonb_build_array(x.value)) then continue;end if;
-   select coalesce(jsonb_agg(value order by value),'[]') into mask from jsonb_array_elements((l->'mask')||(r->'mask'));
-   s:=capacity_reference.cap_state(jsonb_build_object('mask',mask,'live','[]'::jsonb,
-    'bags',(l->'bags')||(r->'bags'),'cargo',(l->'cargo')||(r->'cargo'),
-    'base',(l->>'base')::bigint+(r->>'base')::bigint,
-    'u',(l->>'u')::bigint+(r->>'u')::bigint,
-    'b',(l->>'b')::bigint+(r->>'b')::bigint,
-    't',(l->>'t')::bigint+(r->>'t')::bigint),gross_limit,bulk_limit);
-   if s is not null then answer:=answer||jsonb_build_array(s);pending:=pending+1;end if;
-   -- Exact streaming reduction avoids materialising the entire cross-product.
-   if pending>=greatest(1,least(1000,state_limit/2)) then
-    answer:=capacity_reference.prune_states(answer,state_limit);pending:=0;
-   end if;
-  end loop;
+ select coalesce(jsonb_object_agg(value,true),'{}') into used from jsonb_array_elements_text(left_mask);
+ for id in select value from jsonb_array_elements_text(right_mask) order by value loop
+  if classes ? id then
+   select value into chosen from jsonb_array_elements_text(classes->id) where not used ? value order by value limit 1;
+  else chosen:=case when used ? id then null else id end;end if;
+  if chosen is null then return null;end if;
+  translation:=translation||jsonb_build_object(id,chosen);used:=used||jsonb_build_object(chosen,true);
  end loop;
+ select coalesce(jsonb_agg(k order by k),'[]') into mask from jsonb_object_keys(used) k;
+ return jsonb_build_object('mask',mask,'translation',translation);
+end $$;
+
+create or replace function capacity_reference.translate_bags(left_bags jsonb,right_bags jsonb,translation jsonb)
+returns jsonb language sql immutable as $$
+ select left_bags||coalesce(jsonb_object_agg(translation->>key,value),'{}') from jsonb_each(right_bags)
+$$;
+
+create or replace function capacity_reference.combine_states(left_states jsonb,right_states jsonb,gross_limit bigint,bulk_limit bigint,state_limit integer,bag_classes jsonb default '{}'::jsonb)
+returns jsonb language plpgsql immutable as $$
+declare answer jsonb;
+begin
+ if bulk_limit<0 then return '[]';end if;
+ if jsonb_array_length(left_states)::bigint*jsonb_array_length(right_states)>4000000 then
+  raise exception 'Exact capacity combination exceeded pair limit; no optimum established' using errcode='54000';
+ end if;
+ with l as materialized (
+  select value s,value->'mask' mask,(value->>'base')::bigint base,(value->>'u')::bigint u,(value->>'b')::bigint b,(value->>'t')::bigint t from jsonb_array_elements(left_states)
+ ), r as materialized (
+  select value s,value->'mask' mask,(value->>'base')::bigint base,(value->>'u')::bigint u,(value->>'b')::bigint b,(value->>'t')::bigint t from jsonb_array_elements(right_states)
+ ), masks as materialized (
+  select lm.mask lm,rm.mask rm,capacity_reference.merge_masks(lm.mask,rm.mask,bag_classes) merged
+  from (select distinct mask from l) lm cross join (select distinct mask from r) rm
+ ), raw as (
+  select l.s ls,r.s rs,m.merged,l.base+r.base base,l.u+r.u u,l.b+r.b b,least(l.t+r.t,gross_limit-l.base-r.base) t
+  from l join masks m on m.lm=l.mask and m.merged is not null join r on r.mask=m.rm
+  where l.base+r.base<=gross_limit
+ ), clipped as (
+  select *,least(u,t) cu,least(b,t,coalesce(bulk_limit,9000000000000000)) cb from raw
+ ), distinct_profiles as materialized (
+  select distinct on(merged->'mask',base,cu,cb,least(t,cu+cb)) * from clipped
+  order by merged->'mask',base,cu,cb,least(t,cu+cb)
+ ) select coalesce(jsonb_agg(jsonb_build_object('mask',merged->'mask','live','[]'::jsonb,
+   'bags',capacity_reference.translate_bags(ls->'bags',rs->'bags',merged->'translation'),
+   'cargo',(ls->'cargo')||(rs->'cargo'),'base',base,'u',cu,'b',cb,'t',least(t,cu+cb))),'[]') into answer from distinct_profiles;
  return capacity_reference.prune_states(answer,state_limit);
 end $$;
 
@@ -114,10 +173,11 @@ begin
      't',(s->>'t')::bigint+(pos->>'maximumGrossWeightGrams')::bigint-(pos->>'tareWeightGrams')::bigint),gross_limit,bulk_limit);
     if n is not null then next_states:=next_states||jsonb_build_array(n);end if;
    end if;
-   for bag in select value from jsonb_array_elements(p->'baggageUlds') where pos->>'kind'='CONTAINER'
-    and (value->'compatiblePositionIds') ? (pos->>'id') and not (s->'bags') ? (value->>'id')
-    and (value->>'netWeightGrams')::bigint+(pos->>'tareWeightGrams')::bigint<=(pos->>'maximumGrossWeightGrams')::bigint
-    and (value->>'volumeMillilitres')::bigint<=(pos->>'maximumVolumeMillilitres')::bigint loop
+   for bag in select bag_row.value from jsonb_array_elements(p->'baggageUlds') bag_row(value) where pos->>'kind'='CONTAINER'
+    and (bag_row.value->'compatiblePositionIds') ? (pos->>'id') and not (s->'bags') ? (bag_row.value->>'id')
+    and (bag_row.value->>'netWeightGrams')::bigint+(pos->>'tareWeightGrams')::bigint<=(pos->>'maximumGrossWeightGrams')::bigint
+    and (bag_row.value->>'volumeMillilitres')::bigint<=(pos->>'maximumVolumeMillilitres')::bigint
+    and not exists(select 1 from jsonb_array_elements_text(p->'_bagClasses'->(bag_row.value->>'id')) prior where prior<(bag_row.value->>'id') and not (s->'bags') ? prior) loop
     select jsonb_agg(id order by id) into mask from jsonb_object_keys((s->'bags')||jsonb_build_object(bag->>'id',pos->>'id')) id;
     n:=capacity_reference.cap_state(s||jsonb_build_object('live',to_jsonb(next_live),'mask',mask,'bags',(s->'bags')||jsonb_build_object(bag->>'id',pos->>'id'),
      'base',(s->>'base')::bigint+(bag->>'netWeightGrams')::bigint+(pos->>'tareWeightGrams')::bigint),gross_limit,bulk_limit);
@@ -128,7 +188,7 @@ begin
   frontier:=capacity_reference.prune_states(next_states,state_limit);
  end loop;
  for child in select value from jsonb_array_elements(p->'groups') where value->>'parentId'=gid order by value->>'id' loop
-  frontier:=capacity_reference.combine_states(frontier,capacity_reference.group_frontier(p,child->>'id',state_limit),gross_limit,bulk_limit,state_limit);
+  frontier:=capacity_reference.combine_states(frontier,capacity_reference.group_frontier(p,child->>'id',state_limit),gross_limit,bulk_limit,state_limit,p->'_bagClasses');
  end loop;
  return frontier;
 end $$;
@@ -169,9 +229,10 @@ begin
   end loop;
  end if;
  if reason is null then
+  p:=p||jsonb_build_object('_bagClasses',capacity_reference.baggage_classes(p));
   frontier:=jsonb_build_array(jsonb_build_object('mask','[]'::jsonb,'live','[]'::jsonb,'bags','{}'::jsonb,'cargo','[]'::jsonb,'base',0,'u',0,'b',0,'t',0));
   for g in select value from jsonb_array_elements(p->'groups') where value->>'parentId' is null order by value->>'id' loop
-   frontier:=capacity_reference.combine_states(frontier,capacity_reference.group_frontier(p,g->>'id',state_limit),aircraft_limit,null,state_limit);
+   frontier:=capacity_reference.combine_states(frontier,capacity_reference.group_frontier(p,g->>'id',state_limit),aircraft_limit,null,state_limit,p->'_bagClasses');
   end loop;
   select value into best from jsonb_array_elements(frontier) where jsonb_array_length(value->'mask')=jsonb_array_length(p->'baggageUlds') order by (value->>'t')::bigint desc,(value->>'base')::bigint,value->'mask' limit 1;
   if best is not null then

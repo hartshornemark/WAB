@@ -1,0 +1,7 @@
+case-01 INCONCLUSIVE { message: 'Hard process deadline', code: 'HARD_TIMEOUT' } OPTIMAL
+case-02 INCONCLUSIVE { message: 'Hard process deadline', code: 'HARD_TIMEOUT' } OPTIMAL
+case-03 INCONCLUSIVE { message: 'Hard process deadline', code: 'HARD_TIMEOUT' } FEASIBLE
+case-04 EQUIVALENT OPTIMAL OPTIMAL
+case-05 EQUIVALENT OPTIMAL OPTIMAL
+case-06 INCONCLUSIVE { message: 'Hard process deadline', code: 'HARD_TIMEOUT' } OPTIMAL
+case-07-infeasible EQUIVALENT INFEASIBLE INFEASIBLE

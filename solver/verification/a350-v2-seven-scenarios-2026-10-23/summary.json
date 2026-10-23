@@ -1,0 +1,118 @@
+{
+  "step": "STEP 3: Verify equivalent results",
+  "executionStep": "STEP 6: Run the seven scenarios",
+  "complete": true,
+  "cases": [
+    {
+      "case": "case-01",
+      "databaseStatus": "OPTIMAL",
+      "solverStatus": "OPTIMAL",
+      "maximumNetCargoKg": 31201.0,
+      "databaseCounts": {
+        "pallets": 6,
+        "containers": 1,
+        "baggageUlds": 7
+      },
+      "solverCounts": {
+        "pallets": 6,
+        "containers": 1,
+        "baggageUlds": 7
+      },
+      "equivalent": true
+    },
+    {
+      "case": "case-02",
+      "databaseStatus": "OPTIMAL",
+      "solverStatus": "OPTIMAL",
+      "maximumNetCargoKg": 38714.0,
+      "databaseCounts": {
+        "pallets": 7,
+        "containers": 3,
+        "baggageUlds": 5
+      },
+      "solverCounts": {
+        "pallets": 7,
+        "containers": 3,
+        "baggageUlds": 5
+      },
+      "equivalent": true
+    },
+    {
+      "case": "case-03",
+      "databaseStatus": "OPTIMAL",
+      "solverStatus": "OPTIMAL",
+      "maximumNetCargoKg": 40701.0,
+      "databaseCounts": {
+        "pallets": 6,
+        "containers": 8,
+        "baggageUlds": 4
+      },
+      "solverCounts": {
+        "pallets": 6,
+        "containers": 8,
+        "baggageUlds": 4
+      },
+      "equivalent": true
+    },
+    {
+      "case": "case-04",
+      "databaseStatus": "OPTIMAL",
+      "solverStatus": "OPTIMAL",
+      "maximumNetCargoKg": 47555.0,
+      "databaseCounts": {
+        "pallets": 3,
+        "containers": 21,
+        "baggageUlds": 3
+      },
+      "solverCounts": {
+        "pallets": 3,
+        "containers": 21,
+        "baggageUlds": 3
+      },
+      "equivalent": true
+    },
+    {
+      "case": "case-05",
+      "databaseStatus": "OPTIMAL",
+      "solverStatus": "OPTIMAL",
+      "maximumNetCargoKg": 49936.0,
+      "databaseCounts": {
+        "pallets": 2,
+        "containers": 26,
+        "baggageUlds": 2
+      },
+      "solverCounts": {
+        "pallets": 2,
+        "containers": 26,
+        "baggageUlds": 2
+      },
+      "equivalent": true
+    },
+    {
+      "case": "case-06",
+      "databaseStatus": "OPTIMAL",
+      "solverStatus": "OPTIMAL",
+      "maximumNetCargoKg": 31003.0,
+      "databaseCounts": {
+        "pallets": 6,
+        "containers": 1,
+        "baggageUlds": 7
+      },
+      "solverCounts": {
+        "pallets": 6,
+        "containers": 1,
+        "baggageUlds": 7
+      },
+      "equivalent": true
+    },
+    {
+      "case": "case-07-infeasible",
+      "databaseStatus": "INFEASIBLE",
+      "solverStatus": "INFEASIBLE",
+      "maximumNetCargoKg": null,
+      "databaseCounts": null,
+      "solverCounts": null,
+      "equivalent": true
+    }
+  ]
+}
