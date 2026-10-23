@@ -15,3 +15,10 @@ alter role capacity_benchmark in database postgres set default_transaction_read_
 alter role capacity_benchmark in database postgres set statement_timeout='60s';
 alter role capacity_benchmark in database postgres set lock_timeout='1s';
 -- No operational table privileges, schema CREATE or role memberships are granted.
+
+-- Pin only the new private functions; do not change frozen calculation bodies.
+do $$ declare fn text; begin
+ for fn in select p.oid::regprocedure::text from pg_proc p
+   join pg_namespace n on n.oid=p.pronamespace where n.nspname='capacity_reference'
+ loop execute format('alter function %s set search_path = pg_catalog',fn); end loop;
+end $$;
