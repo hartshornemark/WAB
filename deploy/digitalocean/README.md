@@ -36,11 +36,13 @@ for that component is disabled. Its healthcheck uses internal port 8080.
 
 ## Information still required before a deployment decision
 
-The user confirmed the staging origin as `https://demo.wabiqa.com` on
-23 October 2026, hosted on DigitalOcean App Platform. This identifies the public
-app; it does not confirm its current deployment or enable the test endpoint.
+The user confirmed the DigitalOcean App Platform app name as `wabiqa-app` and
+the staging origin as `https://demo.wabiqa.com` on 23 October 2026. These identify
+the intended app; they do not confirm its current deployment or enable the test
+endpoint.
 
-1. Exact staging app ID/name, current app specification and deployment commit.
+1. Current app specification and deployment commit for `wabiqa-app`; resolve its
+   exact app ID from the hosting account before any deployment action.
 2. The backend's intended CPU/RAM instance size and region, recorded for testing.
    No paid database/service or resource size has been invented/provisioned.
 3. Approved isolated native PostgreSQL host, region/tier and database credentials.
@@ -166,8 +168,9 @@ bodies, stale/malformed witnesses, unproved statuses, admission and backend URL
 restrictions; Python tests cover sealed inputs, read-only connection options,
 child timings and error redaction. Next's production build checks the route.
 
-This workstation has no Docker or DigitalOcean CLI installed, and no staging
-app ID/spec or database URL has been supplied. Therefore **container builds,
+This workstation has no Docker or DigitalOcean CLI installed. The staging app
+name and URL are confirmed, but its current spec and the isolated database target
+have not been supplied. Therefore **container builds,
 native PostgreSQL connectivity/grants, App Platform spec validation, healthcheck
 and hosted smoke/latency tests remain unexecuted**. Do not describe this as a
 verified or deployed hosting environment. No new hosted timing claims are made.
