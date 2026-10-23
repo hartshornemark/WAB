@@ -105,3 +105,29 @@ node --import tsx solver/verify_cargo_capacity.mjs --run \
   --python /absolute/path/to/python-with-ortools \
   --solver-seconds 10 --database-seconds 60
 ```
+
+## Repeated local request measurements
+
+The [seven-case local benchmark](benchmarks/a350-v2-local-request-2026-10-23/README.md)
+records 182 measured requests (10 warm and 3 fresh-session requests per
+engine/case), plus 14 excluded warm-ups. All responses were correct and proven;
+there were no timeouts, mismatches or failures. Calculation-only time and
+complete local HTTP request time are separate, with Python startup/pipe transport
+included in the latter. Medians, nearest-rank p95s, all samples and exact code
+snapshots are saved.
+
+Solver requests were faster in cases 1, 2, 4 and 6; the database reference was
+faster in cases 3, 5 and the infeasible case 7. These are local PGlite versus
+one-shot Python results, not native hosted PostgreSQL, live legacy performance,
+a remote solver deployment or the production flight workflow. Service startup
+is recorded separately; frozen input loading replaces live data retrieval and
+baggage preparation. See the report for boundaries and sample-size limits.
+
+Reproduce with a new output directory and loopback network permission:
+
+```sh
+node --import tsx solver/measure_cargo_capacity.mjs --run \
+  --output /absolute/path/to/new-measurement-directory \
+  --python /absolute/path/to/python-with-ortools --samples 10 --cold 3
+node solver/report_cargo_capacity_measurement.mjs /absolute/path/to/new-measurement-directory
+```

@@ -1,0 +1,2171 @@
+{
+  "scope": "Serial loopback HTTP benchmark: aligned V2 SQL in local PGlite versus one-shot local Python CP-SAT. Not live PostgreSQL/Supabase, remote solver transport, or the production flight API.",
+  "percentileMethod": "Median averages the two central values for even n; p95 is nearest rank ceil(0.95*n). With 10 warm samples, p95 is the observed maximum; with 3 cold samples, tails are descriptive only.",
+  "warmupsExcluded": 14,
+  "failures": [],
+  "summary": [
+    {
+      "caseId": "case-01",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 9482,
+          "median": 9509,
+          "p95": 9559,
+          "maximum": 9559
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 9492.285375,
+          "median": 9519.321417,
+          "p95": 9570.927833,
+          "maximum": 9570.927833
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.7437090000000808,
+          "median": 0.7687080000000606,
+          "p95": 1.5351250000001073,
+          "maximum": 1.5351250000001073
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 9485.908708,
+          "median": 9513.112334,
+          "p95": 9562.853042,
+          "maximum": 9562.853042
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.5321659999990516,
+          "median": 0.5326659999991534,
+          "p95": 0.5442090000015014,
+          "maximum": 0.5442090000015014
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 9489.111583,
+          "median": 9515.7445,
+          "p95": 9565.324167,
+          "maximum": 9565.324167
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1078.5277080000014,
+          "median": 1144.6009589999994,
+          "p95": 1162.983458,
+          "maximum": 1162.983458
+        }
+      }
+    },
+    {
+      "caseId": "case-01",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 9320,
+          "median": 9354,
+          "p95": 9451,
+          "maximum": 9451
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 9326.373584000015,
+          "median": 9360.222770999993,
+          "p95": 9457.361541999999,
+          "maximum": 9457.361541999999
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.3482499999990978,
+          "median": 0.3820000000014261,
+          "p95": 0.4103330000070855,
+          "maximum": 0.4103330000070855
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 9322.203042000008,
+          "median": 9356.428062500001,
+          "p95": 9453.465875000002,
+          "maximum": 9453.465875000002
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.3302499999990687,
+          "median": 0.337667000003421,
+          "p95": 0.359375,
+          "maximum": 0.359375
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 9323.990833000003,
+          "median": 9358.2695835,
+          "p95": 9455.269833999992,
+          "maximum": 9455.269833999992
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-01",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 205.751625,
+          "median": 224.666083,
+          "p95": 224.7385,
+          "maximum": 224.7385
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 559.8505829999995,
+          "median": 793.5007910000004,
+          "p95": 835.0359580000004,
+          "maximum": 835.0359580000004
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 317.043583,
+          "median": 531.646167,
+          "p95": 576.1047080000001,
+          "maximum": 576.1047080000001
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 553.0361250000001,
+          "median": 786.635459,
+          "p95": 830.1052910000001,
+          "maximum": 830.1052910000001
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.501749999999987,
+          "median": 0.5541670000000067,
+          "p95": 0.5742079999999987,
+          "maximum": 0.5742079999999987
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 553.1277909999999,
+          "median": 786.7319580000001,
+          "p95": 830.2,
+          "maximum": 830.2
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4512089999999489,
+          "median": 0.46699999999998454,
+          "p95": 0.5213750000000346,
+          "maximum": 0.5213750000000346
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 555.013459,
+          "median": 788.6982499999999,
+          "p95": 832.075666,
+          "maximum": 832.075666
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 162.02891600000112,
+          "median": 165.9774580000012,
+          "p95": 167.97112500000003,
+          "maximum": 167.97112500000003
+        }
+      }
+    },
+    {
+      "caseId": "case-01",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 205.828125,
+          "median": 223.6282495,
+          "p95": 246.324375,
+          "maximum": 246.324375
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 549.3087080000041,
+          "median": 671.5404789999884,
+          "p95": 920.8878750000003,
+          "maximum": 920.8878750000003
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 313.24237500000163,
+          "median": 412.41562500000146,
+          "p95": 645.8030829999989,
+          "maximum": 645.8030829999989
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 548.1326670000017,
+          "median": 670.0792710000023,
+          "p95": 919.0281670000004,
+          "maximum": 919.0281670000004
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.24666699999943376,
+          "median": 0.28543700000227545,
+          "p95": 0.395249999997759,
+          "maximum": 0.395249999997759
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 548.1420829999988,
+          "median": 670.089812000002,
+          "p95": 919.0401249999995,
+          "maximum": 919.0401249999995
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.1134170000004815,
+          "median": 0.1319374999984575,
+          "p95": 0.16954199999963748,
+          "maximum": 0.16954199999963748
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 548.6958749999976,
+          "median": 670.718708000004,
+          "p95": 919.8113749999975,
+          "maximum": 919.8113749999975
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 4925,
+          "median": 4929,
+          "p95": 4988,
+          "maximum": 4988
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 4935.019583999994,
+          "median": 4938.492375000002,
+          "p95": 4998.053458999988,
+          "maximum": 4998.053458999988
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.6405419999998685,
+          "median": 0.695709000000079,
+          "p95": 0.6967500000000655,
+          "maximum": 0.6967500000000655
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 4929.498125,
+          "median": 4932.93375,
+          "p95": 4991.905334,
+          "maximum": 4991.905334
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.5358340000002499,
+          "median": 0.5553340000005846,
+          "p95": 0.8883340000002136,
+          "maximum": 0.8883340000002136
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 4931.8715,
+          "median": 4935.30825,
+          "p95": 4994.66625,
+          "maximum": 4994.66625
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1123.2299170000188,
+          "median": 1158.9507500000182,
+          "p95": 1196.4356670000125,
+          "maximum": 1196.4356670000125
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 4803,
+          "median": 4809,
+          "p95": 4826,
+          "maximum": 4826
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 4808.701958999998,
+          "median": 4815.0785004999925,
+          "p95": 4831.374291999993,
+          "maximum": 4831.374291999993
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.32741600000008475,
+          "median": 0.3640415000008943,
+          "p95": 0.4547500000007858,
+          "maximum": 0.4547500000007858
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 4805.156999999999,
+          "median": 4811.2615209999985,
+          "p95": 4827.716458000001,
+          "maximum": 4827.716458000001
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.30895800000143936,
+          "median": 0.34535399999731453,
+          "p95": 0.6644169999999576,
+          "maximum": 0.6644169999999576
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 4806.907082999998,
+          "median": 4813.089395999999,
+          "p95": 4829.601667,
+          "maximum": 4829.601667
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 79.032834,
+          "median": 81.19125,
+          "p95": 97.2745,
+          "maximum": 97.2745
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 432.3326669999806,
+          "median": 441.11062500000116,
+          "p95": 701.3644579999964,
+          "maximum": 701.3644579999964
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 318.875042,
+          "median": 322.41445799999997,
+          "p95": 568.2889580000001,
+          "maximum": 568.2889580000001
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 425.848208,
+          "median": 434.40175,
+          "p95": 694.9050420000001,
+          "maximum": 694.9050420000001
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.514125000000007,
+          "median": 0.5269590000000051,
+          "p95": 0.5297919999999863,
+          "maximum": 0.5297919999999863
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 425.939167,
+          "median": 434.495542,
+          "p95": 694.996125,
+          "maximum": 694.996125
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4247500000000173,
+          "median": 0.42916600000000926,
+          "p95": 0.43649999999990996,
+          "maximum": 0.43649999999990996
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 427.77216699999997,
+          "median": 436.318916,
+          "p95": 696.871834,
+          "maximum": 696.871834
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 162.1462499999907,
+          "median": 162.23025000002235,
+          "p95": 164.68808300001547,
+          "maximum": 164.68808300001547
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 79.197167,
+          "median": 79.920354,
+          "p95": 81.608708,
+          "maximum": 81.608708
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 421.5773749999935,
+          "median": 423.4200204999943,
+          "p95": 436.3767919999955,
+          "maximum": 436.3767919999955
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 310.6208750000005,
+          "median": 313.2042289999954,
+          "p95": 323.30495900000096,
+          "maximum": 323.30495900000096
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 420.40729099999953,
+          "median": 422.15658299999996,
+          "p95": 434.987374999997,
+          "maximum": 434.987374999997
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.2087920000012673,
+          "median": 0.23087499999928696,
+          "p95": 0.36333299999932933,
+          "maximum": 0.36333299999932933
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 420.41949999999997,
+          "median": 422.1663959999969,
+          "p95": 434.994999999999,
+          "maximum": 434.994999999999
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.10754199999792036,
+          "median": 0.12674999999944703,
+          "p95": 0.16908300000068266,
+          "maximum": 0.16908300000068266
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 420.9654580000024,
+          "median": 422.639438000002,
+          "p95": 435.499917000001,
+          "maximum": 435.499917000001
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 1480,
+          "median": 1492,
+          "p95": 1502,
+          "maximum": 1502
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 1489.3914579999982,
+          "median": 1500.461874999979,
+          "p95": 1510.0928330000024,
+          "maximum": 1510.0928330000024
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.627666999999974,
+          "median": 0.6321249999998599,
+          "p95": 0.64387499999998,
+          "maximum": 0.64387499999998
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 1484.2003330000002,
+          "median": 1495.2983749999999,
+          "p95": 1504.4861669999998,
+          "maximum": 1504.4861669999998
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.453125,
+          "median": 0.45358299999998053,
+          "p95": 0.45679100000006656,
+          "maximum": 0.45679100000006656
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 1486.4385000000002,
+          "median": 1497.5066250000002,
+          "p95": 1506.745208,
+          "maximum": 1506.745208
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1128.914958999987,
+          "median": 1160.1741669999901,
+          "p95": 1315.3519579999847,
+          "maximum": 1315.3519579999847
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 1390,
+          "median": 1395.5,
+          "p95": 1527,
+          "maximum": 1527
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 1392.0161250000237,
+          "median": 1398.1635209999804,
+          "p95": 1529.9439589999965,
+          "maximum": 1529.9439589999965
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.21304200000122364,
+          "median": 0.22547899999881338,
+          "p95": 0.28295799999978044,
+          "maximum": 0.28295799999978044
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 1390.7117089999956,
+          "median": 1396.7895209999997,
+          "p95": 1528.5337499999987,
+          "maximum": 1528.5337499999987
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.10483400000157417,
+          "median": 0.11420849999922211,
+          "p95": 0.15062500000021828,
+          "maximum": 0.15062500000021828
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 1391.2224579999965,
+          "median": 1397.3092080000006,
+          "p95": 1529.0618749999994,
+          "maximum": 1529.0618749999994
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 3148.271625,
+          "median": 3165.247208,
+          "p95": 3166.128958,
+          "maximum": 3166.128958
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 3499.3475000000035,
+          "median": 3524.675709000003,
+          "p95": 3526.1829580000194,
+          "maximum": 3526.1829580000194
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 316.148625,
+          "median": 323.6165,
+          "p95": 325.27575,
+          "maximum": 325.27575
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 3494.4399999999996,
+          "median": 3518.14275,
+          "p95": 3521.201333,
+          "maximum": 3521.201333
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4524579999999787,
+          "median": 0.4767500000000098,
+          "p95": 0.4974160000000154,
+          "maximum": 0.4974160000000154
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 3494.532125,
+          "median": 3518.234083,
+          "p95": 3521.290583,
+          "maximum": 3521.290583
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.41583300000002055,
+          "median": 0.43445799999972223,
+          "p95": 0.5372499999998581,
+          "maximum": 0.5372499999998581
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 3496.254833,
+          "median": 3520.159458,
+          "p95": 3523.029833,
+          "maximum": 3523.029833
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 163.37779199998477,
+          "median": 166.96504199999617,
+          "p95": 167.96549999999115,
+          "maximum": 167.96549999999115
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 3148.129958,
+          "median": 3155.8353545,
+          "p95": 3165.075916,
+          "maximum": 3165.075916
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3495.474500000011,
+          "median": 3501.950667000012,
+          "p95": 3508.38491600001,
+          "maximum": 3508.38491600001
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 311.8263750000042,
+          "median": 315.5924374999995,
+          "p95": 326.70379199999934,
+          "maximum": 326.70379199999934
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3494.377207999998,
+          "median": 3500.9312499999996,
+          "p95": 3507.2217920000003,
+          "maximum": 3507.2217920000003
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.19908399999985704,
+          "median": 0.22795849999965867,
+          "p95": 0.39783400000033,
+          "maximum": 0.39783400000033
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 3494.386666999999,
+          "median": 3500.941332999999,
+          "p95": 3507.2294999999976,
+          "maximum": 3507.2294999999976
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.09916700000030687,
+          "median": 0.11441699999886623,
+          "p95": 0.1667089999991731,
+          "maximum": 0.1667089999991731
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3494.818916999997,
+          "median": 3501.397041500003,
+          "p95": 3507.7765420000032,
+          "maximum": 3507.7765420000032
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 835,
+          "median": 840,
+          "p95": 841,
+          "maximum": 841
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 843.9643339999602,
+          "median": 848.405374999973,
+          "p95": 849.6522080000141,
+          "maximum": 849.6522080000141
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.6202500000001692,
+          "median": 0.6345420000000104,
+          "p95": 0.6712500000001,
+          "maximum": 0.6712500000001
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 838.808667,
+          "median": 843.1709579999999,
+          "p95": 844.421292,
+          "maximum": 844.421292
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.44974999999999454,
+          "median": 0.47962500000016917,
+          "p95": 0.5494999999998527,
+          "maximum": 0.5494999999998527
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 841.0715,
+          "median": 845.427958,
+          "p95": 846.788166,
+          "maximum": 846.788166
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1125.5489579999703,
+          "median": 1130.5025830000523,
+          "p95": 1176.0409999999683,
+          "maximum": 1176.0409999999683
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 768,
+          "median": 771.5,
+          "p95": 784,
+          "maximum": 784
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 769.3831660000142,
+          "median": 773.4605204999971,
+          "p95": 786.3780000000261,
+          "maximum": 786.3780000000261
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.20091599999977916,
+          "median": 0.22431250000022374,
+          "p95": 0.574624999999287,
+          "maximum": 0.574624999999287
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 768.413790999999,
+          "median": 772.2937084999999,
+          "p95": 785.2352920000001,
+          "maximum": 785.2352920000001
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.09804199999962293,
+          "median": 0.12333349999880738,
+          "p95": 0.1487499999998363,
+          "maximum": 0.1487499999998363
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 768.8094170000004,
+          "median": 772.7776880000001,
+          "p95": 785.8255829999998,
+          "maximum": 785.8255829999998
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 162.039125,
+          "median": 162.32925,
+          "p95": 162.716458,
+          "maximum": 162.716458
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 512.3189169999678,
+          "median": 515.7914170000004,
+          "p95": 517.7185419999878,
+          "maximum": 517.7185419999878
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 313.987125,
+          "median": 318.016542,
+          "p95": 321.81179199999997,
+          "maximum": 321.81179199999997
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 505.77208299999995,
+          "median": 509.69116700000006,
+          "p95": 512.824375,
+          "maximum": 512.824375
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.45570800000001555,
+          "median": 0.47041699999999764,
+          "p95": 0.4979160000000036,
+          "maximum": 0.4979160000000036
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 505.89987499999995,
+          "median": 509.787375,
+          "p95": 512.917708,
+          "maximum": 512.917708
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4221670000000586,
+          "median": 0.4399590000000444,
+          "p95": 0.4528339999999389,
+          "maximum": 0.4528339999999389
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 507.70570899999996,
+          "median": 511.57116700000006,
+          "p95": 514.656792,
+          "maximum": 514.656792
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 161.4666669999715,
+          "median": 165.95537499996135,
+          "p95": 170.18920800002525,
+          "maximum": 170.18920800002525
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 161.905083,
+          "median": 162.661208,
+          "p95": 163.131791,
+          "maximum": 163.131791
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 508.9225410000072,
+          "median": 511.99127050003153,
+          "p95": 527.9192499999772,
+          "maximum": 527.9192499999772
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 314.5049170000002,
+          "median": 316.7308539999999,
+          "p95": 333.77258299999994,
+          "maximum": 333.77258299999994
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 507.8397090000017,
+          "median": 510.8959789999999,
+          "p95": 526.6650829999999,
+          "maximum": 526.6650829999999
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.18908299999930023,
+          "median": 0.21416700000031597,
+          "p95": 0.24437499999976353,
+          "maximum": 0.24437499999976353
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 507.8476249999985,
+          "median": 510.9031255,
+          "p95": 526.674458,
+          "maximum": 526.674458
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.09537499999896681,
+          "median": 0.11779199999909906,
+          "p95": 0.14333300000043891,
+          "maximum": 0.14333300000043891
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 508.26337499999863,
+          "median": 511.3425205000003,
+          "p95": 527.243833,
+          "maximum": 527.243833
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-05",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 216,
+          "median": 216,
+          "p95": 217,
+          "maximum": 217
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 223.82104100001743,
+          "median": 224.64937500003725,
+          "p95": 224.65750000003027,
+          "maximum": 224.65750000003027
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.5921670000000177,
+          "median": 0.5947089999999662,
+          "p95": 0.599042000000054,
+          "maximum": 0.599042000000054
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 218.85245800000007,
+          "median": 219.52529099999992,
+          "p95": 219.54999999999995,
+          "maximum": 219.54999999999995
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4270410000001448,
+          "median": 0.46162500000014006,
+          "p95": 0.4827499999998963,
+          "maximum": 0.4827499999998963
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 221.003375,
+          "median": 221.71699999999987,
+          "p95": 221.76424999999995,
+          "maximum": 221.76424999999995
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1079.073291000037,
+          "median": 1081.2799170000362,
+          "p95": 1126.6069160000188,
+          "maximum": 1126.6069160000188
+        }
+      }
+    },
+    {
+      "caseId": "case-05",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 162,
+          "median": 165.5,
+          "p95": 174,
+          "maximum": 174
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 164.33512499998324,
+          "median": 167.04560399998445,
+          "p95": 175.72299999999814,
+          "maximum": 175.72299999999814
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.18666699999994307,
+          "median": 0.22558349999985694,
+          "p95": 0.4254579999997077,
+          "maximum": 0.4254579999997077
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 163.3897909999996,
+          "median": 166.01414550000004,
+          "p95": 174.533416,
+          "maximum": 174.533416
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.08916700000008859,
+          "median": 0.11362500000086584,
+          "p95": 0.1399579999999787,
+          "maximum": 0.1399579999999787
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 163.78283400000055,
+          "median": 166.4376249999998,
+          "p95": 175.1535409999999,
+          "maximum": 175.1535409999999
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-05",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 475.760208,
+          "median": 475.939333,
+          "p95": 476.800584,
+          "maximum": 476.800584
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 826.8711250000051,
+          "median": 828.6976670000004,
+          "p95": 837.424457999994,
+          "maximum": 837.424457999994
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 317.277875,
+          "median": 317.712209,
+          "p95": 327.688833,
+          "maximum": 327.688833
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 821.9775,
+          "median": 823.679417,
+          "p95": 832.5325,
+          "maximum": 832.5325
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4570420000000013,
+          "median": 0.46962500000000773,
+          "p95": 0.5131250000000023,
+          "maximum": 0.5131250000000023
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 822.0687499999999,
+          "median": 823.77725,
+          "p95": 832.62825,
+          "maximum": 832.62825
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4036670000000413,
+          "median": 0.4069160000000238,
+          "p95": 0.4213330000000042,
+          "maximum": 0.4213330000000042
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 823.761291,
+          "median": 825.647667,
+          "p95": 834.365042,
+          "maximum": 834.365042
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 164.43104100000346,
+          "median": 165.6728749999893,
+          "p95": 169.60579200001666,
+          "maximum": 169.60579200001666
+        }
+      }
+    },
+    {
+      "caseId": "case-05",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 474.659125,
+          "median": 476.1629585,
+          "p95": 477.669791,
+          "maximum": 477.669791
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 821.0031250000466,
+          "median": 826.5841875000333,
+          "p95": 851.9512080000131,
+          "maximum": 851.9512080000131
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 312.80595900000026,
+          "median": 317.4817505000001,
+          "p95": 346.296957999999,
+          "maximum": 346.296957999999
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 819.933959,
+          "median": 825.4629585000002,
+          "p95": 850.9413749999985,
+          "maximum": 850.9413749999985
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.18449999999938882,
+          "median": 0.21441649999997026,
+          "p95": 0.3613329999998314,
+          "maximum": 0.3613329999998314
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 819.9423749999996,
+          "median": 825.4734585000003,
+          "p95": 850.9493340000008,
+          "maximum": 850.9493340000008
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.09900000000016007,
+          "median": 0.1301040000003013,
+          "p95": 0.14708299999983865,
+          "maximum": 0.14708299999983865
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 820.458584,
+          "median": 825.9575420000003,
+          "p95": 851.3699589999997,
+          "maximum": 851.3699589999997
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 9612,
+          "median": 9614,
+          "p95": 9787,
+          "maximum": 9787
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 9621.540832999977,
+          "median": 9624.730749999988,
+          "p95": 9796.765917000012,
+          "maximum": 9796.765917000012
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.6327080000000933,
+          "median": 0.6554590000000644,
+          "p95": 1.6082910000000084,
+          "maximum": 1.6082910000000084
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 9615.969125000001,
+          "median": 9618.146625,
+          "p95": 9790.328416,
+          "maximum": 9790.328416
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.5274160000008123,
+          "median": 0.5324999999993452,
+          "p95": 0.541916999998648,
+          "maximum": 0.541916999998648
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 9618.316375,
+          "median": 9621.441709,
+          "p95": 9792.61075,
+          "maximum": 9792.61075
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1120.2077079999726,
+          "median": 1135.8160410000128,
+          "p95": 1210.9924579999642,
+          "maximum": 1210.9924579999642
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 9389,
+          "median": 9410,
+          "p95": 9649,
+          "maximum": 9649
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 9395.019375000033,
+          "median": 9416.479624500003,
+          "p95": 9655.154584000004,
+          "maximum": 9655.154584000004
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.3553329999995185,
+          "median": 0.4083329999994021,
+          "p95": 1.504624999986845,
+          "maximum": 1.504624999986845
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 9391.236917000002,
+          "median": 9412.170708,
+          "p95": 9651.15808400001,
+          "maximum": 9651.15808400001
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.33337500000197906,
+          "median": 0.35820849999981874,
+          "p95": 0.6041669999976875,
+          "maximum": 0.6041669999976875
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 9393.011416999994,
+          "median": 9414.600396,
+          "p95": 9653.336249999993,
+          "maximum": 9653.336249999993
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 197.02975,
+          "median": 197.039333,
+          "p95": 215.191417,
+          "maximum": 215.191417
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 547.6246249999967,
+          "median": 661.4044579999754,
+          "p95": 819.6972500000265,
+          "maximum": 819.6972500000265
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 315.873125,
+          "median": 429.51429200000007,
+          "p95": 568.5385,
+          "maximum": 568.5385
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 542.680791,
+          "median": 656.428084,
+          "p95": 812.7519159999999,
+          "maximum": 812.7519159999999
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.4832500000000266,
+          "median": 0.49558300000001054,
+          "p95": 0.5277079999999899,
+          "maximum": 0.5277079999999899
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 542.772875,
+          "median": 656.5206249999999,
+          "p95": 812.843458,
+          "maximum": 812.843458
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.44774999999992815,
+          "median": 0.45441700000003493,
+          "p95": 0.4629580000000715,
+          "maximum": 0.4629580000000715
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 544.550667,
+          "median": 658.3149999999999,
+          "p95": 814.6968750000001,
+          "maximum": 814.6968750000001
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 165.3255829999689,
+          "median": 172.49495800002478,
+          "p95": 177.64825000002747,
+          "maximum": 177.64825000002747
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 196.199792,
+          "median": 207.874875,
+          "p95": 234.181959,
+          "maximum": 234.181959
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 540.031707999995,
+          "median": 688.0604164999968,
+          "p95": 936.515207999968,
+          "maximum": 936.515207999968
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 313.72175000000425,
+          "median": 448.03018800000063,
+          "p95": 672.7374579999996,
+          "maximum": 672.7374579999996
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 538.9299580000006,
+          "median": 686.6209170000002,
+          "p95": 933.8606249999975,
+          "maximum": 933.8606249999975
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.24420800000370946,
+          "median": 0.312479500000336,
+          "p95": 0.8179159999999683,
+          "maximum": 0.8179159999999683
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 538.9375,
+          "median": 686.6272085000019,
+          "p95": 933.8818339999998,
+          "maximum": 933.8818339999998
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.1180839999942691,
+          "median": 0.13377099999706843,
+          "p95": 0.2584580000002461,
+          "maximum": 0.2584580000002461
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 539.4579590000067,
+          "median": 687.2558545000029,
+          "p95": 934.9799999999996,
+          "maximum": 934.9799999999996
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "database",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 4,
+          "median": 5,
+          "p95": 5,
+          "maximum": 5
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 14.094541999977082,
+          "median": 14.32545800000662,
+          "p95": 14.482416000042576,
+          "maximum": 14.482416000042576
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 1.0102080000001479,
+          "median": 1.0644159999999374,
+          "p95": 1.16662499999984,
+          "maximum": 1.16662499999984
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 8.38675000000012,
+          "median": 8.785540999999967,
+          "p95": 8.860791000000063,
+          "maximum": 8.860791000000063
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.39837499999998727,
+          "median": 0.41670799999997143,
+          "p95": 0.42116699999996854,
+          "maximum": 0.42116699999996854
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 11.044624999999996,
+          "median": 11.325125000000071,
+          "p95": 11.602791999999909,
+          "maximum": 11.602791999999909
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 1127.538583000016,
+          "median": 1127.689708000049,
+          "p95": 1145.8223330000183,
+          "maximum": 1145.8223330000183
+        }
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "database",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 0,
+          "median": 1,
+          "p95": 1,
+          "maximum": 1
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 2.9939160000067204,
+          "median": 3.3833539999905042,
+          "p95": 3.8975839999620803,
+          "maximum": 3.8975839999620803
+        },
+        "workerStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.49533400000018446,
+          "median": 0.5291039999997338,
+          "p95": 0.601917000000185,
+          "maximum": 0.601917000000185
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 1.687457999999424,
+          "median": 2.054999999999609,
+          "p95": 2.391540999999961,
+          "maximum": 2.391540999999961
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.1322920000002341,
+          "median": 0.1454994999999144,
+          "p95": 0.1868329999999787,
+          "maximum": 0.1868329999999787
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 2.5145000000002256,
+          "median": 2.8453125000003183,
+          "p95": 3.3672919999999067,
+          "maximum": 3.3672919999999067
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "solver",
+      "phase": "cold",
+      "requested": 3,
+      "recorded": 3,
+      "verified": 3,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 3,
+          "minimum": 64.143334,
+          "median": 65.207792,
+          "p95": 79.717917,
+          "maximum": 79.717917
+        },
+        "completeRequestMilliseconds": {
+          "samples": 3,
+          "minimum": 414.7245000000112,
+          "median": 415.3457499999786,
+          "p95": 685.6024159999797,
+          "maximum": 685.6024159999797
+        },
+        "workerStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 311.735875,
+          "median": 312.81770800000004,
+          "p95": 566.898166,
+          "maximum": 566.898166
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 3,
+          "minimum": 407.603666,
+          "median": 408.35079199999996,
+          "p95": 678.9878329999999,
+          "maximum": 678.9878329999999
+        },
+        "inputMilliseconds": {
+          "samples": 3,
+          "minimum": 0.8797500000000014,
+          "median": 0.9081669999999917,
+          "p95": 0.9265409999999861,
+          "maximum": 0.9265409999999861
+        },
+        "backendMilliseconds": {
+          "samples": 3,
+          "minimum": 407.74054199999995,
+          "median": 408.44329100000004,
+          "p95": 679.084667,
+          "maximum": 679.084667
+        },
+        "validationMilliseconds": {
+          "samples": 3,
+          "minimum": 0.36262499999998,
+          "median": 0.42295799999999417,
+          "p95": 0.4343750000000455,
+          "maximum": 0.4343750000000455
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 3,
+          "minimum": 409.994,
+          "median": 410.665334,
+          "p95": 681.205333,
+          "maximum": 681.205333
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 3,
+          "minimum": 161.66216700000223,
+          "median": 163.80683300003875,
+          "p95": 164.89895800000522,
+          "maximum": 164.89895800000522
+        }
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "solver",
+      "phase": "warm",
+      "requested": 10,
+      "recorded": 10,
+      "verified": 10,
+      "errors": 0,
+      "inconclusive": 0,
+      "mismatches": 0,
+      "warmSessionRestartsExcluded": 0,
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 64.171,
+          "median": 65.1201455,
+          "p95": 65.587083,
+          "maximum": 65.587083
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 410.0982920000097,
+          "median": 411.82312499999534,
+          "p95": 430.90454100002535,
+          "maximum": 430.90454100002535
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 312.89016699999956,
+          "median": 314.6160419999999,
+          "p95": 333.238875,
+          "maximum": 333.238875
+        },
+        "workerRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 408.48562499999935,
+          "median": 410.18808400000034,
+          "p95": 429.2865419999998,
+          "maximum": 429.2865419999998
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 0.5072920000002341,
+          "median": 0.5614579999996749,
+          "p95": 0.7002079999997477,
+          "maximum": 0.7002079999997477
+        },
+        "backendMilliseconds": {
+          "samples": 10,
+          "minimum": 408.49974999999995,
+          "median": 410.2000005,
+          "p95": 429.30333399999995,
+          "maximum": 429.30333399999995
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.15837499999997817,
+          "median": 0.19527099999982056,
+          "p95": 0.26020799999969313,
+          "maximum": 0.26020799999969313
+        },
+        "serverHandlerMilliseconds": {
+          "samples": 10,
+          "minimum": 409.40416600000026,
+          "median": 411.1598329999995,
+          "p95": 430.2561250000001,
+          "maximum": 430.2561250000001
+        },
+        "serviceStartupMilliseconds": {
+          "samples": 0,
+          "minimum": null,
+          "median": null,
+          "p95": null,
+          "maximum": null
+        }
+      }
+    }
+  ],
+  "completeWithoutFailures": true,
+  "measuredRequests": 182,
+  "totalRequestsIncludingWarmups": 196,
+  "analysisCodeSha256": {
+    "solver/cargo_capacity_statistics.mjs": "baaaf16b7ac6bd1ee8750c0ac7da9b92f4afd4ce85f704781b076d008e8c1b4e",
+    "solver/report_cargo_capacity_measurement.mjs": "8111ce10e5ac6738f2d2df93f8099c0e6084b188aa80a371e7a90afc0903e9c3"
+  }
+}

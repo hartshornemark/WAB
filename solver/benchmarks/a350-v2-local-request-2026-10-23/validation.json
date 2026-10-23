@@ -1,0 +1,19 @@
+{
+  "measuredRequests": 182,
+  "excludedWarmups": 14,
+  "requestExceptions": 0,
+  "allExpectedResultsAndWitnesses": "PASS",
+  "typescriptTests": {
+    "passed": 928,
+    "failed": 0
+  },
+  "pythonTests": {
+    "passed": 15,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "changedFilesLint": "PASS",
+  "frozenInputsReproduction": "PASS",
+  "sharedDatabaseChanges": "NONE",
+  "productionRequestMeasurement": "NOT PERFORMED"
+}

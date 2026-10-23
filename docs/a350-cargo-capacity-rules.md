@@ -123,3 +123,14 @@ not a representative performance baseline for the existing database algorithm.
 Its runtime must not be substituted for measured legacy database turnaround
 when claiming an improvement. If old and new rules yield different offers,
 report the semantic change separately from any measured runtime comparison.
+
+## Subsequent repeated local measurements
+
+The local calculation/request measurement stage is recorded in
+`solver/benchmarks/a350-v2-local-request-2026-10-23/README.md`: 182 measured
+requests plus 14 warm-ups, all correct and proven. It separates core calculation
+from complete loopback HTTP requests and Python startup/transport. It shows a
+scenario-dependent winner, not a universal solver speedup. Live legacy database,
+hosted native PostgreSQL, remote-service and production-flight request timings
+remain outside this result. No application activation or shared database change
+was needed to obtain these local measurements.
