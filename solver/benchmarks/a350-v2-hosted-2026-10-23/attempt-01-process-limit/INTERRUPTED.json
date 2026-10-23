@@ -1,0 +1,6 @@
+{
+  "interruptedAt": "2026-10-23T07:13:13.120545+00:00",
+  "reason": "Case 3 worker failures at approximately 12 seconds. Preserve all original rows; assess startup versus declared search budget before retry.",
+  "recordedRequests": 63,
+  "originalRawResultsUnchanged": true
+}

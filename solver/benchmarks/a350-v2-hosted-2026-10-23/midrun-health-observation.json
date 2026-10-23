@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-23T07:41:21.807Z",
+  "window": "DigitalOcean overview Last 5m; sampled, not an instantaneous or isolated peak",
+  "lines": [
+    "\t\t\t\t\t\t\t82 text Healthy",
+    "\t\t\t\t\t\t\t\t\t594 text 2 Instances",
+    "\t\t\t\t\t\t\t\t\t\t596 text CPU",
+    "\t\t\t\t\t\t\t\t\t597 heading 32%, Value: 3",
+    "\t\t\t\t\t\t\t\t\t\t600 text RAM",
+    "\t\t\t\t\t\t\t\t\t601 heading 13%, Value: 3"
+  ]
+}

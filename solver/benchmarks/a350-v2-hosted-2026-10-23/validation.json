@@ -1,0 +1,1559 @@
+{
+  "allPassed": false,
+  "totals": {
+    "measured": 140,
+    "proven": 134,
+    "unprovedOrFailed": 6,
+    "allWitnessesValid": true,
+    "allMatchKnownReferenceObjective": true,
+    "transportErrors": 0
+  },
+  "rows": [
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": false,
+      "witnessValid": true,
+      "proven": false,
+      "matchesKnownMaximum": true,
+      "reason": "Feasible/unknown result does not prove the maximum"
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": false,
+      "witnessValid": true,
+      "proven": false,
+      "matchesKnownMaximum": true,
+      "reason": "Feasible/unknown result does not prove the maximum"
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": false,
+      "witnessValid": true,
+      "proven": false,
+      "matchesKnownMaximum": true,
+      "reason": "Feasible/unknown result does not prove the maximum"
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": false,
+      "witnessValid": true,
+      "proven": false,
+      "matchesKnownMaximum": true,
+      "reason": "Feasible/unknown result does not prove the maximum"
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": false,
+      "witnessValid": true,
+      "proven": false,
+      "matchesKnownMaximum": true,
+      "reason": "Feasible/unknown result does not prove the maximum"
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": false,
+      "witnessValid": true,
+      "proven": false,
+      "matchesKnownMaximum": true,
+      "reason": "Feasible/unknown result does not prove the maximum"
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "warmup",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 1,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 2,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 3,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 4,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 5,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 6,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 7,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 8,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 9,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 10,
+      "phase": "repeated",
+      "valid": true,
+      "witnessValid": true,
+      "proven": true,
+      "matchesKnownMaximum": true
+    }
+  ]
+}

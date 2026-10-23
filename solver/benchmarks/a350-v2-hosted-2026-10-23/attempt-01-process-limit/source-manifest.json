@@ -1,0 +1,19 @@
+{
+  "commit": "f1edd26f97b04d2fdb2df21b53f817c0ea46950e",
+  "files": {
+    "solver/cargo_capacity.py": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7",
+    "solver/cp_sat_solver.py": "5436c4eaf3315288d363e8891175aff347961db93e5e328574fc6b668b9396e1",
+    "solver/staging/app_worker.py": "cbbe69e2504041cbdb476ef82cb017ec09e55f7e9db9ab4ffdda60501617fee7",
+    "solver/staging/preflight.sql": "d306e7b27eb0d839362b4d9a64f3d13a7db9b1cd92169670345a1cec44725a0e",
+    "solver/staging/runtime_grants.sql": "b0912e73d5d804904f40c07b2b7f2acf7602b3efed3068bff94cdcd8eff74b36",
+    "solver/staging/timed_offer.sql": "a28486331069e9708293e2074c60d8a50581497cae4b0c2f115baea845a7e8a8",
+    "solver/staging/supabase-ca.crt": "700723581420dd1ac98fd7e9ac529f0ef210eadcaf87fc868a3ad7d114c2f3b7",
+    "solver/reference/max_net_cargo_v2.sql": "db5949c6d0d07d93b464f49e8e77e4440803081f5775da435a8723ab6eb0eb69",
+    "solver/reference/frontier_net_cargo_v2.sql": "2e7e5e68429d7d006f519d1b630710975ee545fd4489418d3d3211adecb44b6b",
+    "src/domain/cargo-capacity.ts": "e9c8fe7f1e010ed0cf89f36c6ad56c35f92547f1875f68a3cd3279e773f6be2e",
+    "src/infrastructure/capacity/staging-worker.ts": "0e2f3c6589d97c18f7642a15a3331f3aab5510261ee3e68fbf977d85ba9ea3cd",
+    "src/infrastructure/capacity/staging-endpoint.ts": "88d594970473576ab302063ac439dfa35624cac19aae1f6686a2e73391360609",
+    "solver/run_hosted_capacity_measurements.mjs": "49bcec083682a557e6fe08742a72dcd985a700abdc21fe7f7451225af89be158",
+    "Dockerfile": "4a27d59505322fcd7d6c090966868688a1dc683dae689119819041e6da3ee19d"
+  }
+}

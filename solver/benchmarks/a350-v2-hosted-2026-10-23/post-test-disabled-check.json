@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-10-23T07:48:01.385Z",
+  "benchmarkDisabled": true,
+  "checks": [
+    {
+      "authenticated": false,
+      "status": 404,
+      "body": {
+        "error": "Not found."
+      }
+    },
+    {
+      "authenticated": true,
+      "status": 404,
+      "body": {
+        "error": "Not found."
+      }
+    }
+  ],
+  "normalLoginPageStatus": 200
+}

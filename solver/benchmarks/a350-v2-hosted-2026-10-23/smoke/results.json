@@ -1,0 +1,354 @@
+{
+  "scope": "Hosted fixed-input staging requests; not browser rendering or live passenger/baggage preparation.",
+  "startedAt": "2026-10-23T07:22:29.698Z",
+  "origin": "https://demo.wabiqa.com",
+  "samplesPerEngineCase": 1,
+  "mode": "smoke",
+  "rows": [
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "smoke",
+      "httpStatus": 200,
+      "inputSha256": "1827daf5b0c9c40fc0956e110dd433a0adcbe8a7ae68b2d95855a947d27607b1",
+      "inputRevision": "sha256:fc986770c5e8dfd39d7d463e0bd146c04845fc57757b0c080630ad29a49f8e8c",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "status": "OPTIMAL",
+        "arrangement": {
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1709000
+            }
+          ],
+          "cargoUlds": [
+            {
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "710d42d3-5de8-4159-89c7-ba5aac86f1eb",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ec96ea87-acbb-4e22-8532-0b04ea33656d",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "f1972899-6423-49ed-9a8b-189f1ec1df3b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "1d072d50-b424-4fd9-940a-e52635fe5a84",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "a75699e9-336f-4332-8146-569650a9dd07",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 4516000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-03:BAG:01",
+              "positionId": "263d09ba-88a6-44a9-84ec-8b1086f88183"
+            },
+            {
+              "loadId": "case-03:BAG:02",
+              "positionId": "b624506a-f84c-4b03-bc9d-1819e7dde005"
+            },
+            {
+              "loadId": "case-03:BAG:03",
+              "positionId": "bc305f17-e4fd-474f-b8e1-a60c145d5acb"
+            },
+            {
+              "loadId": "case-03:BAG:04",
+              "positionId": "d16bc12e-dcf4-4176-a6fd-6aaeaffe7242"
+            }
+          ],
+          "cargoNetWeightGrams": 40701000,
+          "cargoTareWeightGrams": 1460000,
+          "cargoGrossWeightGrams": 42161000
+        },
+        "diagnostics": {
+          "algorithm": "EXACT_GROUP_FRONTIER",
+          "earlyRejection": null
+        },
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:fc986770c5e8dfd39d7d463e0bd146c04845fc57757b0c080630ad29a49f8e8c"
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 3364.616,
+        "workerStartupMilliseconds": 246.7865559999991,
+        "executionRoundTripMilliseconds": 4706.852809000004,
+        "inputMilliseconds": 5.077667999998084,
+        "validationMilliseconds": 1.5827700000008917,
+        "handlerMilliseconds": 4719.818300999999
+      },
+      "backend": {
+        "revision": "3976e29d8eb967652554efc855d746c158de9e53",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.11.2",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7",
+        "postgresVersion": "17.6",
+        "databaseEngine": "current Supabase native PostgreSQL"
+      },
+      "completeRequestMilliseconds": 5270.253542
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "smoke",
+      "httpStatus": 200,
+      "inputSha256": "1827daf5b0c9c40fc0956e110dd433a0adcbe8a7ae68b2d95855a947d27607b1",
+      "inputRevision": "sha256:fc986770c5e8dfd39d7d463e0bd146c04845fc57757b0c080630ad29a49f8e8c",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:fc986770c5e8dfd39d7d463e0bd146c04845fc57757b0c080630ad29a49f8e8c",
+        "status": "FEASIBLE",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 10005,
+        "arrangement": {
+          "cargoUlds": [
+            {
+              "positionId": "0dc45847-8c9f-4f93-aca5-7f6cf9fba418",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "39745564-e732-4f3f-8d94-5b773a08431b",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a1e141f-5b2a-4ae7-8153-7cfd9574c23e",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "3a91bb9d-62f2-4093-91ec-faeb1c15a8d4",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "4ee3631d-caf1-430b-9354-15be8fcab8c3",
+              "netWeightGrams": 3445000
+            },
+            {
+              "positionId": "54db1bd3-aa46-40c5-943e-bf5d21ded116",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "8120cfeb-029e-4821-8b24-da34ec60f44f",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "b45cfa6e-fa33-43c3-a07c-766f776ad546",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "d8d706f4-34b2-4da5-8d64-b06a03ef996b",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "dbf33b29-0bbc-43a6-9f67-6d67cd2d0922",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ec96ea87-acbb-4e22-8532-0b04ea33656d",
+              "netWeightGrams": 4516000
+            },
+            {
+              "positionId": "ee90fae9-453c-42a3-b22b-e64894151ecb",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "fe1906c4-7985-4e12-8eb1-9193ae23d1f8",
+              "netWeightGrams": 1487000
+            },
+            {
+              "positionId": "ff209028-1ff2-4fc4-babf-e0f1427090d8",
+              "netWeightGrams": 4516000
+            }
+          ],
+          "baggageUlds": [
+            {
+              "loadId": "case-03:BAG:04",
+              "positionId": "05cffabc-caa6-42a6-9cda-80b87a7e7238"
+            },
+            {
+              "loadId": "case-03:BAG:03",
+              "positionId": "94d827de-e9f7-4174-991f-39cf66d9914d"
+            },
+            {
+              "loadId": "case-03:BAG:01",
+              "positionId": "cf3807ce-0a74-4f6f-8a5f-2b2d208c995b"
+            },
+            {
+              "loadId": "case-03:BAG:02",
+              "positionId": "f7b83422-9e5a-4a7a-a71d-6981a8847af6"
+            }
+          ],
+          "bulkCargo": [
+            {
+              "areaId": "LOWER:ALB:5:51",
+              "netWeightGrams": 1841000
+            },
+            {
+              "areaId": "LOWER:ALB:5:52",
+              "netWeightGrams": 667000
+            },
+            {
+              "areaId": "LOWER:ALB:5:53",
+              "netWeightGrams": 272000
+            }
+          ],
+          "cargoNetWeightGrams": 40701000,
+          "cargoTareWeightGrams": 1460000,
+          "cargoGrossWeightGrams": 42161000
+        }
+      },
+      "outcome": "INCONCLUSIVE",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 10005.146549,
+        "workerStartupMilliseconds": 3188.7676490000013,
+        "executionRoundTripMilliseconds": 13353.159977000003,
+        "inputMilliseconds": 5.617343000005349,
+        "validationMilliseconds": 2.7689419999951497,
+        "handlerMilliseconds": 13367.027474999995
+      },
+      "backend": {
+        "revision": "3976e29d8eb967652554efc855d746c158de9e53",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.11.2",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7"
+      },
+      "completeRequestMilliseconds": 13557.837499999998
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "repetition": 0,
+      "phase": "smoke",
+      "httpStatus": 200,
+      "inputSha256": "187f4639d19ce738b035fe13b0362ce4ec48eeada31f18913a4e87f2155e4b86",
+      "inputRevision": "sha256:043e2fe9ff586a287f3101ee96b21a09987319c66cfe2cd9f4f434b100d8f3ee",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "status": "INFEASIBLE",
+        "arrangement": null,
+        "diagnostics": {
+          "algorithm": "EXACT_GROUP_FRONTIER",
+          "earlyRejection": "BAGGAGE_POSITION_COUNT"
+        },
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:043e2fe9ff586a287f3101ee96b21a09987319c66cfe2cd9f4f434b100d8f3ee"
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 2.074,
+        "workerStartupMilliseconds": 214.51742800000648,
+        "executionRoundTripMilliseconds": 1429.3845560000045,
+        "inputMilliseconds": 6.474640999993426,
+        "validationMilliseconds": 1.9005699999979697,
+        "handlerMilliseconds": 1438.2890689999913
+      },
+      "backend": {
+        "revision": "3976e29d8eb967652554efc855d746c158de9e53",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.11.2",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7",
+        "postgresVersion": "17.6",
+        "databaseEngine": "current Supabase native PostgreSQL"
+      },
+      "completeRequestMilliseconds": 1515.0015830000011
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "repetition": 0,
+      "phase": "smoke",
+      "httpStatus": 200,
+      "inputSha256": "187f4639d19ce738b035fe13b0362ce4ec48eeada31f18913a4e87f2155e4b86",
+      "inputRevision": "sha256:043e2fe9ff586a287f3101ee96b21a09987319c66cfe2cd9f4f434b100d8f3ee",
+      "result": {
+        "mode": "CARGO_CAPACITY",
+        "aircraftType": "359",
+        "rulesVersion": "A350_MAX_NET_CARGO_V2",
+        "inputRevision": "sha256:043e2fe9ff586a287f3101ee96b21a09987319c66cfe2cd9f4f434b100d8f3ee",
+        "status": "INFEASIBLE",
+        "engine": "OR-TOOLS CP-SAT",
+        "solveMilliseconds": 137,
+        "arrangement": null
+      },
+      "outcome": "VERIFIED",
+      "validation": "PASS",
+      "timings": {
+        "calculationMilliseconds": 137.905844,
+        "workerStartupMilliseconds": 3032.0869320000056,
+        "executionRoundTripMilliseconds": 3280.3862590000062,
+        "inputMilliseconds": 8.570055999996839,
+        "validationMilliseconds": 2.3348930000065593,
+        "handlerMilliseconds": 3291.8113090000115
+      },
+      "backend": {
+        "revision": "3976e29d8eb967652554efc855d746c158de9e53",
+        "topology": "existing-app-local-worker",
+        "pythonVersion": "3.11.2",
+        "ortoolsVersion": "9.14.6206",
+        "workerMode": "one-shot",
+        "admission": "one test per app process; serial caller required across replicas",
+        "modelSha256": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7"
+      },
+      "completeRequestMilliseconds": 3443.5096250000024
+    }
+  ],
+  "finishedAt": "2026-10-23T07:22:53.496Z"
+}

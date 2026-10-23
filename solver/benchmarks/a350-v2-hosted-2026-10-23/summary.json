@@ -1,0 +1,1105 @@
+{
+  "allPassed": false,
+  "totals": {
+    "measured": 140,
+    "proven": 134,
+    "unprovedOrFailed": 6,
+    "allWitnessesValid": true,
+    "allMatchKnownReferenceObjective": true,
+    "transportErrors": 0
+  },
+  "measuredRequests": 140,
+  "warmupsExcluded": 14,
+  "percentileMethod": "Nearest-rank p95; with 10 samples this equals the observed maximum. Median averages central two values.",
+  "versions": [
+    {
+      "revision": "3976e29d8eb967652554efc855d746c158de9e53",
+      "topology": "existing-app-local-worker",
+      "pythonVersion": "3.11.2",
+      "ortoolsVersion": "9.14.6206",
+      "workerMode": "one-shot",
+      "admission": "one test per app process; serial caller required across replicas",
+      "modelSha256": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7",
+      "postgresVersion": "17.6",
+      "databaseEngine": "current Supabase native PostgreSQL"
+    },
+    {
+      "revision": "3976e29d8eb967652554efc855d746c158de9e53",
+      "topology": "existing-app-local-worker",
+      "pythonVersion": "3.11.2",
+      "ortoolsVersion": "9.14.6206",
+      "workerMode": "one-shot",
+      "admission": "one test per app process; serial caller required across replicas",
+      "modelSha256": "02238132ab64bfe84089c6b3a1811799c7fefb60cbea551f5b13690bbc5534a7"
+    }
+  ],
+  "summary": [
+    {
+      "caseId": "case-01",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 22308.781,
+          "median": 22820.5575,
+          "p95": 23208.774,
+          "maximum": 23208.774
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 23755.510541,
+          "median": 24317.436645499984,
+          "p95": 24878.177167,
+          "maximum": 24878.177167
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 22308.781,
+          "median": 22820.5575,
+          "p95": 23208.774,
+          "maximum": 23208.774
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 160.34498199995141,
+          "median": 207.3596759999782,
+          "p95": 242.08926899998914,
+          "maximum": 242.08926899998914
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 23624.688275000022,
+          "median": 24181.356836499996,
+          "p95": 24620.38336899999,
+          "maximum": 24620.38336899999
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.734751000010874,
+          "median": 6.627216499997303,
+          "p95": 9.298262999975123,
+          "maximum": 9.298262999975123
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.5410360000096262,
+          "median": 0.8691450000042096,
+          "p95": 1.8685699999914505,
+          "maximum": 1.8685699999914505
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 23632.207786999992,
+          "median": 24188.57162850001,
+          "p95": 24628.91960199998,
+          "maximum": 24628.91960199998
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 23755.510541,
+          "median": 24317.436645499984,
+          "p95": 24878.177167,
+          "maximum": 24878.177167
+        }
+      }
+    },
+    {
+      "caseId": "case-01",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 425.714942,
+          "median": 522.6338275,
+          "p95": 568.743344,
+          "maximum": 568.743344
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3475.112666000001,
+          "median": 3947.372145500005,
+          "p95": 4489.636875000026,
+          "maximum": 4489.636875000026
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 425.714942,
+          "median": 522.6338275,
+          "p95": 568.743344,
+          "maximum": 568.743344
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 2783.324087999994,
+          "median": 3142.353791500005,
+          "p95": 3599.717425000039,
+          "maximum": 3599.717425000039
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3315.982182000007,
+          "median": 3827.6397219999926,
+          "p95": 4303.115749000048,
+          "maximum": 4303.115749000048
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.2383459999691695,
+          "median": 5.863084500015248,
+          "p95": 15.44776999996975,
+          "maximum": 15.44776999996975
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.6229850000236183,
+          "median": 0.7962309999857098,
+          "p95": 14.385542000003625,
+          "maximum": 14.385542000003625
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3325.2454719999805,
+          "median": 3840.6630490000243,
+          "p95": 4313.300335999986,
+          "maximum": 4313.300335999986
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3475.112666000001,
+          "median": 3947.372145500005,
+          "p95": 4489.636875000026,
+          "maximum": 4489.636875000026
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 10947.977,
+          "median": 11166.3525,
+          "p95": 11537.207,
+          "maximum": 11537.207
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 12294.861542000028,
+          "median": 12578.200854499999,
+          "p95": 12877.571166000038,
+          "maximum": 12877.571166000038
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 10947.977,
+          "median": 11166.3525,
+          "p95": 11537.207,
+          "maximum": 11537.207
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 171.26721499999985,
+          "median": 206.43816199997673,
+          "p95": 240.0428640000755,
+          "maximum": 240.0428640000755
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 12215.91943400004,
+          "median": 12462.310864,
+          "p95": 12800.771032999968,
+          "maximum": 12800.771032999968
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.673543000011705,
+          "median": 6.057121499965433,
+          "p95": 20.738904999976512,
+          "maximum": 20.738904999976512
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.5674870000220835,
+          "median": 0.916970999998739,
+          "p95": 3.4424299999373034,
+          "maximum": 3.4424299999373034
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 12225.596959999995,
+          "median": 12469.575499999977,
+          "p95": 12807.730012000073,
+          "maximum": 12807.730012000073
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 12294.861542000028,
+          "median": 12578.200854499999,
+          "p95": 12877.571166000038,
+          "maximum": 12877.571166000038
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 218.355317,
+          "median": 281.54704549999997,
+          "p95": 314.900212,
+          "maximum": 314.900212
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3362.727292000025,
+          "median": 3840.4106874999998,
+          "p95": 4366.075167000003,
+          "maximum": 4366.075167000003
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 218.355317,
+          "median": 281.54704549999997,
+          "p95": 314.900212,
+          "maximum": 314.900212
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 2841.236659999995,
+          "median": 3291.585959499993,
+          "p95": 3791.136797999963,
+          "maximum": 3791.136797999963
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3181.596805999987,
+          "median": 3697.540991499962,
+          "p95": 4204.2208500000415,
+          "maximum": 4204.2208500000415
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.916017999988981,
+          "median": 5.722657000005711,
+          "p95": 17.414083000039682,
+          "maximum": 17.414083000039682
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.6284250000026077,
+          "median": 0.7885299999616109,
+          "p95": 23.096279000048526,
+          "maximum": 23.096279000048526
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3187.861275000032,
+          "median": 3714.8789925000165,
+          "p95": 4212.1355600000825,
+          "maximum": 4212.1355600000825
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3362.727292000025,
+          "median": 3840.4106874999998,
+          "p95": 4366.075167000003,
+          "maximum": 4366.075167000003
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 3229.507,
+          "median": 3255.6345,
+          "p95": 3472.091,
+          "maximum": 3472.091
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 4513.895917000016,
+          "median": 4687.465186999994,
+          "p95": 5723.667999999947,
+          "maximum": 5723.667999999947
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 3229.507,
+          "median": 3255.6345,
+          "p95": 3472.091,
+          "maximum": 3472.091
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 174.86510199995246,
+          "median": 195.58006800001021,
+          "p95": 246.79430700000376,
+          "maximum": 246.79430700000376
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 4414.376247999957,
+          "median": 4525.051255499944,
+          "p95": 5638.114285000018,
+          "maximum": 5638.114285000018
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 3.866399999940768,
+          "median": 5.853180500038434,
+          "p95": 14.635558999958448,
+          "maximum": 14.635558999958448
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.7887619999237359,
+          "median": 1.1558070000610314,
+          "p95": 2.4353750000009313,
+          "maximum": 2.4353750000009313
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 4421.726689000032,
+          "median": 4532.11518100003,
+          "p95": 5650.9342609999,
+          "maximum": 5650.9342609999
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 4513.895917000016,
+          "median": 4687.465186999994,
+          "p95": 5723.667999999947,
+          "maximum": 5723.667999999947
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 4,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 8053.517342,
+          "median": 10005.269872500001,
+          "p95": 10007.810496,
+          "maximum": 10007.810496
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 11086.900167000014,
+          "median": 13317.535458499973,
+          "p95": 13761.885583000025,
+          "maximum": 13761.885583000025
+        }
+      },
+      "exceptions": [
+        {
+          "repetition": 1,
+          "outcome": "INCONCLUSIVE",
+          "status": "FEASIBLE"
+        },
+        {
+          "repetition": 2,
+          "outcome": "INCONCLUSIVE",
+          "status": "FEASIBLE"
+        },
+        {
+          "repetition": 3,
+          "outcome": "INCONCLUSIVE",
+          "status": "FEASIBLE"
+        },
+        {
+          "repetition": 4,
+          "outcome": "INCONCLUSIVE",
+          "status": "FEASIBLE"
+        },
+        {
+          "repetition": 7,
+          "outcome": "INCONCLUSIVE",
+          "status": "FEASIBLE"
+        },
+        {
+          "repetition": 9,
+          "outcome": "INCONCLUSIVE",
+          "status": "FEASIBLE"
+        }
+      ],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 4,
+          "minimum": 8053.517342,
+          "median": 8490.471103,
+          "p95": 8587.418479,
+          "maximum": 8587.418479
+        },
+        "workerStartupMilliseconds": {
+          "samples": 4,
+          "minimum": 2832.108576000086,
+          "median": 2871.0283934999607,
+          "p95": 2947.941029999987,
+          "maximum": 2947.941029999987
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 4,
+          "minimum": 11012.163223999902,
+          "median": 11462.645774000033,
+          "p95": 11674.77336900006,
+          "maximum": 11674.77336900006
+        },
+        "inputMilliseconds": {
+          "samples": 4,
+          "minimum": 6.072932000039145,
+          "median": 6.786513500032015,
+          "p95": 11.617389000020921,
+          "maximum": 11.617389000020921
+        },
+        "validationMilliseconds": {
+          "samples": 4,
+          "minimum": 0.47009499999694526,
+          "median": 0.8447269999887794,
+          "p95": 0.989136999938637,
+          "maximum": 0.989136999938637
+        },
+        "handlerMilliseconds": {
+          "samples": 4,
+          "minimum": 11019.732240999932,
+          "median": 11473.220820000046,
+          "p95": 11682.03038599994,
+          "maximum": 11682.03038599994
+        },
+        "completeRequestMilliseconds": {
+          "samples": 4,
+          "minimum": 11086.900167000014,
+          "median": 11587.525000000023,
+          "p95": 11868.92274999991,
+          "maximum": 11868.92274999991
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 1833.716,
+          "median": 1837.9445,
+          "p95": 2135.805,
+          "maximum": 2135.805
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3135.395542000071,
+          "median": 3175.5928539999877,
+          "p95": 3806.308083000011,
+          "maximum": 3806.308083000011
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 1833.716,
+          "median": 1837.9445,
+          "p95": 2135.805,
+          "maximum": 2135.805
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 139.684905000031,
+          "median": 201.36253899999429,
+          "p95": 497.5539090000093,
+          "maximum": 497.5539090000093
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3022.795023999992,
+          "median": 3083.303437500028,
+          "p95": 3725.2041679999093,
+          "maximum": 3725.2041679999093
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.478328000055626,
+          "median": 6.640900500002317,
+          "p95": 9.771514000021853,
+          "maximum": 9.771514000021853
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.4772900000680238,
+          "median": 0.9212434999644756,
+          "p95": 1.4571399999549612,
+          "maximum": 1.4571399999549612
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3028.693481000024,
+          "median": 3091.266156000027,
+          "p95": 3735.651138999965,
+          "maximum": 3735.651138999965
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3135.395542000071,
+          "median": 3175.5928539999877,
+          "p95": 3806.308083000011,
+          "maximum": 3806.308083000011
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 276.765754,
+          "median": 322.090047,
+          "p95": 398.344354,
+          "maximum": 398.344354
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3344.1900000000605,
+          "median": 3449.7836455000215,
+          "p95": 4101.37737500004,
+          "maximum": 4101.37737500004
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 276.765754,
+          "median": 322.090047,
+          "p95": 398.344354,
+          "maximum": 398.344354
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 2742.2789910000283,
+          "median": 2901.7687874999247,
+          "p95": 3400.0956209999276,
+          "maximum": 3400.0956209999276
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3200.4085299998987,
+          "median": 3334.9955650000484,
+          "p95": 3911.2903650000226,
+          "maximum": 3911.2903650000226
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.10064900002908,
+          "median": 5.86949499999173,
+          "p95": 10.810723999980837,
+          "maximum": 10.810723999980837
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.4522659999784082,
+          "median": 0.9701609999756329,
+          "p95": 1.4831009999616072,
+          "maximum": 1.4831009999616072
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3207.763988000108,
+          "median": 3341.396316999977,
+          "p95": 3923.4242099999683,
+          "maximum": 3923.4242099999683
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3344.1900000000605,
+          "median": 3449.7836455000215,
+          "p95": 4101.37737500004,
+          "maximum": 4101.37737500004
+        }
+      }
+    },
+    {
+      "caseId": "case-05",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 413.809,
+          "median": 422.81600000000003,
+          "p95": 445.799,
+          "maximum": 445.799
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 1726.7342090000166,
+          "median": 1837.827791000076,
+          "p95": 1936.0300419999985,
+          "maximum": 1936.0300419999985
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 413.809,
+          "median": 422.81600000000003,
+          "p95": 445.799,
+          "maximum": 445.799
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 167.94638300000224,
+          "median": 199.89148099994054,
+          "p95": 249.22836099995766,
+          "maximum": 249.22836099995766
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 1639.446855999995,
+          "median": 1695.1415515000117,
+          "p95": 1792.5776070000138,
+          "maximum": 1792.5776070000138
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 3.8662740000290796,
+          "median": 5.607542000012472,
+          "p95": 8.157235000049695,
+          "maximum": 8.157235000049695
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.3640649999724701,
+          "median": 0.9941955000394955,
+          "p95": 2.2414690000005066,
+          "maximum": 2.2414690000005066
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 1644.2898440000135,
+          "median": 1701.3709624999901,
+          "p95": 1802.047407999984,
+          "maximum": 1802.047407999984
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 1726.7342090000166,
+          "median": 1837.827791000076,
+          "p95": 1936.0300419999985,
+          "maximum": 1936.0300419999985
+        }
+      }
+    },
+    {
+      "caseId": "case-05",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 1145.520223,
+          "median": 1212.163468,
+          "p95": 1539.235292,
+          "maximum": 1539.235292
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 4161.524124999996,
+          "median": 4459.2109375,
+          "p95": 5425.287208000082,
+          "maximum": 5425.287208000082
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 1145.520223,
+          "median": 1212.163468,
+          "p95": 1539.235292,
+          "maximum": 1539.235292
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 2814.950236000004,
+          "median": 2980.5432164999656,
+          "p95": 3771.8910840000026,
+          "maximum": 3771.8910840000026
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 4085.2507399999304,
+          "median": 4242.345945500012,
+          "p95": 5345.9783809999935,
+          "maximum": 5345.9783809999935
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 3.5243480000644922,
+          "median": 4.764135000004899,
+          "p95": 7.58569599990733,
+          "maximum": 7.58569599990733
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.44640599994454533,
+          "median": 0.66283550002845,
+          "p95": 17.96535800001584,
+          "maximum": 17.96535800001584
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 4090.6575650000013,
+          "median": 4248.333916999982,
+          "p95": 5354.379502000054,
+          "maximum": 5354.379502000054
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 4161.524124999996,
+          "median": 4459.2109375,
+          "p95": 5425.287208000082,
+          "maximum": 5425.287208000082
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 22007.323,
+          "median": 22537.510000000002,
+          "p95": 28104.955,
+          "maximum": 28104.955
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 23622.35445799993,
+          "median": 24027.513457999972,
+          "p95": 29525.512125000125,
+          "maximum": 29525.512125000125
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 22007.323,
+          "median": 22537.510000000002,
+          "p95": 28104.955,
+          "maximum": 28104.955
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 161.92913699988276,
+          "median": 203.44880050013307,
+          "p95": 268.2391540000681,
+          "maximum": 268.2391540000681
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 23433.019680999918,
+          "median": 23900.48180550011,
+          "p95": 29445.642663999926,
+          "maximum": 29445.642663999926
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 5.382490999996662,
+          "median": 5.880388499936089,
+          "p95": 11.358475000131875,
+          "maximum": 11.358475000131875
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.5460650001186877,
+          "median": 0.8145050001330674,
+          "p95": 2.380817999946885,
+          "maximum": 2.380817999946885
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 23441.0569610002,
+          "median": 23911.737759500043,
+          "p95": 29453.504364000168,
+          "maximum": 29453.504364000168
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 23622.35445799993,
+          "median": 24027.513457999972,
+          "p95": 29525.512125000125,
+          "maximum": 29525.512125000125
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 461.803576,
+          "median": 647.7318955000001,
+          "p95": 807.284975,
+          "maximum": 807.284975
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3543.467958000023,
+          "median": 3990.3703125000466,
+          "p95": 4744.605749999988,
+          "maximum": 4744.605749999988
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 461.803576,
+          "median": 647.7318955000001,
+          "p95": 807.284975,
+          "maximum": 807.284975
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 2853.2908040001057,
+          "median": 3081.088942500064,
+          "p95": 3710.387992999982,
+          "maximum": 3710.387992999982
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3466.128360999981,
+          "median": 3909.115344000049,
+          "p95": 4662.240189000033,
+          "maximum": 4662.240189000033
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.410521999932826,
+          "median": 6.618549499893561,
+          "p95": 10.050365999806672,
+          "maximum": 10.050365999806672
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 0.4503850000910461,
+          "median": 1.1198235000483692,
+          "p95": 1.5051140000578016,
+          "maximum": 1.5051140000578016
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3473.8901579999365,
+          "median": 3916.365166499978,
+          "p95": 4673.574096999946,
+          "maximum": 4673.574096999946
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3543.467958000023,
+          "median": 3990.3703125000466,
+          "p95": 4744.605749999988,
+          "maximum": 4744.605749999988
+        }
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "DATABASE",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 2.113,
+          "median": 2.293,
+          "p95": 23.448,
+          "maximum": 23.448
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 1405.6852080000099,
+          "median": 1491.3009795000544,
+          "p95": 1610.4070830000564,
+          "maximum": 1610.4070830000564
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 2.113,
+          "median": 2.293,
+          "p95": 23.448,
+          "maximum": 23.448
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 132.8330970001407,
+          "median": 193.8295690000523,
+          "p95": 217.49181800009683,
+          "maximum": 217.49181800009683
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 1327.1697739998344,
+          "median": 1390.9248059999663,
+          "p95": 1533.1091810001526,
+          "maximum": 1533.1091810001526
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.074236000189558,
+          "median": 6.428683000034653,
+          "p95": 9.234859999967739,
+          "maximum": 9.234859999967739
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 1.5512399999424815,
+          "median": 1.7942730000941083,
+          "p95": 2.626382000045851,
+          "maximum": 2.626382000045851
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 1339.3578599998727,
+          "median": 1400.1794854998589,
+          "p95": 1541.7439059999306,
+          "maximum": 1541.7439059999306
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 1405.6852080000099,
+          "median": 1491.3009795000544,
+          "p95": 1610.4070830000564,
+          "maximum": 1610.4070830000564
+        }
+      }
+    },
+    {
+      "caseId": "case-07-infeasible",
+      "engine": "SOLVER",
+      "recorded": 10,
+      "verified": 10,
+      "allResponseLatencies": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 124.125786,
+          "median": 159.0905995,
+          "p95": 190.819804,
+          "maximum": 190.819804
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3176.871749999933,
+          "median": 3511.6457085000584,
+          "p95": 3884.6130000001285,
+          "maximum": 3884.6130000001285
+        }
+      },
+      "exceptions": [],
+      "metrics": {
+        "calculationMilliseconds": {
+          "samples": 10,
+          "minimum": 124.125786,
+          "median": 159.0905995,
+          "p95": 190.819804,
+          "maximum": 190.819804
+        },
+        "workerStartupMilliseconds": {
+          "samples": 10,
+          "minimum": 2778.915946000023,
+          "median": 3082.1018319999566,
+          "p95": 3525.6446050000377,
+          "maximum": 3525.6446050000377
+        },
+        "executionRoundTripMilliseconds": {
+          "samples": 10,
+          "minimum": 3015.866664999863,
+          "median": 3426.0490664999234,
+          "p95": 3809.3233739999123,
+          "maximum": 3809.3233739999123
+        },
+        "inputMilliseconds": {
+          "samples": 10,
+          "minimum": 4.486384999938309,
+          "median": 7.679722000029869,
+          "p95": 11.017842000117525,
+          "maximum": 11.017842000117525
+        },
+        "validationMilliseconds": {
+          "samples": 10,
+          "minimum": 1.3969229999929667,
+          "median": 1.678281500004232,
+          "p95": 6.0459160001482815,
+          "maximum": 6.0459160001482815
+        },
+        "handlerMilliseconds": {
+          "samples": 10,
+          "minimum": 3026.0187160000205,
+          "median": 3435.8295389999403,
+          "p95": 3816.5802339999937,
+          "maximum": 3816.5802339999937
+        },
+        "completeRequestMilliseconds": {
+          "samples": 10,
+          "minimum": 3176.871749999933,
+          "median": 3511.6457085000584,
+          "p95": 3884.6130000001285,
+          "maximum": 3884.6130000001285
+        }
+      }
+    }
+  ]
+}

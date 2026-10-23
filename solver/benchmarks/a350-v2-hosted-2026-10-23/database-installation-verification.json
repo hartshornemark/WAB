@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-10-23T07:46:57.149Z",
+  "project": "ffmadtrcirrzywdqahbu",
+  "function_definition_md5": {
+    "capacity_reference.flow(jsonb)": "19809557008ea3e8ad637503d9c23dc8",
+    "capacity_reference.path(jsonb,text)": "274c91270181bddf9c126535e8918761",
+    "capacity_reference.timed_offer(jsonb)": "4d78329a72007f9a15c0e617097febd1",
+    "capacity_reference.baggage_classes(jsonb)": "59ac8b01a8717fde6efd6d53a41eb48d",
+    "capacity_reference.max_net_cargo_v2(jsonb)": "6d4797f37eaa619273007ac9581a3b63",
+    "capacity_reference.evaluate(jsonb,jsonb,jsonb)": "8ce215ab23a41e91d8576122009eb6f4",
+    "capacity_reference.prune_states(jsonb,integer)": "d3214713fd4c22479e99e0a62d8f5739",
+    "capacity_reference.cap_state(jsonb,bigint,bigint)": "1358c3726cee8856e1d163f6096f3764",
+    "capacity_reference.exhaustive_net_cargo_v2(jsonb)": "5ba0efa54b03c01b4fae47ea57292002",
+    "capacity_reference.merge_masks(jsonb,jsonb,jsonb)": "2cf165c6c33567df3a570ce64772591c",
+    "capacity_reference.translate_bags(jsonb,jsonb,jsonb)": "1c1f70572a160473e18e027ab5895582",
+    "capacity_reference.group_frontier(jsonb,text,integer)": "0aba776c031a448a620af0ddd46e4a29",
+    "capacity_reference.frontier_net_cargo_v2(jsonb,integer)": "1fb5b21e8284d6dd46dc1fd132d36490",
+    "capacity_reference.combine_states(jsonb,jsonb,bigint,bigint,integer,jsonb)": "72a4ee72c41bd2a7b9d1b659c5ac5ae6"
+  },
+  "search_paths_pinned_and_invoker": true,
+  "schema_count": 1
+}

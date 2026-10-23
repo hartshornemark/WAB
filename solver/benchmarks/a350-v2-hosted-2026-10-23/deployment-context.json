@@ -1,0 +1,119 @@
+{
+  "startedAt": "2026-10-23T06:46:47.881233+00:00",
+  "app": {
+    "id": "ac1398c3-9ffb-42cf-a92b-43c6fad88c2b",
+    "name": "wabiqa-app",
+    "origin": "https://demo.wabiqa.com",
+    "region": "sgp",
+    "replicas": 2,
+    "instanceSize": "apps-s-1vcpu-1gb",
+    "baselineDashboardLast5Minutes": {
+      "cpuPercent": 2,
+      "ramPercent": 10
+    },
+    "rollbackDeployment": "a033115e-ce2b-4458-ac36-34c6cf2ba5d9",
+    "rollbackCommit": "bdcf60c091dfac626524523232ac73188ca0d537",
+    "testingOffDeployment": "1e8a74a9-e8bd-4fe5-b46e-0bf60019fd7b",
+    "flagEnableDeployment": "60ac8935-91cb-47c1-8834-df8df6fe56db",
+    "latestCodeDeployment": "7424e5c9-e913-451d-b871-f2d38c8c2870",
+    "testingOffGateVerified": true,
+    "correctedDeadlineDeployment": "7bec4e08-c754-4799-977c-0ae520d5344a",
+    "postTestDisabledDeployment": "2039c55b-f27a-4352-aa06-59376d3efa90",
+    "testingEnabledAfterRun": false,
+    "postTestDisabledVerifiedAt": "2026-10-23T07:48:01.385Z",
+    "normalLoginPageStatus": 200,
+    "automaticDeploymentEnabled": false
+  },
+  "source": {
+    "branch": "fix/a350-solver-cargo-capacity",
+    "commit": "3976e29d8eb967652554efc855d746c158de9e53",
+    "pushed": true,
+    "merged": false
+  },
+  "database": {
+    "project": "ffmadtrcirrzywdqahbu",
+    "name": "AHM565-Static-Data",
+    "region": "ap-northeast-2",
+    "compute": "t3a.nano",
+    "postgresVersion": "17.6",
+    "schema": "capacity_reference",
+    "functions": 14,
+    "role": "capacity_benchmark",
+    "roleElevated": false,
+    "roleMemberships": 0,
+    "apiRolesDenied": true,
+    "securityInvoker": true,
+    "functionSearchPathPinned": true,
+    "endpoint": "aws-0-ap-northeast-2.pooler.supabase.com:5432",
+    "tls": "verify-full with provider CA",
+    "nativeRestrictedSmoke": "PASS: INFEASIBLE",
+    "nativeRestrictedSmokeCalculationMilliseconds": 12.82,
+    "benchmarkAdvisorWarnings": 0,
+    "dataApiSchemas": [
+      "public",
+      "graphql_public",
+      "Basic_Carrier_Record"
+    ],
+    "benchmarkObjectsRetainedForReview": true
+  },
+  "status": "COMPLETE WITH INCONCLUSIVE CASE-3 SOLVER PROOFS; benchmark disabled after measurement",
+  "operationalCalculationActivated": false,
+  "executionBudgets": {
+    "solverStartupSeconds": 15,
+    "solverSearchSeconds": 10,
+    "solverPostReadinessHardSeconds": 12,
+    "databaseStatementSeconds": 60,
+    "databaseProcessHardSeconds": 68,
+    "clientRequestHardSeconds": 80
+  },
+  "client": {
+    "description": "User workstation; exact physical location not independently established",
+    "timezone": "Asia/Manila",
+    "cdnEdgeObserved": "MNL"
+  },
+  "localComparisonCheck": {
+    "modelByteIdentical": true,
+    "searchWorkersBoth": 1,
+    "randomSeedBoth": 0,
+    "localPythonVersion": "3.12.14",
+    "hostedPythonVersion": "3.11.2",
+    "localCase3MedianCalculationMilliseconds": 3155.8353545,
+    "localCase3MedianCompleteRequestMilliseconds": 3501.950667000012,
+    "localCase3MedianWorkerStartupMilliseconds": 315.5924374999995,
+    "interpretation": "Different effective compute and startup environment; individual causes have not been profiled. Do not attribute the difference exclusively to CPU sharing."
+  },
+  "readOnlyContainerObservation": {
+    "architecture": "x86_64",
+    "osVisibleCpus": 8,
+    "configuredAppEntitlement": "1 shared vCPU per instance",
+    "cgroupV1QuotaUsecReported": -1,
+    "cgroupV1PeriodUsecReported": 100000,
+    "cgroupCpuStatAvailable": false,
+    "numericalThreadEnvironment": {
+      "OPENBLAS_NUM_THREADS": null,
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null
+    },
+    "note": "Read with Python standard library only; no additional solve or timing stress test. Visible host CPUs and inner cgroup values do not establish guaranteed CPU capacity or prove throttling as the cause."
+  },
+  "measurement": {
+    "startedAt": "2026-10-23T07:24:16.455Z",
+    "finishedAt": "2026-10-23T07:44:13.042Z",
+    "measuredRequests": 140,
+    "excludedWarmups": 14,
+    "totals": {
+      "measured": 140,
+      "proven": 134,
+      "unprovedOrFailed": 6,
+      "allWitnessesValid": true,
+      "allMatchKnownReferenceObjective": true,
+      "transportErrors": 0
+    },
+    "case3MeasuredSolverProven": 4,
+    "case3MeasuredSolverInconclusive": 6,
+    "case3AllMeasuredSolverNetKg": 40701,
+    "originalInterruptedAttemptRetained": true
+  },
+  "noAdditionalServiceOrDatabaseProvisioned": true,
+  "temporarySecretsRemovedAfterDeployment": true
+}

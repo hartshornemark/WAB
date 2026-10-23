@@ -1,0 +1,67 @@
+{
+  "startedAt": "2026-10-23T06:46:47.881233+00:00",
+  "app": {
+    "id": "ac1398c3-9ffb-42cf-a92b-43c6fad88c2b",
+    "name": "wabiqa-app",
+    "origin": "https://demo.wabiqa.com",
+    "region": "sgp",
+    "replicas": 2,
+    "instanceSize": "apps-s-1vcpu-1gb",
+    "baselineDashboardLast5Minutes": {
+      "cpuPercent": 2,
+      "ramPercent": 10
+    },
+    "rollbackDeployment": "a033115e-ce2b-4458-ac36-34c6cf2ba5d9",
+    "rollbackCommit": "bdcf60c091dfac626524523232ac73188ca0d537",
+    "testingOffDeployment": "1e8a74a9-e8bd-4fe5-b46e-0bf60019fd7b",
+    "flagEnableDeployment": "60ac8935-91cb-47c1-8834-df8df6fe56db",
+    "latestCodeDeployment": "7424e5c9-e913-451d-b871-f2d38c8c2870",
+    "testingOffGateVerified": true,
+    "enabledAt": "2026-10-23T06:58:28Z"
+  },
+  "source": {
+    "branch": "fix/a350-solver-cargo-capacity",
+    "commit": "f1edd26f97b04d2fdb2df21b53f817c0ea46950e",
+    "pushed": true,
+    "merged": false
+  },
+  "database": {
+    "project": "ffmadtrcirrzywdqahbu",
+    "name": "AHM565-Static-Data",
+    "region": "ap-northeast-2",
+    "compute": "t3a.nano",
+    "postgresVersion": "17.6",
+    "schema": "capacity_reference",
+    "functions": 14,
+    "role": "capacity_benchmark",
+    "roleElevated": false,
+    "roleMemberships": 0,
+    "apiRolesDenied": true,
+    "securityInvoker": true,
+    "functionSearchPathPinned": true,
+    "endpoint": "aws-0-ap-northeast-2.pooler.supabase.com:5432",
+    "tls": "verify-full with provider CA",
+    "nativeRestrictedSmoke": "PASS: INFEASIBLE",
+    "nativeRestrictedSmokeCalculationMilliseconds": 12.82,
+    "benchmarkAdvisorWarnings": 0,
+    "dataApiSchemas": [
+      "public",
+      "graphql_public",
+      "Basic_Carrier_Record"
+    ]
+  },
+  "status": "latest-code deployment healthy; both hosted smoke engines verified; repeated measurements running",
+  "operationalCalculationActivated": false,
+  "client": {
+    "description": "User workstation; exact physical location not independently established",
+    "timezone": "Asia/Manila",
+    "cdnEdgeObserved": "MNL"
+  },
+  "executionBudgets": {
+    "solverSearchSeconds": 10,
+    "solverProcessHardSeconds": 12,
+    "databaseStatementSeconds": 60,
+    "databaseProcessHardSeconds": 68,
+    "clientRequestHardSeconds": 80
+  }
+}

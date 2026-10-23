@@ -2,8 +2,7 @@
 
 Deployment runbook. Execution began with explicit user approval on
 23 October 2026: the preparation branch is pushed and the private benchmark
-schema/account are installed on current Supabase. Hosting and benchmark outcomes
-must be recorded separately; instructions below do not themselves prove completion. This replaces the earlier proposal for a separate private service and
+schema/account are installed on current Supabase. Deployment and repeated measurements are complete; testing is disabled again. See [hosted results](../../solver/benchmarks/a350-v2-hosted-2026-10-23/REPORT.txt): 134 of 140 measured requests proved, with six case-3 solver proofs inconclusive. This replaces the earlier proposal for a separate private service and
 separate reference database. The operational cargo calculation, AUTOLOAD, board,
 tray and other aircraft are unchanged.
 
@@ -197,23 +196,20 @@ The existing app production build must package the one-shot worker, model,
 fixtures and pinned PostgreSQL driver. Local SQL tests check private-schema
 permissions and calculation under the restricted role where supported.
 
-No Docker engine or DigitalOcean CLI is available on this workstation. Container
-builds, live Supabase install/TLS/role checks, DigitalOcean validation, actual
-headroom and hosted smoke/latency measurements remain deployment-time checks.
-Do not describe local preparation as a verified hosted deployment.
+No Docker engine or DigitalOcean CLI is available on this workstation. The DigitalOcean container build, native Supabase TLS/role checks, gated smoke checks and hosted latency measurements were subsequently executed. Deployment IDs, raw outcomes and sampled resource observations are archived with the hosted results.
 
 References:
 - [Supabase connection methods](https://supabase.com/docs/guides/database/connecting-to-postgres)
 - [Supabase roles](https://supabase.com/docs/guides/database/postgres/roles)
 - [DigitalOcean App Spec](https://docs.digitalocean.com/products/app-platform/reference/app-spec/)
 
-Local verification on 23 October 2026: 938 TypeScript tests (including the real
+Local verification on 23 October 2026: 941 TypeScript tests (including the real
 one-shot solver smoke), 20 Python tests, TypeScript checking, changed-file lint
 and the production Next.js build passed. The seven sealed V2 inputs reproduce
 unchanged. The review patch was applied to a redacted reconstruction of the
 supplied App Spec and parsed as YAML: one existing service and its original
 resource allocation remain. Local SQL tests use PGlite, not the live Supabase
-server. Native TLS, provider permissions and container build remain unexecuted.
+server. Native TLS, provider permissions and the hosted container build subsequently passed; see the execution archive.
 
 Hosted execution uncovered a harness timing issue in the initial run: solver
 imports took about four seconds, while the original 12-second process deadline

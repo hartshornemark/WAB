@@ -1,0 +1,29 @@
+Hosted A350 fixed-input benchmark — 23 October 2026
+
+Exceptions recorded: inspect validation.json and raw results before making performance claims.
+
+Existing DigitalOcean app: wabiqa-app, sgp, 2 x 1 shared vCPU / 1GB.
+Current Supabase: ap-northeast-2, t3a.nano, PostgreSQL 17.6.
+Final run: 140 measured requests, 134 proved, 6 unproved/failed; transport errors 0. All returned witnesses valid: true; all match the known reference objective/infeasibility: true.
+Serial requests; 10 measured requests per engine/case after one excluded warm-up.
+Complete request includes external HTTPS, app handling, child startup, validation and, for DATABASE, native database connection/transport.
+Core time excludes startup and transport. These are fixture comparisons, not the live passenger/baggage preparation workflow.
+No operational cargo calculation was switched.
+
+Case | DB core median s | Solver core median s | DB request median / p95 s | Solver request median / p95 s | Proven DB; Solver
+case-01 | 22.821 | 0.523 | 24.317 / 24.878 | 3.947 / 4.490 | 10/10; 10/10
+case-02 | 11.166 | 0.282 | 12.578 / 12.878 | 3.840 / 4.366 | 10/10; 10/10
+case-03 | 3.256 | unproved requests | 4.687 / 5.724 | unproved requests / unproved requests | 10/10; 4/10
+case-04 | 1.838 | 0.322 | 3.176 / 3.806 | 3.450 / 4.101 | 10/10; 10/10
+case-05 | 0.423 | 1.212 | 1.838 / 1.936 | 4.459 / 5.425 | 10/10; 10/10
+case-06 | 22.538 | 0.648 | 24.028 / 29.526 | 3.990 / 4.745 | 10/10; 10/10
+case-07-infeasible | 0.002 | 0.159 | 1.491 / 1.610 | 3.512 / 3.885 | 10/10; 10/10
+case-03 SOLVER: 4/10 measured requests proved; exceptions: INCONCLUSIVE FEASIBLE, INCONCLUSIVE FEASIBLE, INCONCLUSIVE FEASIBLE, INCONCLUSIVE FEASIBLE, INCONCLUSIVE FEASIBLE, INCONCLUSIVE FEASIBLE. All-response median core 10.005 s, complete 13.318 s; these are not time-to-proven-optimum figures.
+
+Timing distributions use verified/proven responses only. Failed and unproved requests remain counted and visible in raw results and validation.json; they are not successful timings.
+Read raw results for every failure, unproved result and metadata field; no outliers removed.
+The database and app are in different regions, which is part of this deployed request path.
+No hosted timing claim is transferable to another environment without measurement.
+
+Testing was disabled again after measurement; authenticated and unauthenticated benchmark requests return 404, and the normal login page returns 200. Temporary plaintext deployment secrets were removed. No merge or operational cutover occurred.
+The p95 uses nearest rank; with ten observations this is the maximum. The interrupted initial harness attempt is retained separately and excluded from the final comparison.
